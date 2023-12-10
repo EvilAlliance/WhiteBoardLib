@@ -9,62 +9,62 @@ pnpm run dev
 #### Primitive Types
 * isNumber
     ```javascript
-    const x = ???;
+    const x = ??;
     //result is true or false
     const result = isNumber(x);
     ```
 * isString
     ```javascript
-    const x = ???;
+    const x = ??;
     //result is true or false
     const result = isString(x);
     ```
 * isBoolean
      ```javascript
-    const x = ???;
+    const x = ??;
     //result is true or false
     const result = isBoolean(x);
     ```
 * isUndefined
     ```javascript
-    const x = ???;
+    const x = ??;
     //result is true or false
     const result = isUndefined(x);
     ```
 * isNull
      ```javascript
-    const x = ???;
+    const x = ??;
     //result is true or false
     const result = isNull(x);
     ```
 * isSymbol
     ```javascript
-    const x = ???;
+    const x = ?;
     //result is true or false
     const result = isSymbol(x);
     ```
 * isBigInt
     ```javascript
-    const x = ???;
+    const x = ??;
     //result is true or false
     const result = isbigInt(x);
     ```
 * isFunction
     ```javascript
-    const x = ???;
+    const x = ??;
     //result is true or false
     const result = isFunction(x);
     ```
 #### Array Type
 * isArray
     ```javascript
-    const x = ???;
+    const x = ??;
     //result is true or false
     const result = isArray(x);
     ```
 * isArrayOf
      ```javascript
-    const x = ???;
+    const x = ??;
     //result is true or false
     const result = isArrayOf(x, TypeCheckingFunction);
     //Second parameter is not a Function throws an error
@@ -72,13 +72,13 @@ pnpm run dev
 #### Object Type
 * isObject
      ```javascript
-    const x = ???;
+    const x = ??;
     //result is true or false
     const result = isObject(x);
     ```
 * isObjectWithKeys
      ```javascript
-    const x = ???;
+    const x = ??;
     //result is true or false
     const result = isObjectWithKeys(x, ArrayWithKeys);
     //Second parameter is not an Array throws an error
@@ -92,7 +92,7 @@ pnpm run dev
     ```
 * isObjectWhiteKeysAndTypes
     ```javascript
-    const x = ???;
+    const x = ??;
     //result is true or false
     const result = isObjectWhiteKeysAndTypes(x, ObjectWithValueAsFunction);
     //Second parameter is not an Object with value as Function throws an error
