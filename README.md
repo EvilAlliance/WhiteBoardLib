@@ -5,3 +5,7 @@ Instalation and Run project
 pnpm install
 pnpm run dev 
 ```
+### Linter
+```sh
+pnpm run lint 
+```
