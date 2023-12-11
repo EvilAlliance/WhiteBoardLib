@@ -35,36 +35,36 @@ setDefault<Object>(Partial<Object>, ObjectDefault);
 ```typescript
 const rect = new Rect(PartialRect)
 ```
+* width: number | 
 Width of the rectangle
-* width: number
+* height: number | 
 Height of the rectangle
-* height: number
+* top: number | 
 Distance of the rectangle from the top border of the canvas
-* top: number;
+* left: number | 
 Distance of the rectangle from the left border of the canvas
-* left: number;
+* fill: boolean | 
 If the rectangle is filled with the color
-* fill: boolean;
+* fillColor: keyof typeof Color | string | 
 The color inside the rectangle
-* fillColor: keyof typeof Color | string;
+* strokeColor: keyof typeof Color | string | 
 The color of the outer stroke of the rectangle
-* strokeColor: keyof typeof Color | string;
+* strokeWidth: number | 
 Thickness of the outer stroke of the rectangle
-* strokeWidth: number
-Center point base in the x axis, number between 0 and 1
-* originX: 'left' | 'center' | 'right' | number;
+* originX: 'left' | 'center' | 'right' | number | 
+Center point base in the x axis, number between0 and 1
+* originY: 'top' | 'center' | 'bottom' | number | 
 Center point base in the y axis, number between 0 and 1
-* originY: 'top' | 'center' | 'bottom' | number;
-* skewY: number;
-* skewX: number;
-* scaleY: number;
-* scaleX: number;
+* skewY: number | 
+* skewX: number | 
+* scaleY: number | 
+* scaleX: number | 
+* angle: number | 
 Rotation base on the center point
-* angle: number;
+* rx: number | 
 Curve the corners in the side of the x axis
-* rx: number;
+* ry: number | 
 Curve the corners in the side of the y axis
-* ry: number;
 
 ##### RectRender
 Renders the Rect in the Canvas
