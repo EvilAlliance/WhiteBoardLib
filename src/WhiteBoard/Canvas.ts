@@ -1,7 +1,9 @@
+import { CanvasObject } from "./Object/Object";
+
 export class Canvas {
     public Canvas: HTMLCanvasElement;
     public ctx: CanvasRenderingContext2D;
-    public Objects: any;
+    public Objects: CanvasObject[];
     public eventListener: any;
     public height: number;
     public width: number;
@@ -23,5 +25,7 @@ export class Canvas {
 
         this.width = width;
         this.height = height;
+
+        this.Objects = [];
     }
 }
