@@ -8,6 +8,11 @@ pnpm run dev
 ## Color
 it is a JSON file with 30000+ colors
 
+Parse the key of this JSON file to something Canvas API understands
+```typescript
+const string = CanvasParseColor(x: string);
+```
+
 ### Methods
 #### Canvas
 ```typescript
