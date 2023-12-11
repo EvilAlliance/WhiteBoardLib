@@ -1,4 +1,4 @@
-import { CanvasObjectContainer } from "./Object/CanvasObjectContainer";
+import { CanvasObjectContainer } from './Object/CanvasObjectContainer';
 
 export class Canvas {
     public Canvas: HTMLCanvasElement;

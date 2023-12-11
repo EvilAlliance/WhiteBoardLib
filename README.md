@@ -15,3 +15,9 @@ const canvas = new Canvas(string | HTMLCanvasElement, number, number);
 ```typescript
 const canvasObject = new CanvasObjectContainer(Object, string);
 ```
+
+#### CommonMethod
+Changes the PartialObject into a complete one with their default values
+```typescript
+setDefault<Object>(Partial<Object>, ObjectDefault);
+```
