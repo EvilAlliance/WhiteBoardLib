@@ -1,6 +1,7 @@
 import { Canvas } from './../Canvas';
 import { setDefault } from '../CommonMethod';
 import Color from './../Constantes/Color.json';
+import { CanvasParseColor } from '../Utils/Color';
 const kRect = 1 - 0.5522847498;
 
 const RectDefault: Rect = Object.freeze({
@@ -118,7 +119,7 @@ export function RectRender(canvas: Canvas, rect: Rect) {
     left -= centerX;
     top -= centerY;
 
-    ctx.strokeStyle = parseToCanvasColor(rect.strokeColor);
+    ctx.strokeStyle = CanvasParseColor(rect.strokeColor);
     ctx.lineWidth = strokeWidth;
 
     ctx.moveTo(left + rx, top);
@@ -169,7 +170,7 @@ export function RectRender(canvas: Canvas, rect: Rect) {
     ctx.stroke();
 
     if (rect.fill) {
-        ctx.fillStyle = parseToCanvasColor(rect.fillColor);
+        ctx.fillStyle = CanvasParseColor(rect.fillColor);
         ctx.fill();
     }
 
