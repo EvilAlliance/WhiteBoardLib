@@ -5,7 +5,6 @@ Instalation and Run project
 pnpm install
 pnpm run dev 
 ```
-## Colors
 it is a JSON file with 30000+ colors
 
 ### Methods
