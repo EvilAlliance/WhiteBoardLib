@@ -5,6 +5,7 @@ Instalation and Run project
 pnpm install
 pnpm run dev 
 ```
+## Color
 it is a JSON file with 30000+ colors
 
 ### Methods
@@ -15,7 +16,7 @@ const canvas = new Canvas(string | HTMLCanvasElement, number, number);
 ```
 #### CanvasObjectContainer
 ```typescript
-const canvasObject = new CanvasObjectContainer(CanvasObject, string);
+const canvasObject = new CanvasObjectContainer(CanvasObject);
 ```
 
 #### CommonMethod
