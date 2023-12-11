@@ -11,7 +11,7 @@ pnpm run dev
 const canvas = new Canvas(string | HTMLCanvasElement, number, number);
 //if string does not point to a HTMLCanvasElement an error will occur
 ```
-#### CanvasObject
+#### CanvasObjectContainer
 ```typescript
-const canvasObject = new CanvasObject(Object, string);
+const canvasObject = new CanvasObjectContainer(Object, string);
 ```

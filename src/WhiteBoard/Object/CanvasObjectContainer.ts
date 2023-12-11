@@ -1,4 +1,4 @@
-export class CanvasObject {
+export class CanvasObjectContainer {
     public render: boolean;
     public name: string;
     public eventListener: any;

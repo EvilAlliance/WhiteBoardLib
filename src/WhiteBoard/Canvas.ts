@@ -1,9 +1,9 @@
-import { CanvasObject } from "./Object/Object";
+import { CanvasObjectContainer } from "./Object/CanvasObjectContainer";
 
 export class Canvas {
     public Canvas: HTMLCanvasElement;
     public ctx: CanvasRenderingContext2D;
-    public Objects: CanvasObject[];
+    public Objects: CanvasObjectContainer[];
     public eventListener: any;
     public height: number;
     public width: number;
