@@ -16,7 +16,7 @@ const string = CanvasParseColor(x: string);
 ### Methods
 #### Canvas
 ```typescript
-const canvas = new Canvas(string | HTMLCanvasElement, number, number);
+const canvas = new Canvas(selector | HTMLCanvasElement, number, number);
 //if string does not point to a HTMLCanvasElement an error will occur
 ```
 #### CanvasObjectContainer
