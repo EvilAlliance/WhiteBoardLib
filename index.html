@@ -4,9 +4,20 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite App</title>
+    <script type="module" src="/src/index.ts"></script>
+    <title>WhiteBoardLib</title>
   </head>
-  <body>
-    <script type="module" src="/src/index.js"></script>
+  <body
+        style="
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100dvh;
+        "
+    >
+        <button id="brush" type="button">Brush</button>
+        <button id="cursor" type="button">Cursor</button>
+        <button id="eraserAll" type="button">EraserAll</button>
+        <canvas style="width: 1000px; height: 800px; background: green">
   </body>
 </html>
