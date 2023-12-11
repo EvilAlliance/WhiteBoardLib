@@ -1,4 +1,5 @@
 import { CanvasObjectContainer } from './Object/CanvasObjectContainer';
+import { Rect, RectRender } from './Object/Rect';
 
 export class Canvas {
     public Canvas: HTMLCanvasElement;

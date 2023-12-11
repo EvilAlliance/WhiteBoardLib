@@ -1,4 +1,4 @@
-import { CanvasObject } from "./CanvasObject";
+import { CanvasObject } from './CanvasObject';
 
 export class CanvasObjectContainer {
     public render: boolean;
