@@ -54,6 +54,11 @@ const rect = new Rect(PartialRect)
 * rx: number;
 * ry: number;
 
+##### RectRender
+Renders the Rect in the Canvas
+```typescript
+RectRender(Canvas, Rect)
+```
 
 #### CanvasObject
 * Rect
