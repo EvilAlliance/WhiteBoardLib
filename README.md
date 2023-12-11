@@ -42,8 +42,8 @@ const rect = new Rect(PartialRect)
 * top: number;
 * left: number;
 * fill: boolean;
-* fillColor: keyof typeof Colors | string;
-* strokeColor: keyof typeof Colors | string;
+* fillColor: keyof typeof Color | string;
+* strokeColor: keyof typeof Color | string;
 * originX: 'left' | 'center' | 'right';
 * originY: 'top' | 'center' | 'bottom';
 * skewY: number;
