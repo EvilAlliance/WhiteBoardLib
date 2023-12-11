@@ -33,8 +33,8 @@ export class Rect {
     public fill: boolean;
     public fillColor: keyof typeof Color | string;
     public strokeColor: keyof typeof Color | string;
-    public originX: 'left' | 'center' | 'right';
-    public originY: 'top' | 'center' | 'bottom';
+    public originX: 'left' | 'center' | 'right' | number;
+    public originY: 'top' | 'center' | 'bottom' | number;
     public skewY: number;
     public skewX: number;
     public scaleY: number;
@@ -186,8 +186,8 @@ export const OriginXY = Object.freeze({
 });
 
 export function getCenter(obj: Rect) {
-    const x = OriginXY[obj.originX] ?? obj.originX;
-    const y = OriginXY[obj.originY] ?? obj.originY;
+    const x = OriginXY[obj.originX as keyof typeof OriginXY] ?? obj.originX;
+    const y = OriginXY[obj.originY as keyof typeof OriginXY] ?? obj.originY;
     return {
         centerX: obj.width * x,
         centerY: obj.height * y,
