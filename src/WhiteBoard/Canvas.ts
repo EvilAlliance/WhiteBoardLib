@@ -38,5 +38,9 @@ export function CanvasAddCanvasObject(canvas: Canvas, obj: CanvasObject) {
 export function CanvasAddCanvasObjectContainer(canvas: Canvas, obj: CanvasObjectContainer) {
     canvas.Objects.push(obj);
 }
+export function CanvasRender(canvas: Canvas) {
+    for (const Object of canvas.Objects) {
+        if (Object instanceof Rect) { RectRender(canvas, Object); }
+        else { console.log('TODO: ', Object); }
     }
 }

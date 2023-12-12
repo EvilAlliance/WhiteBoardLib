@@ -40,6 +40,11 @@ Adds a CanvasObjectContainer into the canvas list of CanvasObjectContainers
 ```typescript
 CanvasAddCanvasObjectContainer(Canvas, CanvasObjectContainer);
 ```
+##### CanvasRender
+Renders all object inside of Objects list
+```typescript
+CanvasRender(Canvas);
+```
 #### CanvasObjectContainer
 ```typescript
 const canvasObject = new CanvasObjectContainer(CanvasObject);
