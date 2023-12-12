@@ -28,5 +28,8 @@ export class Canvas {
         this.height = height;
 
         this.Objects = [];
+export function CanvasClear(canvas: Canvas) {
+    canvas.ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
     }
 }
