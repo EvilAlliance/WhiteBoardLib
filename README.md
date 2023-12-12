@@ -30,6 +30,16 @@ Clear the canvas of all it contents
 ```typescript
 CanvasClear(Canvas);
 ```
+##### CanvasAddCanvasObject
+Adds a CanvasObject into the canvas list of CanvasObjectContainers
+```typescript
+CanvasAddCanvasObject(Canvas, CanvasObject);
+```
+##### CanvasAddCanvasObjectContainer
+Adds a CanvasObjectContainer into the canvas list of CanvasObjectContainers
+```typescript
+CanvasAddCanvasObjectContainer(Canvas, CanvasObjectContainer);
+```
 #### CanvasObjectContainer
 ```typescript
 const canvasObject = new CanvasObjectContainer(CanvasObject);

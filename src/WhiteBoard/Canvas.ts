@@ -31,5 +31,12 @@ export class Canvas {
 export function CanvasClear(canvas: Canvas) {
     canvas.ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
+export function CanvasAddCanvasObject(canvas: Canvas, obj: CanvasObject) {
+    canvas.Objects.push(new CanvasObjectContainer(obj));
+}
+
+export function CanvasAddCanvasObjectContainer(canvas: Canvas, obj: CanvasObjectContainer) {
+    canvas.Objects.push(obj);
+}
     }
 }
