@@ -5,6 +5,13 @@ Instalation and Run project
 pnpm install
 pnpm run dev 
 ```
+
+## CommonMethod
+Changes the PartialObject into a complete one with their default values
+```typescript
+setDefault<Object>(Partial<Object>, ObjectDefault);
+```
+
 ## Color
 it is a JSON file with 30000+ colors
 
@@ -13,43 +20,57 @@ Parse the key of this JSON file to something Canvas API understands
 const string = CanvasParseColor(x: string);
 ```
 
-## CommonMethod
-Changes the PartialObject into a complete one with their default values
-```typescript
-setDefault<Object>(Partial<Object>, ObjectDefault);
-```
-
-### Methods
-#### Canvas
+## Types
+### Canvas
 ```typescript
 const canvas = new Canvas(selector | HTMLCanvasElement, number, number);
 //if string does not point to a HTMLCanvasElement an error will occur
 ```
-##### CanvasClear
+* Canvas: HTMLCanvasElement \ Canvas it use
+* ctx: CanvasRenderingContext2D \ The context of said Canvas
+* Objects: CanvasObjectContainer[] \ Objects of the Canvas
+* eventListener: any \
+* height: number \ Height of the Canvas
+* width: number \ Width of the Canvas
+* cursor: any \ 
+
+#### CanvasClear
 Clear the canvas of all it contents
 ```typescript
 CanvasClear(Canvas);
 ```
-##### CanvasAddCanvasObject
+
+#### CanvasAddCanvasObject
 Adds a CanvasObject into the canvas list of CanvasObjectContainers
 ```typescript
 CanvasAddCanvasObject(Canvas, CanvasObject);
 ```
-##### CanvasAddCanvasObjectContainer
+
+#### CanvasAddCanvasObjectContainer
 Adds a CanvasObjectContainer into the canvas list of CanvasObjectContainers
 ```typescript
 CanvasAddCanvasObjectContainer(Canvas, CanvasObjectContainer);
 ```
-##### CanvasRender
+
+#### CanvasRender
 Renders all object inside of Objects list
 ```typescript
 CanvasRender(Canvas);
 ```
-#### CanvasObjectContainer
+
+### CanvasObjectContainer
 ```typescript
 const canvasObject = new CanvasObjectContainer(CanvasObject);
 ```
-#### Rect
+
+* render: boolean \ if it is rendered in the canvas
+* enventListner: any \ 
+* Object: CanvasObject \ The Object
+
+### CanvasObject
+* Rect
+
+### Rect
 ```typescript
 const rect = new Rect(PartialRect)
 ```
@@ -71,11 +92,20 @@ const rect = new Rect(PartialRect)
 * rx: number \ Curve the corners in the side of the x axis
 * ry: number \ Curve the corners in the side of the y axis
 
-##### RectRender
+#### RectUpdateRxRy
+If rx or ry is not defined it will be equal to the other
+```typescript
+RectUpdateRxRy(Rect)
+```
+
+#### RectUpdateWidthHeight
+Updates the widht and height based int the strokeWidth
+```typescript
+RectUpdateRxRy(Rect)
+```
+
+#### RectRender
 Renders the Rect in the Canvas
 ```typescript
 RectRender(Canvas, Rect)
 ```
-
-#### CanvasObject
-* Rect
