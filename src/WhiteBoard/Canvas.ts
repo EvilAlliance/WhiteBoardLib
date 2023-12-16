@@ -1,3 +1,4 @@
+import { CanvasObject } from './Object/CanvasObject';
 import { CanvasObjectContainer } from './Object/CanvasObjectContainer';
 import { Rect, RectRender } from './Object/Rect';
 
@@ -28,9 +29,13 @@ export class Canvas {
         this.height = height;
 
         this.Objects = [];
+    }
+}
+
 export function CanvasClear(canvas: Canvas) {
     canvas.ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
+
 export function CanvasAddCanvasObject(canvas: Canvas, obj: CanvasObject) {
     canvas.Objects.push(new CanvasObjectContainer(obj));
 }
