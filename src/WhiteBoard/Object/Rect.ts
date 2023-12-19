@@ -45,23 +45,7 @@ export class Rect {
         RectUpdateRxRy(obj as Rect);
         setDefault<Rect>(obj, RectDefault);
         RectUpdateWidthHeight(obj as Rect);
-        this.strokeWidth = obj.strokeWidth as number;
-        this.width = obj.width as number;
-        this.height = obj.height as number;
-        this.top = obj.top as number;
-        this.left = obj.left as number;
-        this.fill = obj.fill as boolean;
-        this.fillColor = obj.fillColor as ColorString;
-        this.strokeColor = obj.strokeColor as ColorString;
-        this.originX = obj.originX as ('left');
-        this.originY = obj.originY as ('top');
-        this.skewY = obj.skewY as number;
-        this.skewX = obj.skewX as number;
-        this.scaleY = obj.scaleY as number;
-        this.scaleX = obj.scaleX as number;
-        this.angle = obj.angle as number;
-        this.rx = obj.rx as number;
-        this.ry = obj.ry as number;
+        setDefault<Rect>(this, obj as Rect);
     }
 }
 
