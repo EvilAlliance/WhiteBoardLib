@@ -1,12 +1,18 @@
 import { CanvasObject } from './Object/CanvasObject';
 import { CanvasObjectContainer } from './Object/CanvasObjectContainer';
 import { Rect, RectRender } from './Object/Rect';
+import { TEventCallback } from './Observable';
+
+export type CanvasEvents = {
+    'render:Before': void;
+    'render:After': void;
+}
 
 export class Canvas {
     public Canvas: HTMLCanvasElement;
     public ctx: CanvasRenderingContext2D;
     public Objects: CanvasObjectContainer[];
-    public eventListener: any;
+    public eventListener: Record<keyof CanvasEvents, TEventCallback<CanvasEvents[keyof CanvasEvents]>[]>;
     public height: number;
     public width: number;
     public cursor: any;
@@ -29,6 +35,8 @@ export class Canvas {
         this.height = height;
 
         this.Objects = [];
+
+        this.eventListener = {} as Record<keyof CanvasEvents, TEventCallback<CanvasEvents[keyof CanvasEvents]>[]>;
     }
 }
 
