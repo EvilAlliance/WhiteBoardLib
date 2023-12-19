@@ -1,7 +1,13 @@
 import Color from './../Constantes/Color.json';
 
-export function CanvasParseColor(x: string): string {
-    return Color[x as keyof typeof Color] ?? x;
+type RGB = `rgb(${number}, ${number}, ${number})`;
+type RGBA = `rgba(${number}, ${number}, ${number}, ${number})`;
+type HEX = `#${string}`;
+
+export type ColorString = RGB | RGBA | HEX;
+
+export function CanvasParseColor(x: keyof typeof Color | ColorString): ColorString | ColorString {
+    return Color[x as keyof typeof Color] as ColorString ?? x;
 }
 
 export type ColorRGBA = [number, number, number, number];

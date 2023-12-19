@@ -1,7 +1,7 @@
 import { Canvas } from './../Canvas';
 import { setDefault } from '../CommonMethod';
 import Color from './../Constantes/Color.json';
-import { CanvasParseColor } from '../Utils/Color';
+import { CanvasParseColor, ColorString } from '../Utils/Color';
 const kRect = 1 - 0.5522847498;
 
 const RectDefault: Rect = Object.freeze({
@@ -31,8 +31,8 @@ export class Rect {
     public top: number;
     public left: number;
     public fill: boolean;
-    public fillColor: keyof typeof Color | string;
-    public strokeColor: keyof typeof Color | string;
+    public fillColor: keyof typeof Color | ColorString;
+    public strokeColor: keyof typeof Color | ColorString;
     public originX: 'left' | 'center' | 'right' | number;
     public originY: 'top' | 'center' | 'bottom' | number;
     public skewY: number;
@@ -52,8 +52,8 @@ export class Rect {
         this.top = obj.top as number;
         this.left = obj.left as number;
         this.fill = obj.fill as boolean;
-        this.fillColor = obj.fillColor as string;
-        this.strokeColor = obj.strokeColor as string;
+        this.fillColor = obj.fillColor as ColorString;
+        this.strokeColor = obj.strokeColor as ColorString;
         this.originX = obj.originX as ('left');
         this.originY = obj.originY as ('top');
         this.skewY = obj.skewY as number;
