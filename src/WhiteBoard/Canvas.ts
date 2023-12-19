@@ -48,9 +48,20 @@ export function CanvasAddCanvasObject(canvas: Canvas, obj: CanvasObject) {
     canvas.Objects.push(new CanvasObjectContainer(obj));
 }
 
+export function CanvasAddCanvasObjectRender(canvas: Canvas, obj: CanvasObject) {
+    canvas.Objects.push(new CanvasObjectContainer(obj));
+    CanvasRender(canvas);
+}
+
 export function CanvasAddCanvasObjectContainer(canvas: Canvas, obj: CanvasObjectContainer) {
     canvas.Objects.push(obj);
 }
+
+export function CanvasAddCanvasObjectContainerRender(canvas: Canvas, obj: CanvasObjectContainer) {
+    canvas.Objects.push(obj);
+    CanvasRender(canvas);
+}
+
 export function CanvasRender(canvas: Canvas) {
     fire<CanvasEvents>(canvas, 'render:Before', null);
     for (const Object of canvas.Objects) {
