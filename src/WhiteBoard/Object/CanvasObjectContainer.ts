@@ -2,8 +2,8 @@ import { TEventCallback } from '../Observable';
 import { CanvasObject } from './CanvasObject';
 
 export type CanvasObjectContainerEvent = {
-    'render:Before': void;
-    'render:After': void;
+    'render:Before': null;
+    'render:After': null;
 }
 
 export class CanvasObjectContainer {

@@ -1,11 +1,11 @@
 import { CanvasObject } from './Object/CanvasObject';
-import { CanvasObjectContainer } from './Object/CanvasObjectContainer';
+import { CanvasObjectContainer, CanvasObjectContainerEvent } from './Object/CanvasObjectContainer';
 import { Rect, RectRender } from './Object/Rect';
-import { TEventCallback } from './Observable';
+import { TEventCallback, fire } from './Observable';
 
 export type CanvasEvents = {
-    'render:Before': void;
-    'render:After': void;
+    'render:Before': null;
+    'render:After': null;
 }
 
 export class Canvas {
@@ -52,8 +52,12 @@ export function CanvasAddCanvasObjectContainer(canvas: Canvas, obj: CanvasObject
     canvas.Objects.push(obj);
 }
 export function CanvasRender(canvas: Canvas) {
+    fire<CanvasEvents>(canvas, 'render:Before', null);
     for (const Object of canvas.Objects) {
+        fire<CanvasObjectContainerEvent>(Object, 'render:Before', null);
         if (Object instanceof Rect) { RectRender(canvas, Object); }
         else { console.log('TODO: ', Object); }
+        fire<CanvasObjectContainerEvent>(Object, 'render:After', null);
     }
+    fire<CanvasEvents>(canvas, 'render:After', null);
 }
