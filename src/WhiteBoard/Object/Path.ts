@@ -1,23 +1,14 @@
-import { setDefault } from '../CommonMethod';
+import { setOption } from '../CommonMethod';
 import { Point } from '../GeoSpace/Point';
 import { Color } from '../Utils/Color';
 
-
-const PathDefault: Path = Object.freeze({
-    Path: [] as Point[],
-    color: 'Red',
-    lineCap: 'round',
-    width: 1
-});
-
 export class Path {
-    public Path: Point[];
-    public color: Color;
-    public lineCap: CanvasLineCap;
-    public width: number;
+    public Path: Point[] = [];
+    public color: Color = 'Red';
+    public lineCap: CanvasLineCap = 'round';
+    public width: number = 1;
 
     constructor(obj: Partial<Path>) {
-        setDefault<Path>(obj, PathDefault);
-        setDefault<Path>(this, obj as Path);
+        setOption<Path>(this, obj as Path);
     }
 }

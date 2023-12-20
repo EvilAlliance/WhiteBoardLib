@@ -1,51 +1,30 @@
 import { Canvas } from './../Canvas';
-import { setDefault } from '../CommonMethod';
-import { CanvasParseColor, Color, ColorString } from '../Utils/Color';
+import { setOption } from '../CommonMethod';
+import { CanvasParseColor, Color } from '../Utils/Color';
 const kRect = 1 - 0.5522847498;
 
-const RectDefault: Rect = Object.freeze({
-    strokeWidth: 0,
-    width: 0,
-    height: 0,
-    top: 0,
-    left: 0,
-    fill: false,
-    fillColor: 'Red',
-    strokeColor: 'Red',
-    originX: 'left',
-    originY: 'top',
-    skewX: 0,
-    skewY: 0,
-    scaleX: 1,
-    scaleY: 1,
-    angle: 0,
-    rx: 0,
-    ry: 0,
-});
-
 export class Rect {
-    public strokeWidth: number;
-    public width: number;
-    public height: number;
-    public top: number;
-    public left: number;
+    public strokeWidth: number = 0;
+    public width: number = 0;
+    public height: number = 0;
+    public top: number = 0;
+    public left: number = 0;
     public fill: boolean;
-    public fillColor: Color;
-    public strokeColor: Color;
-    public originX: 'left' | 'center' | 'right' | number;
-    public originY: 'top' | 'center' | 'bottom' | number;
-    public skewY: number;
-    public skewX: number;
-    public scaleY: number;
-    public scaleX: number;
-    public angle: number;
-    public rx: number;
-    public ry: number;
+    public fillColor: Color = 'Red';
+    public strokeColor: Color = 'Red';
+    public originX: 'left' | 'center' | 'right' | number = 'left';
+    public originY: 'top' | 'center' | 'bottom' | number = 'top';
+    public skewY: number = 0;
+    public skewX: number = 0;
+    public scaleY: number = 1;
+    public scaleX: number = 1;
+    public angle: number = 0;
+    public rx: number = 0;
+    public ry: number = 0;
     constructor(obj: Partial<Rect>) {
-        RectUpdateRxRy(obj as Rect);
-        setDefault<Rect>(obj, RectDefault);
-        RectUpdateWidthHeight(obj as Rect);
-        setDefault<Rect>(this, obj as Rect);
+        RectUpdateRxRy(obj);
+        setOption<Rect>(this, obj);
+        RectUpdateWidthHeight(this);
     }
 }
 

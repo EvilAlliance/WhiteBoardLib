@@ -1,6 +1,6 @@
 export type TEventCallback<T = any> = (options: T) => any;
 
-export function on<T>(obj: { eventListener: Record<keyof T, TEventCallback[]> }, arg0: Partial<Record<keyof T, TEventCallback<T[keyof T]>>> | keyof T, handler?: TEventCallback<T[keyof T]>) {
+export function on<T, K extends keyof T>(obj: { eventListener: Record<keyof T, TEventCallback[]> }, arg0: Partial<Record<K, TEventCallback<T[K]>>> | K, handler?: TEventCallback<T[K]>) {
     if (typeof arg0 == 'object') {
         for (const [eventName, handler] of Object.entries(arg0)) {
             on(obj, eventName as keyof T, handler as TEventCallback<T[keyof T]>);
@@ -34,7 +34,7 @@ export function once<T>(obj: { eventListener: Record<keyof T, TEventCallback[]> 
     }
 }
 
-export function removeEventListener<T>(obj: { eventListener: Record<keyof T, TEventCallback[]> }, eventName: keyof T, handler?: TEventCallback<T[keyof T]>) {
+export function removeEventListener<T, K extends keyof T>(obj: { eventListener: Record<keyof T, TEventCallback[]> }, eventName: K, handler?: TEventCallback<T[K]>) {
     if (!handler) {
         obj.eventListener[eventName] = [];
     } else {
@@ -44,7 +44,7 @@ export function removeEventListener<T>(obj: { eventListener: Record<keyof T, TEv
     }
 }
 
-export function off<T>(obj: { eventListener: Record<keyof T, TEventCallback[]> }, arg0: Partial<Record<keyof T, TEventCallback<T[keyof T]>>> | keyof T, handler?: TEventCallback<T[keyof T]>) {
+export function off<T, K extends keyof T>(obj: { eventListener: Record<keyof T, TEventCallback[]> }, arg0: Partial<Record<K, TEventCallback<T[K]>>> | K, handler?: TEventCallback<T[K]>) {
     if (!arg0) {
         for (const eventName in obj.eventListener) {
             removeEventListener(obj, eventName);
@@ -58,7 +58,7 @@ export function off<T>(obj: { eventListener: Record<keyof T, TEventCallback[]> }
     }
 }
 
-export function fire<T>(obj: { eventListener: Record<keyof T, TEventCallback[]> }, eventName: keyof T, options: T[keyof T]) {
+export function fire<T, K extends keyof T>(obj: { eventListener: Record<keyof T, TEventCallback[]> }, eventName: K, options: T[K]) {
     const events = obj.eventListener[eventName] || [];
     for (let i = 0; i < events.length; i++) {
         events[i].bind(obj)(options || {});
