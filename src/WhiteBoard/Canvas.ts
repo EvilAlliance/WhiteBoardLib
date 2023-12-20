@@ -63,12 +63,11 @@ export function CanvasAddCanvasObjectContainerRender(canvas: Canvas, obj: Canvas
 }
 
 export function CanvasRender(canvas: Canvas) {
-    fire<CanvasEvents>(canvas, 'render:Before', null);
+    fire<CanvasEvents, 'render:Before'>(canvas, 'render:Before', null);
     for (const Object of canvas.Objects) {
-        fire<CanvasObjectContainerEvent>(Object, 'render:Before', null);
-        if (Object instanceof Rect) { RectRender(canvas, Object); }
+        fire<CanvasObjectContainerEvent, 'render:Before'>(Object, 'render:Before', null);
         else { console.log('TODO: ', Object); }
-        fire<CanvasObjectContainerEvent>(Object, 'render:After', null);
+        fire<CanvasObjectContainerEvent, 'render:After'>(Object, 'render:After', null);
     }
-    fire<CanvasEvents>(canvas, 'render:After', null);
+    fire<CanvasEvents, 'render:After'>(canvas, 'render:After', null);
 }
