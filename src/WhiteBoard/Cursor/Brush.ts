@@ -17,6 +17,7 @@ export class Brush {
 }
 
 export function BrushMouseDown(this: Canvas, e: MouseEvent) {
+    if (!(this.cursor instanceof Brush)) return;
     const path = new Path({
         width: this.cursor?.width,
         color: this.cursor?.color,
@@ -37,6 +38,7 @@ export function BrushMouseDown(this: Canvas, e: MouseEvent) {
 }
 
 function mouseMove(this: Canvas, e: MouseEvent, path: Path) {
+    if (!(this.cursor instanceof Brush)) return;
     const p = new Point(e.offsetX, e.offsetY);
     if (path.Path.length == 0) {
         path.Path.push(p);
