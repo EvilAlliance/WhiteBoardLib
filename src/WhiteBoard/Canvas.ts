@@ -1,11 +1,16 @@
+import { Brush, BrushMouseDown, PathRender } from './Cursor/Brush';
 import { CanvasObject } from './Object/CanvasObject';
 import { CanvasObjectContainer, CanvasObjectContainerEvent } from './Object/CanvasObjectContainer';
+import { Path } from './Object/Path';
 import { Rect, RectRender } from './Object/Rect';
-import { TEventCallback, fire } from './Observable';
+import { TEventCallback, fire, on } from './Observable';
 
 export type CanvasEvents = {
     'render:Before': null;
     'render:After': null;
+    'mouse:down': MouseEvent;
+    'mouse:move': MouseEvent;
+    'mouse:up': MouseEvent;
 }
 
 export class Canvas {
@@ -15,7 +20,7 @@ export class Canvas {
     public eventListener: Record<keyof CanvasEvents, TEventCallback<CanvasEvents[keyof CanvasEvents]>[]>;
     public height: number;
     public width: number;
-    public cursor: any;
+    public cursor?: Brush;
 
     constructor(tag: string | HTMLCanvasElement, width: number, height: number) {
         if (tag instanceof HTMLCanvasElement) {
@@ -37,6 +42,23 @@ export class Canvas {
         this.Objects = [];
 
         this.eventListener = {} as Record<keyof CanvasEvents, TEventCallback<CanvasEvents[keyof CanvasEvents]>[]>;
+
+        this.Canvas.addEventListener('mousedown', (e) => {
+            fire<CanvasEvents, 'mouse:down'>(this, 'mouse:down', e);
+        });
+
+        this.Canvas.addEventListener('mousemove', (e) => {
+            fire<CanvasEvents, 'mouse:move'>(this, 'mouse:move', e);
+        });
+
+        this.Canvas.addEventListener('mouseup', (e) => {
+            fire<CanvasEvents, 'mouse:up'>(this, 'mouse:up', e);
+        });
+
+        on<CanvasEvents, 'mouse:down'>(this, 'mouse:down', function(this: Canvas, e) {
+            if (this.cursor instanceof Brush) { BrushMouseDown.bind(this)(e); }
+            else { console.log('TODO: ', this.cursor); }
+        });
     }
 }
 
@@ -66,6 +88,8 @@ export function CanvasRender(canvas: Canvas) {
     fire<CanvasEvents, 'render:Before'>(canvas, 'render:Before', null);
     for (const Object of canvas.Objects) {
         fire<CanvasObjectContainerEvent, 'render:Before'>(Object, 'render:Before', null);
+        if (Object.Object instanceof Rect) { RectRender(canvas, Object.Object); }
+        else if (Object.Object instanceof Path) { PathRender(canvas, Object.Object); }
         else { console.log('TODO: ', Object); }
         fire<CanvasObjectContainerEvent, 'render:After'>(Object, 'render:After', null);
     }

@@ -30,6 +30,7 @@ export function BrushMouseDown(this: Canvas, e: MouseEvent) {
     });
 
     const y = on<CanvasEvents, 'mouse:up'>(this, 'mouse:up', function(this: Canvas) {
+        //mouseUp.bind(this)(path)
         x();
         y();
     });
@@ -50,7 +51,6 @@ function mouseMove(this: Canvas, e: MouseEvent, path: Path) {
 }
 
 export function PathRender(canvas: Canvas, path: Path) {
-    console.log(canvas.Objects);
     if (path.Path.length == 0) return;
     const ctx = canvas.ctx;
     ctx.save();
@@ -93,5 +93,36 @@ export function PathRender(canvas: Canvas, path: Path) {
     ctx.restore();
 }
 
-function mouseUp() {
+function trailDots(this: Canvas, path: Path, color: Color) {
+    const p = path.Path;
+    const { ctx } = this;
+    ctx.strokeStyle = CanvasParseColor(color)
+    ctx.fillStyle = CanvasParseColor(color)
+    for (const dot of p) {
+        ctx.beginPath();
+        ctx.arc(dot.x, dot.y, 1, 0 * Math.PI, 1.5 * Math.PI);
+        ctx.stroke();
+        ctx.fill()
+    }
+}
+
+//simplify path prototype not used 
+//@ts-ignore
+function mouseUp(this: Canvas, path: Path) {
+    const p = JSON.parse(JSON.stringify(path));
+    let curr = path.Path[0];
+    let i = 1;
+    while (i < path.Path.length - 1) {
+        const nextVec = new Vector(curr, path.Path[i]);
+        const nextNextVec = new Vector(curr, path.Path[i + 1]);
+        const newVec = new Vector(path.Path[i], path.Path[i + 1]);
+        if (Math.abs(Math.atan(nextVec.y / nextVec.x) - Math.atan(nextNextVec.y / nextNextVec.x)) < Math.PI / 90 && Math.abs(Math.atan(newVec.y / newVec.x)) > Math.PI / 90 - Math.PI / 180) {
+            path.Path.splice(i--, 1)
+        }
+        curr = path.Path[i++];
+    }
+    CanvasClear(this)
+    CanvasRender(this)
+    trailDots.bind(this)(p, 'Black');
+    trailDots.bind(this)(path, 'Bulrush');
 }
