@@ -1,4 +1,5 @@
 import { Brush, BrushMouseDown, PathRender } from './Cursor/Brush';
+import { EraserAll, EraserAllMouseDown } from './Cursor/EraserAll';
 import { CanvasObject } from './Object/CanvasObject';
 import { CanvasObjectContainer, CanvasObjectContainerEvent } from './Object/CanvasObjectContainer';
 import { Path } from './Object/Path';
@@ -20,7 +21,7 @@ export class Canvas {
     public eventListener: Record<keyof CanvasEvents, TEventCallback<CanvasEvents[keyof CanvasEvents]>[]>;
     public height: number;
     public width: number;
-    public cursor?: Brush;
+    public cursor?: Brush | EraserAll;
 
     constructor(tag: string | HTMLCanvasElement, width: number, height: number) {
         if (tag instanceof HTMLCanvasElement) {
@@ -56,8 +57,8 @@ export class Canvas {
         });
 
         on<CanvasEvents, 'mouse:down'>(this, 'mouse:down', function(this: Canvas, e) {
-            if (this.cursor instanceof Brush) { BrushMouseDown.bind(this)(e); }
             if (this.cursor instanceof Brush) { BrushMouseDown(this, e); }
+            else if (this.cursor instanceof EraserAll) { EraserAllMouseDown(this, e); }
             else { console.log('TODO: ', this.cursor); }
         });
     }
