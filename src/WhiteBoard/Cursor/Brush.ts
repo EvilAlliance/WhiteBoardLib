@@ -6,6 +6,7 @@ import { CanvasObjectContainer } from '../Object/CanvasObjectContainer';
 import { Path } from '../Object/Path';
 import { on } from '../Observable';
 import { CanvasParseColor, Color } from '../Utils/Color';
+import { trailDots } from '../debug';
 
 export class Brush {
     public lineCap: CanvasLineCap = 'round';
@@ -93,20 +94,6 @@ export function PathRender(canvas: Canvas, path: Path) {
     ctx.stroke();
     ctx.closePath();
     ctx.restore();
-    trailDots(canvas, path, 'Black');
-}
-
-function trailDots(canvas: Canvas, path: Path, color: Color) {
-    const p = path.Path;
-    const { ctx } = canvas;
-    ctx.strokeStyle = CanvasParseColor(color);
-    ctx.fillStyle = CanvasParseColor(color);
-    for (const dot of p) {
-        ctx.beginPath();
-        ctx.arc(dot.x, dot.y, 1, 0 * Math.PI, 1.5 * Math.PI);
-        ctx.stroke();
-        ctx.fill();
-    }
 }
 
 //simplify path prototype not used 
