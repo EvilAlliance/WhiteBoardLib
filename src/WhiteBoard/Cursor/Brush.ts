@@ -16,40 +16,40 @@ export class Brush {
     }
 }
 
-export function BrushMouseDown(this: Canvas, e: MouseEvent) {
-    if (!(this.cursor instanceof Brush)) return;
+export function BrushMouseDown(canvas: Canvas, e: MouseEvent) {
+    if (!(canvas.cursor instanceof Brush)) return;
     const path = new Path({
-        width: this.cursor?.width,
-        color: this.cursor?.color,
-        lineCap: this.cursor?.lineCap,
+        width: canvas.cursor?.width,
+        color: canvas.cursor?.color,
+        lineCap: canvas.cursor?.lineCap,
     });
-    this.Objects.push(new CanvasObjectContainer(path));
+    canvas.Objects.push(new CanvasObjectContainer(path));
 
-    mouseMove.bind(this)(e, path);
-    const x = on<CanvasEvents, 'mouse:move'>(this, 'mouse:move', function(this: Canvas, e) {
-        mouseMove.bind(this)(e, path);
+    mouseMove(canvas, e, path);
+    const x = on<CanvasEvents, 'mouse:move'>(canvas, 'mouse:move', function(this: Canvas, e) {
+        mouseMove(this, e, path);
     });
 
-    const y = on<CanvasEvents, 'mouse:up'>(this, 'mouse:up', function(this: Canvas) {
-        //mouseUp.bind(this)(path)
+    const y = on<CanvasEvents, 'mouse:up'>(canvas, 'mouse:up', function(this: Canvas) {
+        //mouseUp(this,path)
         x();
         y();
     });
 }
 
-function mouseMove(this: Canvas, e: MouseEvent, path: Path) {
-    if (!(this.cursor instanceof Brush)) return;
+function mouseMove(canvas: Canvas, e: MouseEvent, path: Path) {
+    if (!(canvas.cursor instanceof Brush)) return;
     const p = new Point(e.offsetX, e.offsetY);
     if (path.Path.length == 0) {
         path.Path.push(p);
     } else {
         const v = new Vector(p, path.Path[path.Path.length - 1]);
-        if (Math.hypot(v.x, v.y) >= (this.cursor?.width as number) / 3) {
+        if (Math.hypot(v.x, v.y) >= (canvas.cursor?.width as number) / 2) {
             path.Path.push(p);
         }
     }
-    CanvasClear(this);
-    CanvasRender(this);
+    CanvasClear(canvas);
+    CanvasRender(canvas);
 }
 
 export function PathRender(canvas: Canvas, path: Path) {
@@ -93,24 +93,25 @@ export function PathRender(canvas: Canvas, path: Path) {
     ctx.stroke();
     ctx.closePath();
     ctx.restore();
+    trailDots(canvas, path, 'Black');
 }
 
-function trailDots(this: Canvas, path: Path, color: Color) {
+function trailDots(canvas: Canvas, path: Path, color: Color) {
     const p = path.Path;
-    const { ctx } = this;
-    ctx.strokeStyle = CanvasParseColor(color)
-    ctx.fillStyle = CanvasParseColor(color)
+    const { ctx } = canvas;
+    ctx.strokeStyle = CanvasParseColor(color);
+    ctx.fillStyle = CanvasParseColor(color);
     for (const dot of p) {
         ctx.beginPath();
         ctx.arc(dot.x, dot.y, 1, 0 * Math.PI, 1.5 * Math.PI);
         ctx.stroke();
-        ctx.fill()
+        ctx.fill();
     }
 }
 
 //simplify path prototype not used 
 //@ts-ignore
-function mouseUp(this: Canvas, path: Path) {
+function mouseUp(canvas: Canvas, path: Path) {
     const p = JSON.parse(JSON.stringify(path));
     let curr = path.Path[0];
     let i = 1;
@@ -119,12 +120,12 @@ function mouseUp(this: Canvas, path: Path) {
         const nextNextVec = new Vector(curr, path.Path[i + 1]);
         const newVec = new Vector(path.Path[i], path.Path[i + 1]);
         if (Math.abs(Math.atan(nextVec.y / nextVec.x) - Math.atan(nextNextVec.y / nextNextVec.x)) < Math.PI / 90 && Math.abs(Math.atan(newVec.y / newVec.x)) > Math.PI / 90 - Math.PI / 180) {
-            path.Path.splice(i--, 1)
+            path.Path.splice(i--, 1);
         }
         curr = path.Path[i++];
     }
-    CanvasClear(this)
-    CanvasRender(this)
-    trailDots.bind(this)(p, 'Black');
-    trailDots.bind(this)(path, 'Bulrush');
+    CanvasClear(canvas);
+    CanvasRender(canvas);
+    trailDots(canvas, p, 'Black');
+    trailDots(canvas, path, 'Bulrush');
 }

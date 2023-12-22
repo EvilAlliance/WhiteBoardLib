@@ -9,6 +9,6 @@ export class Path {
     public width: number = 1;
 
     constructor(obj: Partial<Path>) {
-        setOption<Path>(this, obj as Path);
+        setOption<Path>(this, obj);
     }
 }
