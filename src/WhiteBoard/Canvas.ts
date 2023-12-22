@@ -57,6 +57,7 @@ export class Canvas {
 
         on<CanvasEvents, 'mouse:down'>(this, 'mouse:down', function(this: Canvas, e) {
             if (this.cursor instanceof Brush) { BrushMouseDown.bind(this)(e); }
+            if (this.cursor instanceof Brush) { BrushMouseDown(this, e); }
             else { console.log('TODO: ', this.cursor); }
         });
     }
