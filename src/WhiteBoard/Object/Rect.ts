@@ -61,12 +61,6 @@ export function RectRender(canvas: Canvas, rect: Rect) {
 
     ctx.save();
 
-    ctx.beginPath();
-    ctx.arc(left, top, 5, 0, 2 * Math.PI);
-    ctx.closePath();
-    ctx.fillStyle = 'red';
-    ctx.fill();
-
     ctx.setTransform(
         scaleX,
         (skewY * Math.PI) / 180,

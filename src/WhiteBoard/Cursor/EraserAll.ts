@@ -1,13 +1,24 @@
-import { Canvas, CanvasClear, CanvasRender } from '../Canvas';
+import { Canvas, CanvasClear, CanvasEvents, CanvasRender } from '../Canvas';
 import { Point } from '../GeoSpace/Point';
 import { Vector, VectorMod } from '../GeoSpace/Vector';
 import { CanvasObjectContainer } from '../Object/CanvasObjectContainer';
 import { Path } from '../Object/Path';
+import { Rect } from '../Object/Rect';
+import { on } from '../Observable';
 export class EraserAll {
 }
 
 export function EraserAllMouseDown(canvas: Canvas, e: MouseEvent) {
     EraserAllMouseMove(canvas, e);
+
+    const x = on<CanvasEvents, 'mouse:move'>(canvas, 'mouse:move', function(this: Canvas, e) {
+        EraserAllMouseMove(this, e);
+    });
+
+    const y = on<CanvasEvents, 'mouse:up'>(canvas, 'mouse:up', function(this: Canvas) {
+        x();
+        y();
+    });
 }
 
 function EraserAllMouseMove(canvas: Canvas, e: MouseEvent) {
@@ -16,7 +27,8 @@ function EraserAllMouseMove(canvas: Canvas, e: MouseEvent) {
     for (const object of Objects) {
         if (!object.render) { return; }
         else if (object.Object instanceof Path) { EraserAllPath(canvas, object, mousePoint) }
-        else { console.log('TODO: ' + object) }
+        else if (object.Object instanceof Rect) { EraserAllRect(canvas, object, mousePoint) }
+        else { console.log('TODO: ', object) }
     }
 }
 
@@ -91,4 +103,8 @@ function quadraticCurvePoint(origin: Point, end: Point, control: Point, porsenta
 
 function quadraticCurve(origin: number, end: number, control: number, porsentage: number) {
     return Math.pow(1 - porsentage, 2) * origin + 2 * (1 - porsentage) * porsentage * control + Math.pow(porsentage, 2) * end;
+}
+
+function EraserAllRect(canvas: Canvas, object: Rect, mousePoint: Point) {
+
 }
