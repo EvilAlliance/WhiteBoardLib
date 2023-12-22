@@ -9,3 +9,7 @@ export class Vector {
         this.y = final.y - initial.y;
     }
 }
+
+export function VectorMod(Vec: Vector): number {
+    return Math.hypot(Vec.x, Vec.y);
+}
