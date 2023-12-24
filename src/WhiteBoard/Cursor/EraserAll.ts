@@ -3,7 +3,7 @@ import { Point } from '../GeoSpace/Point';
 import { Vector, VectorMod } from '../GeoSpace/Vector';
 import { CanvasObjectContainer } from '../Object/CanvasObjectContainer';
 import { Path } from '../Object/Path';
-import { Rect } from '../Object/Rect';
+import { Rect, RectDraw } from '../Object/Rect';
 import { on } from '../Observable';
 export class EraserAll {
 }
@@ -105,6 +105,11 @@ function quadraticCurve(origin: number, end: number, control: number, porsentage
     return Math.pow(1 - porsentage, 2) * origin + 2 * (1 - porsentage) * porsentage * control + Math.pow(porsentage, 2) * end;
 }
 
-function EraserAllRect(canvas: Canvas, object: Rect, mousePoint: Point) {
+function EraserAllRect(canvas: Canvas, object: CanvasObjectContainer, mousePoint: Point) {
+    const rect = object.Object;
+    if (!(rect instanceof Rect)) return;
+    const ctx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+    RectDraw(ctx, rect);
 
+    if (ctx.isPointInPath(mousePoint.x, mousePoint.y)) EraserAllEraseObject(canvas, object);
 }
