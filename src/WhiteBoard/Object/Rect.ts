@@ -1,6 +1,7 @@
 import { Canvas } from './../Canvas';
 import { setOption } from '../CommonMethod';
 import { CanvasParseColor, Color } from '../Utils/Color';
+import { drawDot } from '../debug';
 const kRect = 1 - 0.5522847498;
 
 export class Rect {
@@ -78,9 +79,9 @@ export function RectRender(canvas: Canvas, rect: Rect) {
     ctx.strokeStyle = CanvasParseColor(rect.strokeColor);
     ctx.lineWidth = strokeWidth;
 
-    ctx.moveTo(left + rx, top);
-
     ctx.beginPath();
+
+    ctx.moveTo(left + rx, top);
 
     ctx.lineTo(left + width - rx, top);
     ctx.bezierCurveTo(
