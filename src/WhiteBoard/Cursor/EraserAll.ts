@@ -116,7 +116,6 @@ function EraserAllRect(canvas: Canvas, object: CanvasObjectContainer, mousePoint
     const ctx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
     RectDraw(ctx, rect);
     const vec = new Vector({ x: 0, y: 0 }, { x: (canvas.cursor.width / 2) * Math.sin(Math.PI / 4), y: (canvas.cursor.width / 2) * Math.cos(Math.PI / 4) });
-    console.log(vec);
 
     const p1 = Object.assign({}, mousePoint);
     VectorTranslatePoint(vec, p1);
