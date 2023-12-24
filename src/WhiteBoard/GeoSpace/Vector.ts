@@ -13,3 +13,8 @@ export class Vector {
 export function VectorMod(Vec: Vector): number {
     return Math.hypot(Vec.x, Vec.y);
 }
+
+export function VectorTranslatePoint(vec: Vector, p: Point) {
+    p.x += vec.x;
+    p.y += vec.y;
+}
