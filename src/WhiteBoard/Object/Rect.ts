@@ -1,7 +1,6 @@
 import { Canvas } from './../Canvas';
 import { setOption } from '../CommonMethod';
 import { CanvasParseColor, Color } from '../Utils/Color';
-import { drawDot } from '../debug';
 const kRect = 1 - 0.5522847498;
 
 export class Rect {
@@ -44,14 +43,31 @@ function RectUpdateWidthHeight(obj: { width: number, height: number, strokeWidth
 
 export function RectRender(canvas: Canvas, rect: Rect) {
     const { ctx } = canvas;
+
+    ctx.save();
+
+    ctx.strokeStyle = CanvasParseColor(rect.strokeColor);
+    ctx.lineWidth = rect.strokeWidth;
+
+    RectDraw(ctx, rect);
+    ctx.stroke();
+
+    if (rect.fill) {
+        ctx.fillStyle = CanvasParseColor(rect.fillColor);
+        ctx.fill();
+    }
+
+    ctx.restore();
+}
+
+export function RectDraw(ctx: CanvasRenderingContext2D, rect: Rect) {
     const {
         scaleX,
         scaleY,
         width,
-        height,
-        ry,
         rx,
-        strokeWidth,
+        ry,
+        height,
         angle,
         skewX,
         skewY,
@@ -60,7 +76,7 @@ export function RectRender(canvas: Canvas, rect: Rect) {
 
     const { centerX, centerY } = getCenter(rect);
 
-    ctx.save();
+    ctx.save()
 
     ctx.setTransform(
         scaleX,
@@ -75,9 +91,6 @@ export function RectRender(canvas: Canvas, rect: Rect) {
 
     left -= centerX;
     top -= centerY;
-
-    ctx.strokeStyle = CanvasParseColor(rect.strokeColor);
-    ctx.lineWidth = strokeWidth;
 
     ctx.beginPath();
 
@@ -124,14 +137,8 @@ export function RectRender(canvas: Canvas, rect: Rect) {
     );
 
     ctx.closePath();
-    ctx.stroke();
 
-    if (rect.fill) {
-        ctx.fillStyle = CanvasParseColor(rect.fillColor);
-        ctx.fill();
-    }
-
-    ctx.restore();
+    ctx.restore()
 }
 
 export const OriginXY = Object.freeze({
