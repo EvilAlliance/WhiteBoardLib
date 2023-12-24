@@ -12,7 +12,7 @@ export class Brush {
     public lineCap: CanvasLineCap = 'round';
     public width: number = 10;
     public color: Color = 'Red';
-    constructor(brush: Partial<Brush>) {
+    constructor(brush: Partial<Brush> = {}) {
         setOption<Brush>(this, brush);
     }
 }
