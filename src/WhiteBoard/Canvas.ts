@@ -1,8 +1,8 @@
-import { Brush, BrushMouseDown, PathRender } from './Cursor/Brush';
+import { Brush, BrushMouseDown } from './Cursor/Brush';
 import { EraserAll, EraserAllMouseDown } from './Cursor/EraserAll';
 import { CanvasObject } from './Object/CanvasObject';
 import { CanvasObjectContainer, CanvasObjectContainerEvent } from './Object/CanvasObjectContainer';
-import { Path } from './Object/Path';
+import { Path, PathRender } from './Object/Path';
 import { Rect, RectRender } from './Object/Rect';
 import { TEventCallback, fire, on } from './Observable';
 
