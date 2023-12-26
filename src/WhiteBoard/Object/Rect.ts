@@ -21,6 +21,7 @@ export class Rect {
     public angle: number = 0;
     public rx: number = 0;
     public ry: number = 0;
+    public globalCompositeOperation: GlobalCompositeOperation = 'source-over';
     constructor(obj: Partial<Rect>) {
         RectUpdateRxRy(obj);
         setOption<Rect>(this, obj);
@@ -45,6 +46,8 @@ export function RectRender(canvas: Canvas, rect: Rect) {
     const { ctx } = canvas;
 
     ctx.save();
+
+    ctx.globalCompositeOperation = rect.globalCompositeOperation;
 
     ctx.strokeStyle = CanvasParseColor(rect.strokeColor);
     ctx.lineWidth = rect.strokeWidth;
