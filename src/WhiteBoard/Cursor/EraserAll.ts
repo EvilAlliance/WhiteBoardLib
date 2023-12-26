@@ -1,5 +1,4 @@
 import { Canvas, CanvasClear, CanvasEvents, CanvasRender } from '../Canvas';
-import { setOption } from '../CommonMethod';
 import { Point } from '../GeoSpace/Point';
 import { Vector, VectorMod, VectorRotate, VectorTranslatePoint } from '../GeoSpace/Vector';
 import { CanvasObjectContainer } from '../Object/CanvasObjectContainer';
@@ -10,7 +9,7 @@ import { on } from '../Observable';
 export class EraserAll {
     public width: number = 10;
     constructor(eraserAll: Partial<EraserAll> = {}) {
-        setOption<EraserAll>(this, eraserAll);
+        Object.assign(this, eraserAll);
     }
 }
 

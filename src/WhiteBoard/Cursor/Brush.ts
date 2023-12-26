@@ -1,5 +1,4 @@
 import { Canvas, CanvasClear, CanvasEvents, CanvasRender } from '../Canvas';
-import { setOption } from '../CommonMethod';
 import { Point } from '../GeoSpace/Point';
 import { Vector } from '../GeoSpace/Vector';
 import { CanvasObjectContainer } from '../Object/CanvasObjectContainer';
@@ -14,7 +13,7 @@ export class Brush {
     public color: Color = 'Red';
     public globalCompositeOperation: GlobalCompositeOperation = 'source-over';
     constructor(brush: Partial<Brush> = {}) {
-        setOption<Brush>(this, brush);
+        Object.assign(this, brush);
     }
 }
 

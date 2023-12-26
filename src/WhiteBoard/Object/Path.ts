@@ -1,5 +1,4 @@
 import { Canvas } from '../Canvas';
-import { setOption } from '../CommonMethod';
 import { Point } from '../GeoSpace/Point';
 import { Vector } from '../GeoSpace/Vector';
 import { CanvasParseColor, Color } from '../Utils/Color';
@@ -12,7 +11,7 @@ export class Path {
     public globalCompositeOperation: GlobalCompositeOperation = 'source-over';
 
     constructor(obj: Partial<Path> = {}) {
-        setOption<Path>(this, obj);
+        Object.assign(this, obj);
     }
 }
 

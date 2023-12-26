@@ -1,5 +1,4 @@
 import { Canvas } from './../Canvas';
-import { setOption } from '../CommonMethod';
 import { CanvasParseColor, Color } from '../Utils/Color';
 const kRect = 1 - 0.5522847498;
 
@@ -24,7 +23,7 @@ export class Rect {
     public globalCompositeOperation: GlobalCompositeOperation = 'source-over';
     constructor(obj: Partial<Rect>) {
         RectUpdateRxRy(obj);
-        setOption<Rect>(this, obj);
+        Object.assign(this, obj);
         RectUpdateWidthHeight(this);
     }
 }
