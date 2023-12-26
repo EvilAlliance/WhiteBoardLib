@@ -1,37 +1,19 @@
 export type TEventCallback<T = any> = (options: T) => any;
 
-export function on<T, K extends keyof T>(obj: { eventListener: Record<keyof T, TEventCallback[]> }, arg0: Partial<Record<K, TEventCallback<T[K]>>> | K, handler?: TEventCallback<T[K]>) {
-    if (typeof arg0 == 'object') {
-        for (const [eventName, handler] of Object.entries(arg0)) {
-            on(obj, eventName as keyof T, handler as TEventCallback<T[keyof T]>);
-        }
-        return () => off(obj, arg0);
-    } else if (handler) {
-        if (!obj.eventListener[arg0]) {
-            obj.eventListener[arg0] = [];
-        }
-        obj.eventListener[arg0].push(handler);
-        return () => off(obj, arg0, handler);
+export function on<T, K extends keyof T>(obj: { eventListener: Record<keyof T, TEventCallback[]> }, evtName: K, handler: TEventCallback<T[K]>) {
+    if (!obj.eventListener[evtName]) {
+        obj.eventListener[evtName] = [];
     }
-    return () => false;
+    obj.eventListener[evtName].push(handler);
+    return () => off(obj, evtName, handler);
 }
 
-export function once<T>(obj: { eventListener: Record<keyof T, TEventCallback[]> }, arg0: Partial<Record<keyof T, TEventCallback<keyof T>>> | keyof T, handler?: TEventCallback<T[keyof T]>) {
-    if (typeof arg0 === 'object') {
-        const disposers: VoidFunction[] = [];
-        for (const [eventName, handler] of Object.entries(arg0)) {
-            disposers.push(once(obj, eventName as keyof T, handler as TEventCallback<T[keyof T]>));
-        }
-        return () => disposers.forEach((d) => d());
-    } else if (handler) {
-        const disposer = on(obj, arg0, function onceHandler(...args) {
-            handler.bind(obj)(...args);
-            disposer();
-        });
-        return disposer;
-    } else {
-        return () => false;
-    }
+export function once<T, K extends keyof T>(obj: { eventListener: Record<keyof T, TEventCallback[]> }, evtName: K, handler: TEventCallback<T[K]>) {
+    const disposer = on(obj, evtName, function onceHandler(...args) {
+        handler.bind(obj)(...args);
+        disposer();
+    });
+    return disposer;
 }
 
 export function removeEventListener<T, K extends keyof T>(obj: { eventListener: Record<keyof T, TEventCallback[]> }, eventName: K, handler?: TEventCallback<T[K]>) {
@@ -44,14 +26,10 @@ export function removeEventListener<T, K extends keyof T>(obj: { eventListener: 
     }
 }
 
-export function off<T, K extends keyof T>(obj: { eventListener: Record<keyof T, TEventCallback[]> }, arg0: Partial<Record<K, TEventCallback<T[K]>>> | K, handler?: TEventCallback<T[K]>) {
+export function off<T, K extends keyof T>(obj: { eventListener: Record<keyof T, TEventCallback[]> }, arg0: K, handler: TEventCallback<T[K]>) {
     if (!arg0) {
         for (const eventName in obj.eventListener) {
             removeEventListener(obj, eventName);
-        }
-    } else if (typeof arg0 == 'object') {
-        for (const [eventName, handler] of Object.entries(arg0)) {
-            removeEventListener(obj, eventName as keyof T, handler as TEventCallback<T[keyof T]>);
         }
     } else {
         removeEventListener(obj, arg0, handler);
