@@ -12,6 +12,7 @@ export class Brush {
     public lineCap: CanvasLineCap = 'round';
     public width: number = 10;
     public color: Color = 'Red';
+    public globalCompositeOperation: GlobalCompositeOperation = 'source-over';
     constructor(brush: Partial<Brush> = {}) {
         setOption<Brush>(this, brush);
     }
@@ -20,9 +21,10 @@ export class Brush {
 export function BrushMouseDown(canvas: Canvas, e: MouseEvent) {
     if (!(canvas.cursor instanceof Brush)) return;
     const path = new Path({
-        width: canvas.cursor?.width,
-        color: canvas.cursor?.color,
-        lineCap: canvas.cursor?.lineCap,
+        width: canvas.cursor.width,
+        color: canvas.cursor.color,
+        lineCap: canvas.cursor.lineCap,
+        globalCompositeOperation: canvas.cursor.globalCompositeOperation,
     });
     canvas.Objects.push(new CanvasObjectContainer(path));
 
