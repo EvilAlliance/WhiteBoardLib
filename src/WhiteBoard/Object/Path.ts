@@ -8,7 +8,7 @@ export class Path {
     public lineCap: CanvasLineCap = 'round';
     public width: number = 1;
 
-    constructor(obj: Partial<Path>) {
+    constructor(obj: Partial<Path> = {}) {
         setOption<Path>(this, obj);
     }
 }
