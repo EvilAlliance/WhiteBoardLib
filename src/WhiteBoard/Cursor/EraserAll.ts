@@ -1,11 +1,12 @@
 import { Canvas, CanvasClear, CanvasEvents, CanvasRender } from '../Canvas';
 import { setOption } from '../CommonMethod';
 import { Point } from '../GeoSpace/Point';
-import { Vector, VectorMod, VectorTranslatePoint } from '../GeoSpace/Vector';
+import { Vector, VectorMod, VectorRotate, VectorTranslatePoint } from '../GeoSpace/Vector';
 import { CanvasObjectContainer } from '../Object/CanvasObjectContainer';
 import { Path } from '../Object/Path';
 import { Rect, RectDraw } from '../Object/Rect';
 import { on } from '../Observable';
+
 export class EraserAll {
     public width: number = 10;
     constructor(eraserAll: Partial<EraserAll> = {}) {
@@ -115,22 +116,23 @@ function EraserAllRect(canvas: Canvas, object: CanvasObjectContainer, mousePoint
     if (!(rect instanceof Rect && canvas.cursor instanceof EraserAll)) return;
     const ctx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
     RectDraw(ctx, rect);
-    const vec = new Vector({ x: 0, y: 0 }, { x: (canvas.cursor.width / 2) * Math.sin(Math.PI / 4), y: (canvas.cursor.width / 2) * Math.cos(Math.PI / 4) });
+    let i = 3;
+    while (canvas.cursor.width * Math.sin(Math.PI / i) > 10) {
+        i += 1;
+    }
 
-    const p1 = Object.assign({}, mousePoint);
-    VectorTranslatePoint(vec, p1);
+    const mod = canvas.cursor.width / 2;
+    const ang = 2 * Math.PI / i;
+    const vec = new Vector({ x: 0, y: 0 }, { x: mod * Math.sin(ang), y: mod * Math.cos(ang) });
 
-    const p2 = Object.assign({}, mousePoint);
-    vec.x = -vec.x;
-    VectorTranslatePoint(vec, p2);
+    const arr = new Array(i);
 
-    const p3 = Object.assign({}, mousePoint);
-    vec.y = -vec.y;
-    VectorTranslatePoint(vec, p3);
+    for (let j = 0; j < arr.length; j++) {
+        const p = Object.assign({}, mousePoint);
+        VectorTranslatePoint(vec, p);
+        arr[j] = p
+        VectorRotate(vec, ang);
+    }
 
-    const p4 = Object.assign({}, mousePoint);
-    vec.x = -vec.x;
-    VectorTranslatePoint(vec, p4);
-
-    if ([p1, p2, p3, p4].some((x) => ctx.isPointInPath(x.x, x.y))) EraserAllEraseObject(canvas, object);
+    if (arr.some((x) => ctx.isPointInPath(x.x, x.y))) EraserAllEraseObject(canvas, object);
 }
