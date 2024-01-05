@@ -1,7 +1,7 @@
-import { Canvas } from "./Canvas";
-import { Point } from "./GeoSpace/Point";
-import { Path } from "./Object/Path";
-import { CanvasParseColor, Color } from "./Utils/Color";
+import { Canvas } from './Canvas';
+import { Point } from './GeoSpace/Point';
+import { Path } from './Object/Path';
+import { CanvasParseColor, Color } from './Utils/Color';
 
 export function drawDot(canvas: Canvas, p: Point, color: Color) {
     const { ctx } = canvas;

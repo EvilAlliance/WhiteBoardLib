@@ -15,8 +15,8 @@ export function VectorMod(Vec: Vector): number {
 }
 
 export function VectorAng(vec: Vector): number {
-    const x = Math.sign(vec.x) == -1 ? Math.PI : 0
-    return Math.atan(vec.y / vec.x) + x
+    const x = Math.sign(vec.x) == -1 ? Math.PI : 0;
+    return Math.atan(vec.y / vec.x) + x;
 }
 
 export function VectorTranslatePoint(vec: Vector, p: Point) {

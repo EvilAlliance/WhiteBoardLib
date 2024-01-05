@@ -78,7 +78,7 @@ export function RectDraw(ctx: CanvasRenderingContext2D, rect: Rect) {
 
     const { centerX, centerY } = getCenter(rect);
 
-    ctx.save()
+    ctx.save();
 
     ctx.setTransform(
         scaleX,
@@ -140,7 +140,7 @@ export function RectDraw(ctx: CanvasRenderingContext2D, rect: Rect) {
 
     ctx.closePath();
 
-    ctx.restore()
+    ctx.restore();
 }
 
 export const OriginXY = Object.freeze({

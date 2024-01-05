@@ -31,9 +31,9 @@ function EraserAllMouseMove(canvas: Canvas, e: MouseEvent) {
     const Objects = canvas.Objects;
     for (const object of Objects) {
         if (!object.render) { return; }
-        else if (object.Object instanceof Path) { EraserAllPath(canvas, object, mousePoint) }
-        else if (object.Object instanceof Rect) { EraserAllRect(canvas, object, mousePoint) }
-        else { console.log('TODO: ', object) }
+        else if (object.Object instanceof Path) { EraserAllPath(canvas, object, mousePoint); }
+        else if (object.Object instanceof Rect) { EraserAllRect(canvas, object, mousePoint); }
+        else { console.log('TODO: ', object); }
     }
 }
 
@@ -60,7 +60,7 @@ function EraserAllEraseObject(canvas: Canvas, object: CanvasObjectContainer) {
 }
 
 function EraserAllMousePointInsideSquareOf2Points(p1: Point, p2: Point, mousePoint: Point): boolean {
-    const InsideYLimiter = (p1.y >= mousePoint.y && p2.y <= mousePoint.y) || (p2.y >= mousePoint.y && p1.y <= mousePoint.y)
+    const InsideYLimiter = (p1.y >= mousePoint.y && p2.y <= mousePoint.y) || (p2.y >= mousePoint.y && p1.y <= mousePoint.y);
     const InsideXLimiter = (p1.x >= mousePoint.x && p2.x <= mousePoint.x) || (p2.x >= mousePoint.x && p1.x <= mousePoint.x);
     return InsideYLimiter && InsideXLimiter;
 }
@@ -81,13 +81,13 @@ function EraserAllSearchBetween2Points(canvas: Canvas, p1: Point, p2: Point, mou
     let low = 0;
     let high = 100;
     while (high - low > 3) {
-        let j = Math.ceil((low + high) / 2)
-        const quadraticCurveP = quadraticCurvePoint(p1, p2, pMid, j / 100)
-        const dist = VectorMod(new Vector(quadraticCurveP, mousePoint))
+        const j = Math.ceil((low + high) / 2);
+        const quadraticCurveP = quadraticCurvePoint(p1, p2, pMid, j / 100);
+        const dist = VectorMod(new Vector(quadraticCurveP, mousePoint));
         if (dist < canvas.cursor.width / 2) { EraserAllEraseObject(canvas, object); return; }
         else {
-            const quadraticCurvePMore = quadraticCurvePoint(p1, p2, pMid, (j + 1) / 100)
-            const quadraticCurvePLess = quadraticCurvePoint(p1, p2, pMid, (j - 1) / 100)
+            const quadraticCurvePMore = quadraticCurvePoint(p1, p2, pMid, (j + 1) / 100);
+            const quadraticCurvePLess = quadraticCurvePoint(p1, p2, pMid, (j - 1) / 100);
             const distM = VectorMod(new Vector(quadraticCurvePMore, mousePoint));
             const distL = VectorMod(new Vector(quadraticCurvePLess, mousePoint));
             if (distM < distL) {
@@ -103,7 +103,7 @@ function quadraticCurvePoint(origin: Point, end: Point, control: Point, porsenta
     return {
         x: quadraticCurve(origin.x, end.x, control.x, porsentage),
         y: quadraticCurve(origin.y, end.y, control.y, porsentage)
-    }
+    };
 }
 
 function quadraticCurve(origin: number, end: number, control: number, porsentage: number) {
@@ -129,7 +129,7 @@ function EraserAllRect(canvas: Canvas, object: CanvasObjectContainer, mousePoint
     for (let j = 0; j < arr.length; j++) {
         const p = Object.assign({}, mousePoint);
         VectorTranslatePoint(vec, p);
-        arr[j] = p
+        arr[j] = p;
         VectorRotate(vec, ang);
     }
 
