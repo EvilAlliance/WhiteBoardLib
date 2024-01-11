@@ -20,10 +20,12 @@ export class Brush {
 export function BrushMouseDown(canvas: Canvas, e: MouseEvent) {
     if (!(canvas.cursor instanceof Brush)) return;
     const path = new Path({
-        width: canvas.cursor.width,
-        color: canvas.cursor.color,
-        lineCap: canvas.cursor.lineCap,
-        globalCompositeOperation: canvas.cursor.globalCompositeOperation,
+        ctxSetting: {
+            strokeWidth: canvas.cursor.width,
+            strokeColor: canvas.cursor.color,
+            lineCap: canvas.cursor.lineCap,
+            globalCompositeOperation: canvas.cursor.globalCompositeOperation,
+        }
     });
     canvas.Objects.push(new CanvasObjectContainer(path));
 

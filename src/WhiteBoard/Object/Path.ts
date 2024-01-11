@@ -1,40 +1,35 @@
-import { Canvas } from '../Canvas';
 import { Point } from '../GeoSpace/Point';
 import { Vector } from '../GeoSpace/Vector';
-import { CanvasParseColor, Color } from '../Utils/Color';
+import { DeepPartial } from '../Type';
+import { BaseObject, BoundingBox } from './BaseObject';
 
-export class Path {
+export class Path extends BaseObject {
     public Path: Point[] = [];
-    public color: Color = 'Red';
-    public lineCap: CanvasLineCap = 'round';
-    public width: number = 1;
-    public globalCompositeOperation: GlobalCompositeOperation = 'source-over';
 
-    constructor(obj: Partial<Path> = {}) {
+    constructor(obj: DeepPartial<Path> = {}) {
+        super();
         Object.assign(this, obj);
+    }
+    draw(ctx: CanvasRenderingContext2D, obj: this): void {
+        PathDraw(ctx, obj);
+    }
+    shouldFill(obj: this): boolean {
+        return obj.ctxSetting.fill || obj.Path.length == 1;
+    }
+    getBoundingBox(obj: this): BoundingBox {
+        return PathGetBoundingBox(obj);
     }
 }
 
-export function PathRender(canvas: Canvas, path: Path) {
+export function PathDraw(ctx: CanvasRenderingContext2D, path: Path) {
     if (path.Path.length == 0) return;
-    const ctx = canvas.ctx;
-    ctx.save();
-
-    ctx.globalCompositeOperation = path.globalCompositeOperation;
-
-    ctx.lineCap = path.lineCap;
-    ctx.lineWidth = path.width;
-    ctx.strokeStyle = CanvasParseColor(path.color);
 
     if (path.Path.length == 1) {
         const point = path.Path[0];
         ctx.fillStyle = ctx.strokeStyle;
         ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.arc(point.x, point.y, path.width / 2, 0, 2 * Math.PI);
-        ctx.stroke();
-        ctx.fill();
-        ctx.restore();
+        ctx.arc(point.x, point.y, path.ctxSetting.strokeWidth / 2, 0, 2 * Math.PI);
         return;
     }
 
@@ -58,4 +53,41 @@ export function PathRender(canvas: Canvas, path: Path) {
     ctx.stroke();
     ctx.closePath();
     ctx.restore();
+}
+
+export function PathGetBoundingBox(obj: Path): BoundingBox {
+    const tl = { ...obj.Path[0] };
+    if (obj.Path.length == 1)
+        return { tl, br: tl };
+    const br = { ...obj.Path[1] };
+
+    if (tl.y > br.y) {
+        const temp = tl.y;
+        tl.y = br.y;
+        br.y = temp;
+    }
+
+    if (tl.x > br.x) {
+        const temp = tl.x;
+        tl.x = br.x;
+        br.x = temp;
+    }
+
+    for (let i = 0; i < obj.Path.length; i++) {
+        const p = obj.Path[i];
+
+        if (p.x < tl.x) {
+            tl.x = p.x;
+        } else if (p.x > br.x) {
+            br.x = p.x;
+        }
+
+        if (p.y < tl.y) {
+            tl.y = p.y;
+        } else if (p.y > br.y) {
+            br.y = p.y;
+        }
+    }
+
+    return { tl, br };
 }

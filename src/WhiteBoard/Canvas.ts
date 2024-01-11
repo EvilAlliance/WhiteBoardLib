@@ -1,9 +1,7 @@
 import { Brush, BrushMouseDown } from './Cursor/Brush';
 import { EraserAll, EraserAllMouseDown } from './Cursor/EraserAll';
-import { CanvasObject } from './Object/CanvasObject';
+import { BaseObject, BaseObjectRender } from './Object/BaseObject';
 import { CanvasObjectContainer, CanvasObjectContainerEvent } from './Object/CanvasObjectContainer';
-import { Path, PathRender } from './Object/Path';
-import { Rect, RectRender } from './Object/Rect';
 import { TEventCallback, fire, on } from './Observable';
 
 export type CanvasEvents = {
@@ -68,11 +66,11 @@ export function CanvasClear(canvas: Canvas) {
     canvas.ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
-export function CanvasAddCanvasObject(canvas: Canvas, obj: CanvasObject) {
+export function CanvasAddCanvasObject(canvas: Canvas, obj: BaseObject) {
     canvas.Objects.push(new CanvasObjectContainer(obj));
 }
 
-export function CanvasAddCanvasObjectRender(canvas: Canvas, obj: CanvasObject) {
+export function CanvasAddCanvasObjectRender(canvas: Canvas, obj: BaseObject) {
     canvas.Objects.push(new CanvasObjectContainer(obj));
     CanvasRender(canvas);
 }
@@ -90,9 +88,8 @@ export function CanvasRender(canvas: Canvas) {
     fire<CanvasEvents, 'render:Before'>(canvas, 'render:Before', null);
     for (const Object of canvas.Objects) {
         fire<CanvasObjectContainerEvent, 'render:Before'>(Object, 'render:Before', null);
-        if (Object.Object instanceof Rect) { RectRender(canvas, Object.Object); }
-        else if (Object.Object instanceof Path) { PathRender(canvas, Object.Object); }
-        else { console.log('TODO: ', Object); }
+        if (Object.render) continue;
+        BaseObjectRender(canvas.ctx, Object.Object);
         fire<CanvasObjectContainerEvent, 'render:After'>(Object, 'render:After', null);
     }
     fire<CanvasEvents, 'render:After'>(canvas, 'render:After', null);

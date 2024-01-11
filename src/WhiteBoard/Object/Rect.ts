@@ -1,30 +1,27 @@
-import { Canvas } from './../Canvas';
-import { CanvasParseColor, Color } from '../Utils/Color';
+import { BaseObject, BoundingBox } from './BaseObject';
+import { DeepPartial } from '../Type';
+import { Point } from '../GeoSpace/Point';
 const kRect = 1 - 0.5522847498;
 
-export class Rect {
-    public strokeWidth: number = 0;
+export class Rect extends BaseObject {
     public width: number = 0;
     public height: number = 0;
     public top: number = 0;
     public left: number = 0;
-    public fill: boolean;
-    public fillColor: Color = 'Red';
-    public strokeColor: Color = 'Red';
-    public originX: 'left' | 'center' | 'right' | number = 'left';
-    public originY: 'top' | 'center' | 'bottom' | number = 'top';
-    public skewY: number = 0;
-    public skewX: number = 0;
-    public scaleY: number = 1;
-    public scaleX: number = 1;
-    public angle: number = 0;
     public rx: number = 0;
     public ry: number = 0;
-    public globalCompositeOperation: GlobalCompositeOperation = 'source-over';
-    constructor(obj: Partial<Rect>) {
+    constructor(obj: DeepPartial<Rect>) {
+        super();
         RectUpdateRxRy(obj);
         Object.assign(this, obj);
-        RectUpdateWidthHeight(this);
+    }
+
+    draw(ctx: CanvasRenderingContext2D, obj: this): void {
+        RectDraw(ctx, obj);
+    }
+
+    getBoundingBox(obj: this): BoundingBox {
+        return RectGetBoundingBox(obj);
     }
 }
 
@@ -36,63 +33,15 @@ function RectUpdateRxRy(obj: { rx?: number, ry?: number }) {
     }
 }
 
-function RectUpdateWidthHeight(obj: { width: number, height: number, strokeWidth: number }) {
-    obj.width = obj.width + obj.strokeWidth / 2;
-    obj.height = obj.height + obj.strokeWidth / 2;
-}
-
-export function RectRender(canvas: Canvas, rect: Rect) {
-    const { ctx } = canvas;
-
-    ctx.save();
-
-    ctx.globalCompositeOperation = rect.globalCompositeOperation;
-
-    ctx.strokeStyle = CanvasParseColor(rect.strokeColor);
-    ctx.lineWidth = rect.strokeWidth;
-
-    RectDraw(ctx, rect);
-    ctx.stroke();
-
-    if (rect.fill) {
-        ctx.fillStyle = CanvasParseColor(rect.fillColor);
-        ctx.fill();
-    }
-
-    ctx.restore();
-}
-
 export function RectDraw(ctx: CanvasRenderingContext2D, rect: Rect) {
     const {
-        scaleX,
-        scaleY,
         width,
         rx,
         ry,
         height,
-        angle,
-        skewX,
-        skewY,
-    } = rect;
-    let { left, top } = rect;
-
-    const { centerX, centerY } = getCenter(rect);
-
-    ctx.save();
-
-    ctx.setTransform(
-        scaleX,
-        (skewY * Math.PI) / 180,
-        (skewX * Math.PI) / 180,
-        scaleY,
         left,
-        top,
-    );
-    ctx.rotate((angle * Math.PI) / 180);
-    ctx.translate(-left, -top);
-
-    left -= centerX;
-    top -= centerY;
+        top
+    } = rect;
 
     ctx.beginPath();
 
@@ -143,19 +92,9 @@ export function RectDraw(ctx: CanvasRenderingContext2D, rect: Rect) {
     ctx.restore();
 }
 
-export const OriginXY = Object.freeze({
-    top: 0,
-    left: 0,
-    center: 0.5,
-    right: 1,
-    bottom: 1,
-});
-
-export function getCenter(obj: Rect) {
-    const x = OriginXY[obj.originX as keyof typeof OriginXY] ?? obj.originX;
-    const y = OriginXY[obj.originY as keyof typeof OriginXY] ?? obj.originY;
-    return {
-        centerX: obj.width * x,
-        centerY: obj.height * y,
-    };
+export function RectGetBoundingBox(obj: Rect): BoundingBox {
+    const thick = obj.ctxSetting.strokeWidth / 2;
+    const tl = new Point(obj.left - thick, obj.top - thick);
+    const br = new Point(obj.left + obj.width + thick, obj.top + obj.height + thick);
+    return { tl, br };
 }

@@ -1,5 +1,5 @@
 import { TEventCallback } from '../Observable';
-import { CanvasObject } from './CanvasObject';
+import { BaseObject } from './BaseObject';
 
 export type CanvasObjectContainerEvent = {
     'render:Before': null;
@@ -9,8 +9,8 @@ export type CanvasObjectContainerEvent = {
 export class CanvasObjectContainer {
     public render: boolean;
     public eventListener: Record<keyof CanvasObjectContainerEvent, TEventCallback<CanvasObjectContainerEvent[keyof CanvasObjectContainerEvent]>[]>;
-    public Object: CanvasObject;
-    constructor(obj: CanvasObject) {
+    public Object: BaseObject;
+    constructor(obj: BaseObject) {
         this.render = true;
         this.eventListener = {} as Record<keyof CanvasObjectContainerEvent, TEventCallback<CanvasObjectContainerEvent[keyof CanvasObjectContainerEvent]>[]>;
         this.Object = obj;

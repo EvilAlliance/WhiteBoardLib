@@ -1,9 +1,9 @@
 import { Canvas, CanvasClear, CanvasRender } from '../Canvas';
-import { CanvasObject } from '../Object/CanvasObject';
-import { OriginXY } from '../Object/Rect';
+import { OriginXY } from '../Object/BaseObject';
 import { ColorRGBA, ColorRGBAParse, ColorRGBAToParse } from '../Utils/Color';
 import { Transitions } from './Transition';
 
+// TODO: Animate
 export function animate(canvas: Canvas, obj: CanvasObject, prop: keyof CanvasObject, fromValue: CanvasObject[keyof CanvasObject], toValue: CanvasObject[keyof CanvasObject], Duration: number, Type: keyof typeof Transitions) {
     if (Duration < 0) return;
 

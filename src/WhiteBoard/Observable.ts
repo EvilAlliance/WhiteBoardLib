@@ -1,4 +1,4 @@
-export type TEventCallback<T = any> = (options: T) => any;
+export type TEventCallback<T = any> = (options: T) => void;
 
 export function on<T, K extends keyof T>(obj: { eventListener: Record<keyof T, TEventCallback[]> }, evtName: K, handler: TEventCallback<T[K]>) {
     if (!obj.eventListener[evtName]) {
