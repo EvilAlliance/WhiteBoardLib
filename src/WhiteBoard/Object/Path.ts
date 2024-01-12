@@ -50,9 +50,6 @@ export function PathDraw(ctx: CanvasRenderingContext2D, path: Path) {
         p2 = path.Path[i + 1];
     }
     ctx.lineTo(p2.x, p2.y);
-    ctx.stroke();
-    ctx.closePath();
-    ctx.restore();
 }
 
 export function PathGetBoundingBox(obj: Path): BoundingBox {

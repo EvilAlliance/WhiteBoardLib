@@ -1,25 +1,36 @@
-import { Canvas, CanvasClear, CanvasEvents, CanvasRender } from '../Canvas';
+import { Canvas, CanvasClear, CanvasRender } from '../Canvas';
 import { Point } from '../GeoSpace/Point';
-import { Vector } from '../GeoSpace/Vector';
+import { Vector, VectorMod } from '../GeoSpace/Vector';
 import { CanvasObjectContainer } from '../Object/CanvasObjectContainer';
 import { Path } from '../Object/Path';
-import { on } from '../Observable';
 import { Color } from '../Utils/Color';
 import { trailDots } from '../debug';
+import { BaseBrush } from './BaseBrush';
 
-export class Brush {
-    public lineCap: CanvasLineCap = 'round';
-    public width: number = 10;
-    public color: Color = 'Red';
-    public globalCompositeOperation: GlobalCompositeOperation = 'source-over';
+export class Brush extends BaseBrush<Path> {
+    lineCap: CanvasLineCap = 'round';
+    color: Color = 'Red';
+    globalCompositeOperation: GlobalCompositeOperation = 'source-over';
+
     constructor(brush: Partial<Brush> = {}) {
+        super();
         Object.assign(this, brush);
+    }
+    mouseDown(canvas: Canvas<this>): Path {
+        return BrushMouseDown(canvas);
+    }
+
+    mouseMove(canvas: Canvas<this>, e: MouseEvent, obj: Path): void {
+        BrushMouseMove(canvas, e, obj);
+    }
+    // @ts-ignore
+    mouseUp(canvas: Canvas<this>, e: MouseEvent, obj: Path): void {
+        console.log(canvas);
     }
 }
 
-export function BrushMouseDown(canvas: Canvas, e: MouseEvent) {
-    if (!(canvas.cursor instanceof Brush)) return;
-    const path = new Path({
+export function BrushMouseDown(canvas: Canvas<Brush>): Path {
+    const p = new Path({
         ctxSetting: {
             strokeWidth: canvas.cursor.width,
             strokeColor: canvas.cursor.color,
@@ -27,38 +38,32 @@ export function BrushMouseDown(canvas: Canvas, e: MouseEvent) {
             globalCompositeOperation: canvas.cursor.globalCompositeOperation,
         }
     });
-    canvas.Objects.push(new CanvasObjectContainer(path));
 
-    mouseMove(canvas, e, path);
-    const x = on<CanvasEvents, 'mouse:move'>(canvas, 'mouse:move', function(this: Canvas, e) {
-        mouseMove(this, e, path);
-    });
+    canvas.Objects.push(new CanvasObjectContainer(p));
 
-    const y = on<CanvasEvents, 'mouse:up'>(canvas, 'mouse:up', function(this: Canvas) {
-        //mouseUp(this,path)
-        x();
-        y();
-    });
+    return p;
 }
 
-function mouseMove(canvas: Canvas, e: MouseEvent, path: Path) {
+export function BrushMouseMove(canvas: Canvas<Brush>, e: MouseEvent, path: Path) {
     if (!(canvas.cursor instanceof Brush)) return;
     const p = new Point(e.offsetX, e.offsetY);
+
     if (path.Path.length == 0) {
         path.Path.push(p);
     } else {
         const v = new Vector(p, path.Path[path.Path.length - 1]);
-        if (Math.hypot(v.x, v.y) >= (canvas.cursor?.width as number) / 2) {
+        if (VectorMod(v) >= canvas.cursor.width / 2) {
             path.Path.push(p);
         }
     }
+
     CanvasClear(canvas);
     CanvasRender(canvas);
 }
 
 //simplify path prototype not used 
 //@ts-ignore
-function mouseUp(canvas: Canvas, path: Path) {
+export function BrushMouseUp(canvas: Canvas, path: Path) {
     const p = JSON.parse(JSON.stringify(path));
     let curr = path.Path[0];
     let i = 1;

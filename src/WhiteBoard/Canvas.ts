@@ -1,5 +1,4 @@
-import { Brush, BrushMouseDown } from './Cursor/Brush';
-import { EraserAll, EraserAllMouseDown } from './Cursor/EraserAll';
+import { BaseBrush, BaseBrushMouseDown } from './Cursor/BaseBrush';
 import { BaseObject, BaseObjectRender } from './Object/BaseObject';
 import { CanvasObjectContainer, CanvasObjectContainerEvent } from './Object/CanvasObjectContainer';
 import { TEventCallback, fire, on } from './Observable';
@@ -12,16 +11,18 @@ export type CanvasEvents = {
     'mouse:up': MouseEvent;
 }
 
-export class Canvas {
+export class Canvas<T extends BaseBrush<any> = BaseBrush<any>> {
     public Canvas: HTMLCanvasElement;
     public ctx: CanvasRenderingContext2D;
     public Objects: CanvasObjectContainer[];
     public eventListener: Record<keyof CanvasEvents, TEventCallback<CanvasEvents[keyof CanvasEvents]>[]>;
     public height: number;
     public width: number;
-    public cursor?: Brush | EraserAll;
+    public cursor: T;
 
-    constructor(tag: string | HTMLCanvasElement, width: number, height: number) {
+    constructor(tag: string | HTMLCanvasElement, width: number, height: number, baseBrush: T) {
+        this.cursor = baseBrush;
+
         if (tag instanceof HTMLCanvasElement) {
             this.Canvas = tag;
         } else {
@@ -55,9 +56,7 @@ export class Canvas {
         });
 
         on<CanvasEvents, 'mouse:down'>(this, 'mouse:down', function(this: Canvas, e) {
-            if (this.cursor instanceof Brush) { BrushMouseDown(this, e); }
-            else if (this.cursor instanceof EraserAll) { EraserAllMouseDown(this, e); }
-            else { console.log('TODO: ', this.cursor); }
+            BaseBrushMouseDown(this, e);
         });
     }
 }
@@ -88,7 +87,7 @@ export function CanvasRender(canvas: Canvas) {
     fire<CanvasEvents, 'render:Before'>(canvas, 'render:Before', null);
     for (const Object of canvas.Objects) {
         fire<CanvasObjectContainerEvent, 'render:Before'>(Object, 'render:Before', null);
-        if (Object.render) continue;
+        if (!Object.render) continue;
         BaseObjectRender(canvas.ctx, Object.Object);
         fire<CanvasObjectContainerEvent, 'render:After'>(Object, 'render:After', null);
     }

@@ -5,25 +5,26 @@ import { CanvasObjectContainer } from '../Object/CanvasObjectContainer';
 import { Path } from '../Object/Path';
 import { Rect, RectDraw } from '../Object/Rect';
 import { on } from '../Observable';
+import { BaseBrush } from './BaseBrush';
 
-export class EraserAll {
-    public width: number = 10;
+export class EraserAll extends BaseBrush {
     constructor(eraserAll: Partial<EraserAll> = {}) {
+        super();
         Object.assign(this, eraserAll);
     }
-}
 
-export function EraserAllMouseDown(canvas: Canvas, e: MouseEvent) {
-    EraserAllMouseMove(canvas, e);
+    //@ts-ignore
+    mouseDown(canvas: Canvas<this>): undefined {
 
-    const x = on<CanvasEvents, 'mouse:move'>(canvas, 'mouse:move', function(this: Canvas, e) {
-        EraserAllMouseMove(this, e);
-    });
+    }
 
-    const y = on<CanvasEvents, 'mouse:up'>(canvas, 'mouse:up', function(this: Canvas) {
-        x();
-        y();
-    });
+    mouseMove(canvas: Canvas<this>, e: MouseEvent): void {
+        EraserAllMouseMove(canvas, e);
+    }
+
+    mouseUp(canvas: Canvas<this>, e: MouseEvent, obj: undefined): void {
+
+    }
 }
 
 function EraserAllMouseMove(canvas: Canvas, e: MouseEvent) {
