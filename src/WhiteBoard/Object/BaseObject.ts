@@ -1,4 +1,5 @@
 import { Point } from '../GeoSpace/Point';
+import { Vector, VectorRotate, VectorTranslatePoint } from '../GeoSpace/Vector';
 import { CanvasParseColor, Color } from '../Utils/Color';
 import { Path } from './Path';
 
@@ -13,6 +14,9 @@ export abstract class BaseObject {
     }
     shouldStroke(obj: typeof this): boolean {
         return obj.ctxSetting.strokeWidth != 0;
+    }
+    pointInRange(obj: typeof this, mousePoint: Point, width: number, tolerance: number): boolean {
+        return BaseObjectPointInRange(obj, mousePoint, width, tolerance);
     }
 }
 
@@ -102,7 +106,7 @@ export function BaseObjectRenderizeCanvas<T extends BaseObject>(ctx: CanvasRende
         ctx.fill();
 }
 
-export function BaseClosedObjectDraw<T extends BaseObject>(ctx: CanvasRenderingContext2D, obj: T) {
+export function BaseObjectDraw<T extends BaseObject>(ctx: CanvasRenderingContext2D, obj: T) {
     ctx.save();
 
     BaseObjectSettingContext(ctx, obj);
@@ -110,6 +114,44 @@ export function BaseClosedObjectDraw<T extends BaseObject>(ctx: CanvasRenderingC
     obj.draw(ctx, obj);
 
     ctx.restore();
+}
+
+export function BaseObjectPointInRange(obj: BaseObject, mousePoint: Point, width: number, tolerance: number): boolean {
+    const ctx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
+    BaseObjectDraw(ctx, obj);
+
+    while (tolerance > 0) {
+        let i = 3;
+        while (width * Math.sin(Math.PI / i) > tolerance) {
+            i += 1;
+        }
+
+        const mod = width / 2;
+        const ang = 2 * Math.PI / i;
+        const vec = new Vector({ x: 0, y: 0 }, { x: mod * Math.sin(ang), y: mod * Math.cos(ang) });
+
+        const arr = new Array(i);
+
+        for (let j = 0; j < arr.length; j++) {
+            const p = Object.assign({}, mousePoint);
+            VectorTranslatePoint(vec, p);
+            arr[j] = p;
+            VectorRotate(vec, ang);
+        }
+
+        const inside = arr.some((x) => {
+            if (obj.shouldFill(obj))
+                return ctx.isPointInPath(x.x, x.y);
+            if (obj.shouldStroke(obj))
+                return ctx.isPointInStroke(x.x, x.y);
+            return false;
+        });
+
+        if (inside) return true;
+        tolerance--;
+    }
+
+    return false;
 }
 
 export const OriginXY = Object.freeze({

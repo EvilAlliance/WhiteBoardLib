@@ -3,13 +3,13 @@ import { on } from '../Observable';
 
 export abstract class BaseBrush<T = undefined> {
     width: number = 10;
-    abstract mouseDown(canvas: Canvas<this>): T;
-    abstract mouseMove(canvas: Canvas<this>, e: MouseEvent, obj: T): void;
-    abstract mouseUp(canvas: Canvas<this>, e: MouseEvent, obj: T): void;
+    abstract mouseDown(canvas: Canvas, obj: typeof this): T;
+    abstract mouseMove(canvas: Canvas, e: MouseEvent, obj: T): void;
+    abstract mouseUp(canvas: Canvas, e: MouseEvent, obj: T): void;
 }
 
 export function BaseBrushMouseDown(canvas: Canvas, e: MouseEvent) {
-    const temp = canvas.cursor.mouseDown(canvas);
+    const temp = canvas.cursor.mouseDown(canvas, canvas.cursor);
 
     canvas.cursor.mouseMove(canvas, e, temp);
 

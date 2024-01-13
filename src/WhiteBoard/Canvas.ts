@@ -1,4 +1,5 @@
 import { BaseBrush, BaseBrushMouseDown } from './Cursor/BaseBrush';
+import { Brush } from './Cursor/Brush';
 import { BaseObject, BaseObjectRender } from './Object/BaseObject';
 import { CanvasObjectContainer, CanvasObjectContainerEvent } from './Object/CanvasObjectContainer';
 import { TEventCallback, fire, on } from './Observable';
@@ -20,9 +21,7 @@ export class Canvas<T extends BaseBrush<any> = BaseBrush<any>> {
     public width: number;
     public cursor: T;
 
-    constructor(tag: string | HTMLCanvasElement, width: number, height: number, baseBrush: T) {
-        this.cursor = baseBrush;
-
+    constructor(tag: string | HTMLCanvasElement, width: number, height: number, baseBrush: BaseBrush<any> = new Brush()) {
         if (tag instanceof HTMLCanvasElement) {
             this.Canvas = tag;
         } else {
@@ -30,6 +29,8 @@ export class Canvas<T extends BaseBrush<any> = BaseBrush<any>> {
             if (!(x && x instanceof HTMLCanvasElement)) throw new Error('Element does not exist or Element is not an HTMLCanvasElement');
             this.Canvas = x as HTMLCanvasElement;
         }
+
+        this.cursor = baseBrush as T;
 
         this.Canvas.width = width;
         this.Canvas.height = height;

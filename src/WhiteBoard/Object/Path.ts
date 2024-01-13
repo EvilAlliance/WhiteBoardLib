@@ -1,5 +1,5 @@
 import { Point } from '../GeoSpace/Point';
-import { Vector } from '../GeoSpace/Vector';
+import { Vector, VectorMod } from '../GeoSpace/Vector';
 import { DeepPartial } from '../Type';
 import { BaseObject, BoundingBox } from './BaseObject';
 
@@ -10,14 +10,21 @@ export class Path extends BaseObject {
         super();
         Object.assign(this, obj);
     }
+
     draw(ctx: CanvasRenderingContext2D, obj: this): void {
         PathDraw(ctx, obj);
     }
+
     shouldFill(obj: this): boolean {
         return obj.ctxSetting.fill || obj.Path.length == 1;
     }
+
     getBoundingBox(obj: this): BoundingBox {
         return PathGetBoundingBox(obj);
+    }
+
+    pointInRange(obj: typeof this, mousePoint: Point, width: number): boolean {
+        return PathPointInRange(obj, mousePoint, width);
     }
 }
 
@@ -87,4 +94,65 @@ export function PathGetBoundingBox(obj: Path): BoundingBox {
     }
 
     return { tl, br };
+}
+
+function PathPointInRange(path: Path, mousePoint: Point, width: number): boolean {
+    for (let i = 0; i < path.Path.length; i++) {
+        const coord = path.Path[i];
+        if (VectorMod(new Vector(coord, mousePoint)) < width / 2) return true;
+        if (i < path.Path.length - 1) {
+            const dot2 = path.Path[i + 1];
+            if (PathMousePointInsideSquareOf2Points(coord, dot2, mousePoint)) {
+                if (PathSearchBetween2Points(coord, dot2, mousePoint, width)) return true;
+            }
+        }
+    }
+    return false;
+}
+
+function PathMousePointInsideSquareOf2Points(p1: Point, p2: Point, mousePoint: Point): boolean {
+    const InsideYLimiter = (p1.y >= mousePoint.y && p2.y <= mousePoint.y) || (p2.y >= mousePoint.y && p1.y <= mousePoint.y);
+    const InsideXLimiter = (p1.x >= mousePoint.x && p2.x <= mousePoint.x) || (p2.x >= mousePoint.x && p1.x <= mousePoint.x);
+    return InsideYLimiter && InsideXLimiter;
+}
+
+function PathSearchBetween2Points(p1: Point, p2: Point, mousePoint: Point, width: number): boolean {
+    const vec = new Vector(p1, p2);
+    vec.x *= 0.5;
+    vec.y *= 0.5;
+
+    const pMid = {
+        x: p1.x + vec.x,
+        y: p1.y + vec.y,
+    };
+
+    let low = 0;
+    let high = 100;
+    while (low < high) {
+        const j = Math.ceil((low + high) / 2);
+        const quadraticCurveP = quadraticCurvePoint(p1, p2, pMid, j / 100);
+        const dist = VectorMod(new Vector(quadraticCurveP, mousePoint));
+        if (dist < width / 2) return true;
+        const quadraticCurvePMore = quadraticCurvePoint(p1, p2, pMid, (j + 1) / 100);
+        const quadraticCurvePLess = quadraticCurvePoint(p1, p2, pMid, (j - 1) / 100);
+        const distM = VectorMod(new Vector(quadraticCurvePMore, mousePoint));
+        const distL = VectorMod(new Vector(quadraticCurvePLess, mousePoint));
+        if (distM < distL) {
+            low = j + 1;
+        } else {
+            high = j - 1;
+        }
+    }
+    return false;
+}
+
+function quadraticCurvePoint(origin: Point, end: Point, control: Point, porsentage: number): Point {
+    return {
+        x: quadraticCurve(origin.x, end.x, control.x, porsentage),
+        y: quadraticCurve(origin.y, end.y, control.y, porsentage)
+    };
+}
+
+function quadraticCurve(origin: number, end: number, control: number, porsentage: number) {
+    return Math.pow(1 - porsentage, 2) * origin + 2 * (1 - porsentage) * porsentage * control + Math.pow(porsentage, 2) * end;
 }
