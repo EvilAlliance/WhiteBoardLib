@@ -11,7 +11,7 @@ export class EraserAll extends BaseBrush {
     }
 
     //@ts-ignore
-    mouseDown(canvas: Canvas): undefined {
+    mouseDown(canvas: Canvas<this>): undefined {
 
     }
 
