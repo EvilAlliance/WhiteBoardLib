@@ -15,6 +15,7 @@ export abstract class BaseObject {
     shouldStroke(obj: typeof this): boolean {
         return obj.ctxSetting.strokeWidth != 0;
     }
+    //this function is not ideal to evey path reason https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fill second example;
     pointInRange(obj: typeof this, mousePoint: Point, width: number, tolerance: number): boolean {
         return BaseObjectPointInRange(obj, mousePoint, width, tolerance);
     }
@@ -90,7 +91,9 @@ export function CtxTransformationSetContextTransformation(ctx: CanvasRenderingCo
         centerPoint.x,
         centerPoint.y
     );
+
     ctx.rotate(obj.angle);
+
     ctx.translate(-centerPoint.x, -centerPoint.y);
 }
 
@@ -100,27 +103,29 @@ export function BaseObjectSettingContext<T extends BaseObject>(ctx: CanvasRender
 }
 
 export function BaseObjectRenderizeCanvas<T extends BaseObject>(ctx: CanvasRenderingContext2D, obj: T) {
-    if (obj.shouldStroke(obj))
-        ctx.stroke();
     if (obj.shouldFill(obj))
         ctx.fill();
+    if (obj.shouldStroke(obj))
+        ctx.stroke();
 }
 
-export function BaseObjectDraw<T extends BaseObject>(ctx: CanvasRenderingContext2D, obj: T) {
-    ctx.save();
+export function BaseObjectDraw<T extends BaseObject>(obj: T): CanvasRenderingContext2D {
+    const ctx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
 
     BaseObjectSettingContext(ctx, obj);
 
     obj.draw(ctx, obj);
 
-    ctx.restore();
+    BaseObjectRenderizeCanvas(ctx, obj);
+
+    return ctx;
 }
 
+//this function is not ideal to evey path reason https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fill second example;
 export function BaseObjectPointInRange(obj: BaseObject, mousePoint: Point, width: number, tolerance: number): boolean {
-    const ctx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-    BaseObjectDraw(ctx, obj);
+    const ctx = BaseObjectDraw(obj);
 
-    while (tolerance > 0) {
+    while (width > 0) {
         let i = 3;
         while (width * Math.sin(Math.PI / i) > tolerance) {
             i += 1;
@@ -140,15 +145,17 @@ export function BaseObjectPointInRange(obj: BaseObject, mousePoint: Point, width
         }
 
         const inside = arr.some((x) => {
-            if (obj.shouldFill(obj))
-                return ctx.isPointInPath(x.x, x.y);
+            if (ctx.isPointInPath(x.x, x.y)) {
+                console.log('epe')
+                return true;
+            }
             if (obj.shouldStroke(obj))
                 return ctx.isPointInStroke(x.x, x.y);
             return false;
         });
 
         if (inside) return true;
-        tolerance--;
+        width--;
     }
 
     return false;
@@ -163,8 +170,8 @@ export const OriginXY = Object.freeze({
 });
 
 export function getCenterPoint(origin: { originX: 'left' | 'center' | 'right' | number, originY: 'top' | 'center' | 'bottom' | number }, { tl }: BoundingBox): Point {
-    const x = OriginXY[origin.originX as keyof typeof OriginXY] ?? origin.originX;
-    const y = OriginXY[origin.originY as keyof typeof OriginXY] ?? origin.originY;
+    const x = OriginXY[(origin.originX ?? 'left') as keyof typeof OriginXY] ?? origin.originX;
+    const y = OriginXY[(origin.originY ?? 'top') as keyof typeof OriginXY] ?? origin.originY;
     return {
         x: tl.x + tl.x * x,
         y: tl.y + tl.y * y,

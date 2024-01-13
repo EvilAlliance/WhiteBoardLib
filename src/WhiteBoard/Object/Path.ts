@@ -22,7 +22,7 @@ export class Path extends BaseObject {
     getBoundingBox(obj: this): BoundingBox {
         return PathGetBoundingBox(obj);
     }
-
+    // ignores everithing export the stroke;
     pointInRange(obj: typeof this, mousePoint: Point, width: number): boolean {
         return PathPointInRange(obj, mousePoint, width);
     }

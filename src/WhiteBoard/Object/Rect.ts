@@ -35,13 +35,17 @@ function RectUpdateRxRy(obj: { rx?: number, ry?: number }) {
 
 export function RectDraw(ctx: CanvasRenderingContext2D, rect: Rect) {
     const {
-        width,
         rx,
         ry,
-        height,
-        left,
-        top
     } = rect;
+
+    let { top, left, height, width } = rect;
+
+    top += rect.ctxSetting.strokeWidth / 2;
+    left += rect.ctxSetting.strokeWidth / 2;
+
+    width -= rect.ctxSetting.strokeWidth;
+    height -= rect.ctxSetting.strokeWidth;
 
     ctx.beginPath();
 
@@ -88,13 +92,10 @@ export function RectDraw(ctx: CanvasRenderingContext2D, rect: Rect) {
     );
 
     ctx.closePath();
-
-    ctx.restore();
 }
 
 export function RectGetBoundingBox(obj: Rect): BoundingBox {
-    const thick = obj.ctxSetting.strokeWidth / 2;
-    const tl = new Point(obj.left - thick, obj.top - thick);
-    const br = new Point(obj.left + obj.width + thick, obj.top + obj.height + thick);
+    const tl = new Point(obj.left, obj.top);
+    const br = new Point(obj.left + obj.width, obj.top + obj.height);
     return { tl, br };
 }

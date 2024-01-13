@@ -25,7 +25,7 @@ export class Brush extends BaseBrush<Path> {
     }
     // @ts-ignore
     mouseUp(canvas: Canvas<this>, e: MouseEvent, obj: Path): void {
-        trailDots(canvas, obj, 'Black');
+
     }
 }
 
