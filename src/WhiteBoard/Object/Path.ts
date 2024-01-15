@@ -1,12 +1,11 @@
 import { Point } from '../GeoSpace/Point';
 import { Vector, VectorMod } from '../GeoSpace/Vector';
-import { DeepPartial } from '../Type';
 import { BaseObject, BoundingBox } from './BaseObject';
 
 export class Path extends BaseObject {
     public Path: Point[] = [];
 
-    constructor(obj: DeepPartial<Path> = {}) {
+    constructor(obj: Partial<Path> = {}) {
         super();
         Object.assign(this, obj);
     }

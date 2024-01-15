@@ -146,7 +146,6 @@ export function BaseObjectPointInRange(obj: BaseObject, mousePoint: Point, width
 
         const inside = arr.some((x) => {
             if (ctx.isPointInPath(x.x, x.y)) {
-                console.log('epe')
                 return true;
             }
             if (obj.shouldStroke(obj))

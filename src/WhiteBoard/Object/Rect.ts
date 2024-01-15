@@ -1,5 +1,4 @@
 import { BaseObject, BoundingBox } from './BaseObject';
-import { DeepPartial } from '../Type';
 import { Point } from '../GeoSpace/Point';
 const kRect = 1 - 0.5522847498;
 
@@ -10,7 +9,7 @@ export class Rect extends BaseObject {
     public left: number = 0;
     public rx: number = 0;
     public ry: number = 0;
-    constructor(obj: DeepPartial<Rect>) {
+    constructor(obj: Partial<Rect>) {
         super();
         RectUpdateRxRy(obj);
         Object.assign(this, obj);
