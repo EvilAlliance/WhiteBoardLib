@@ -36,12 +36,12 @@ const p = new Rect({
         strokeColor: 'Cabo',
         strokeWidth: 20
     }
-})
+});
 
 CanvasAddCanvasObjectRender(canvas, p);
 
 setTimeout(() => {
     canvas.Objects[canvas.Objects.length - 1].Object.ctxSetting.fill = true;
-    CanvasRender(canvas)
-    console.log(canvas.Objects)
-}, 5000)
+    CanvasRender(canvas);
+    console.log(canvas.Objects);
+}, 5000);
