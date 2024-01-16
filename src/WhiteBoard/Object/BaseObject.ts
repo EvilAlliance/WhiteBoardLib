@@ -190,12 +190,12 @@ export function BaseObjectCanvasData(obj: BaseObject): Uint32Array {
     const tl = new Point(
         Math.min(tlT.x, trT.x, blT.x, brT.x),
         Math.min(tlT.y, trT.y, blT.y, brT.y)
-    )
+    );
 
     const br = new Point(
         Math.max(tlT.x, trT.x, blT.x, brT.x),
         Math.max(tlT.y, trT.y, blT.y, brT.y)
-    )
+    );
 
     canvas.width = br.x - tl.x;
     canvas.height = br.y - tl.y;

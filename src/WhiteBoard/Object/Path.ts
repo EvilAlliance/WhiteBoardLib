@@ -67,7 +67,7 @@ export function PathGetBoundingBox(obj: Path): BoundingBox {
             tr: new Point(tl.x + obj.ctxSetting.strokeWidth / 2, tl.y - obj.ctxSetting.strokeWidth / 2),
             bl: new Point(tl.x - obj.ctxSetting.strokeWidth / 2, tl.y + obj.ctxSetting.strokeWidth / 2),
             br: new Point(tl.x + obj.ctxSetting.strokeWidth / 2, tl.y + obj.ctxSetting.strokeWidth / 2),
-        }
+        };
     }
     const br = { ...obj.Path[1] };
 
@@ -116,7 +116,7 @@ export function PathGetBoundingBox(obj: Path): BoundingBox {
         tr,
         bl,
         br
-    }
+    };
 }
 
 function PathPointInRange(path: Path, mousePoint: Point, width: number): boolean {
