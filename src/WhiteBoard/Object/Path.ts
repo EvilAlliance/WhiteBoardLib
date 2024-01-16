@@ -60,8 +60,15 @@ export function PathDraw(ctx: CanvasRenderingContext2D, path: Path) {
 
 export function PathGetBoundingBox(obj: Path): BoundingBox {
     const tl = { ...obj.Path[0] };
-    if (obj.Path.length == 1)
-        return { tl, br: tl };
+
+    if (obj.Path.length == 1) {
+        return {
+            tl: new Point(tl.x - obj.ctxSetting.strokeWidth / 2, tl.y - obj.ctxSetting.strokeWidth / 2),
+            tr: new Point(tl.x + obj.ctxSetting.strokeWidth / 2, tl.y - obj.ctxSetting.strokeWidth / 2),
+            bl: new Point(tl.x - obj.ctxSetting.strokeWidth / 2, tl.y + obj.ctxSetting.strokeWidth / 2),
+            br: new Point(tl.x + obj.ctxSetting.strokeWidth / 2, tl.y + obj.ctxSetting.strokeWidth / 2),
+        }
+    }
     const br = { ...obj.Path[1] };
 
     if (tl.y > br.y) {
@@ -92,7 +99,24 @@ export function PathGetBoundingBox(obj: Path): BoundingBox {
         }
     }
 
-    return { tl, br };
+    const bl = new Point(tl.x, br.y);
+    const tr = new Point(br.x, tl.y);
+
+    tl.x -= obj.ctxSetting.strokeWidth / 2;
+    tl.y -= obj.ctxSetting.strokeWidth / 2;
+    tr.x += obj.ctxSetting.strokeWidth / 2;
+    tr.y -= obj.ctxSetting.strokeWidth / 2;
+    bl.x -= obj.ctxSetting.strokeWidth / 2;
+    bl.y += obj.ctxSetting.strokeWidth / 2;
+    br.x += obj.ctxSetting.strokeWidth / 2;
+    br.y += obj.ctxSetting.strokeWidth / 2;
+
+    return {
+        tl,
+        tr,
+        bl,
+        br
+    }
 }
 
 function PathPointInRange(path: Path, mousePoint: Point, width: number): boolean {

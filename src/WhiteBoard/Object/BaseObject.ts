@@ -48,6 +48,8 @@ export class CtxSetting {
 
 export interface BoundingBox {
     tl: Point;
+    tr: Point;
+    bl: Point;
     br: Point;
 }
 
@@ -61,11 +63,11 @@ export function BaseObjectRender<T extends BaseObject>(ctx: CanvasRenderingConte
     BaseObjectRenderizeCanvas(ctx, obj);
 
 
+    ctx.restore();
+
     for (let i = 0; i < obj.erased.length; i++) {
         BaseObjectRender(ctx, obj.erased[i]);
     }
-
-    ctx.restore();
 }
 
 
@@ -83,7 +85,7 @@ export function CtxSettingSetContextOption(ctx: CanvasRenderingContext2D, obj: C
 export function CtxTransformationSetContextTransformation(ctx: CanvasRenderingContext2D, obj: CtxTransformation, boundingBox: BoundingBox) {
     const centerPoint = getCenterPoint(obj, boundingBox);
 
-    ctx.setTransform(
+    ctx.transform(
         obj.scaleX,
         obj.skewY,
         obj.skewX,
@@ -158,6 +160,64 @@ export function BaseObjectPointInRange(obj: BaseObject, mousePoint: Point, width
     }
 
     return false;
+}
+
+export function BaseObjectCanvasData(obj: BaseObject): Uint32Array {
+    const canvas = document.createElement('canvas');
+
+    const ctx = canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+
+    const b = obj.getBoundingBox(obj);
+    const centerPoint = getCenterPoint(obj.ctxTransformation, b);
+
+    const transformationMat = new DOMMatrix();
+
+    transformationMat.a = obj.ctxTransformation.scaleX;
+    transformationMat.b = obj.ctxTransformation.skewY;
+    transformationMat.c = obj.ctxTransformation.skewX;
+    transformationMat.d = obj.ctxTransformation.scaleY;
+    transformationMat.e = centerPoint.x;
+    transformationMat.f = centerPoint.y;
+
+    transformationMat.rotateSelf(obj.ctxTransformation.angle / Math.PI * 180);
+    transformationMat.translateSelf(-centerPoint.x, -centerPoint.y);
+
+    const tlT = new DOMPointReadOnly(b.tl.x, b.tl.y).matrixTransform(transformationMat);
+    const trT = new DOMPointReadOnly(b.tr.x, b.tr.y).matrixTransform(transformationMat);
+    const blT = new DOMPointReadOnly(b.bl.x, b.bl.y).matrixTransform(transformationMat);
+    const brT = new DOMPointReadOnly(b.br.x, b.br.y).matrixTransform(transformationMat);
+
+    const tl = new Point(
+        Math.min(tlT.x, trT.x, blT.x, brT.x),
+        Math.min(tlT.y, trT.y, blT.y, brT.y)
+    )
+
+    const br = new Point(
+        Math.max(tlT.x, trT.x, blT.x, brT.x),
+        Math.max(tlT.y, trT.y, blT.y, brT.y)
+    )
+
+    canvas.width = br.x - tl.x;
+    canvas.height = br.y - tl.y;
+
+    ctx.translate(-tl.x, -tl.y);
+
+    ctx.save();
+
+    BaseObjectSettingContext(ctx, obj);
+
+
+    obj.draw(ctx, obj);
+
+    BaseObjectRenderizeCanvas(ctx, obj);
+
+    ctx.restore();
+
+    for (let i = 0; i < obj.erased.length; i++) {
+        BaseObjectRender(ctx, obj.erased[i]);
+    }
+
+    return new Uint32Array(ctx.getImageData(0, 0, canvas.width, canvas.height).data.buffer);
 }
 
 export const OriginXY = Object.freeze({

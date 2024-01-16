@@ -95,6 +95,8 @@ export function RectDraw(ctx: CanvasRenderingContext2D, rect: Rect) {
 
 export function RectGetBoundingBox(obj: Rect): BoundingBox {
     const tl = new Point(obj.left, obj.top);
-    const br = new Point(obj.left + obj.width, obj.top + obj.height);
-    return { tl, br };
+    const tr = new Point(obj.left + obj.width, obj.top);
+    const bl = new Point(tl.x, obj.top + obj.height);
+    const br = new Point(tr.x, bl.y);
+    return { tl, tr, bl, br };
 }
