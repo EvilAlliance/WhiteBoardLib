@@ -1,5 +1,6 @@
 import { Canvas, CanvasClear, CanvasRender } from '../Canvas';
 import { Point } from '../GeoSpace/Point';
+import { BaseObjectCanvasData } from '../Object/BaseObject';
 import { CanvasObjectContainer } from '../Object/CanvasObjectContainer';
 import { BaseBrush } from './BaseBrush';
 
@@ -30,6 +31,17 @@ function EraserAllMouseMove(canvas: Canvas<EraserAll>, e: MouseEvent) {
     for (const object of Objects) {
         if (object.Object.pointInRange(object.Object, mousePoint, canvas.cursor.width, canvas.cursor.tolerance)) EraserAllEraseObject(canvas, object);
     }
+}
+
+export function EraserAllObjectCeaseExist(canvas: Canvas, object: CanvasObjectContainer): Worker {
+    const worker = new Worker('./src/WhiteBoard/Cursor/ObjectExist.worker.ts', { type: 'classic' });
+    worker.postMessage(new Uint32Array(BaseObjectCanvasData(object.Object).data.buffer));
+    worker.addEventListener('message', (e) => {
+        worker.terminate();
+        if (typeof e.data != 'boolean') throw new Error('Expected a Boolean');
+        EraserAllEraseObject(canvas, object);
+    });
+    return worker;
 }
 
 export function EraserAllEraseObject(canvas: Canvas, object: CanvasObjectContainer) {

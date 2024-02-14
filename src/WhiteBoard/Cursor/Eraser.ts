@@ -2,13 +2,15 @@ import { Canvas, CanvasClear, CanvasRender } from '../Canvas';
 import { arrIdentical } from '../CommonMethod';
 import { Point } from '../GeoSpace/Point';
 import { BaseObject, BaseObjectCanvasData, CtxSetting } from '../Object/BaseObject';
+import { CanvasObjectContainer } from '../Object/CanvasObjectContainer';
 import { Path } from '../Object/Path';
 import { BaseBrush } from './BaseBrush';
-import { EraserAllEraseObject } from './EraserAll';
+import { EraserAllObjectCeaseExist } from './EraserAll';
 
 export class Eraser extends BaseBrush<WeakMap<BaseObject, Path>>{
     tolerance: number = 5;
     lineCap: CanvasLineCap = 'round';
+    activeWorker: WeakMap<CanvasObjectContainer, Worker> = new WeakMap();
 
     constructor(obj: Partial<Eraser> = {}) {
         super();
@@ -26,7 +28,7 @@ export class Eraser extends BaseBrush<WeakMap<BaseObject, Path>>{
     mouseUp(canvas: Canvas<this>, e: MouseEvent, obj: WeakMap<BaseObject, Path>): void {
         for (const object of canvas.Objects) {
             if (obj.delete(object.Object)) {
-                if (new Uint32Array(BaseObjectCanvasData(object.Object).data.buffer).every((x) => x == 0)) EraserAllEraseObject(canvas, object);
+                canvas.cursor.activeWorker.set(object, EraserAllObjectCeaseExist(canvas, object));
             }
         }
     }
@@ -37,6 +39,7 @@ export function EraserMouseMove(canvas: Canvas<Eraser>, e: MouseEvent, obj: Weak
     for (const object of canvas.Objects) {
         if (!object.render) return;
         if (object.Object.pointInRange(object.Object, mousePoint, canvas.cursor.width, canvas.cursor.tolerance)) {
+            canvas.cursor.activeWorker.delete(object);
             const path = obj.get(object.Object);
             if (!path) {
                 //const beforeData = BaseObjectCanvasData(object.Object);
@@ -77,8 +80,9 @@ export function EraserMouseMove(canvas: Canvas<Eraser>, e: MouseEvent, obj: Weak
             CanvasRender(canvas);
         } else {
             if (obj.delete(object.Object)) {
-                if (new Uint32Array(BaseObjectCanvasData(object.Object).data.buffer).every((x) => x == 0)) EraserAllEraseObject(canvas, object);
+                canvas.cursor.activeWorker.set(object, EraserAllObjectCeaseExist(canvas, object));
             }
         }
     }
 }
+
