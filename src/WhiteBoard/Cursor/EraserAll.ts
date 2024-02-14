@@ -11,7 +11,6 @@ export class EraserAll extends BaseBrush {
         Object.assign(this, eraserAll);
     }
 
-    //@ts-ignore
     mouseDown(canvas: Canvas<this>): undefined {
 
     }
@@ -19,7 +18,7 @@ export class EraserAll extends BaseBrush {
     mouseMove(canvas: Canvas<this>, e: MouseEvent): void {
         EraserAllMouseMove(canvas, e);
     }
-    //@ts-ignore
+
     mouseUp(canvas: Canvas<this>, e: MouseEvent): void {
 
     }

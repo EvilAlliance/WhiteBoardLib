@@ -1,6 +1,7 @@
 import { Canvas, CanvasClear, CanvasRender } from '../Canvas';
 import { Point } from '../GeoSpace/Point';
 import { Vector, VectorMod } from '../GeoSpace/Vector';
+import { CtxSetting } from '../Object/BaseObject';
 import { CanvasObjectContainer } from '../Object/CanvasObjectContainer';
 import { Path } from '../Object/Path';
 import { Color } from '../Utils/Color';
@@ -16,6 +17,7 @@ export class Brush extends BaseBrush<Path> {
         super();
         Object.assign(this, brush);
     }
+
     mouseDown(canvas: Canvas<this>): Path {
         return BrushMouseDown(canvas);
     }
@@ -23,7 +25,7 @@ export class Brush extends BaseBrush<Path> {
     mouseMove(canvas: Canvas<this>, e: MouseEvent, obj: Path): void {
         BrushMouseMove(canvas, e, obj);
     }
-    // @ts-ignore
+
     mouseUp(canvas: Canvas<this>, e: MouseEvent, obj: Path): void {
 
     }
@@ -31,12 +33,12 @@ export class Brush extends BaseBrush<Path> {
 
 export function BrushMouseDown(canvas: Canvas<Brush>): Path {
     const p = new Path({
-        ctxSetting: {
+        ctxSetting: new CtxSetting({
             strokeWidth: canvas.cursor.width,
             strokeColor: canvas.cursor.color,
             lineCap: canvas.cursor.lineCap,
             globalCompositeOperation: canvas.cursor.globalCompositeOperation,
-        }
+        })
     });
 
     canvas.Objects.push(new CanvasObjectContainer(p));
@@ -62,8 +64,7 @@ export function BrushMouseMove(canvas: Canvas<Brush>, e: MouseEvent, path: Path)
 }
 
 //simplify path prototype not used 
-//@ts-ignore
-export function BrushMouseUp(canvas: Canvas, path: Path) {
+function BrushMouseUp(canvas: Canvas, path: Path) {
     const p = JSON.parse(JSON.stringify(path));
     let curr = path.Path[0];
     let i = 1;
@@ -78,6 +79,6 @@ export function BrushMouseUp(canvas: Canvas, path: Path) {
     }
     CanvasClear(canvas);
     CanvasRender(canvas);
-    trailDots(canvas, p, 'Black');
-    trailDots(canvas, path, 'Bulrush');
+    trailDots(canvas.ctx, p, 'Black');
+    trailDots(canvas.ctx, path, 'Bulrush');
 }

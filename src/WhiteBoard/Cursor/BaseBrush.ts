@@ -1,7 +1,7 @@
 import { Canvas, CanvasEvents } from '../Canvas';
 import { on } from '../Observable';
 
-export abstract class BaseBrush<T = undefined> {
+export abstract class BaseBrush<T = void> {
     width: number = 10;
     abstract mouseDown(canvas: Canvas<typeof this>): T;
     abstract mouseMove(canvas: Canvas<typeof this>, e: MouseEvent, obj: T): void;
