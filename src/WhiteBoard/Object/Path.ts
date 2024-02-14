@@ -21,8 +21,8 @@ export class Path extends BaseObject {
     getBoundingBox(obj: this): BoundingBox {
         return PathGetBoundingBox(obj);
     }
-    // ignores everithing export the stroke;
-    pointInRange(obj: typeof this, mousePoint: Point, width: number): boolean {
+    // ignores everithing exept the stroke;
+    pointInRange(obj: typeof this, mousePoint: Point, width: number): Point | null {
         return PathPointInRange(obj, mousePoint, width);
     }
 }
@@ -119,18 +119,18 @@ export function PathGetBoundingBox(obj: Path): BoundingBox {
     };
 }
 
-function PathPointInRange(path: Path, mousePoint: Point, width: number): boolean {
+function PathPointInRange(path: Path, mousePoint: Point, width: number): Point | null {
     for (let i = 0; i < path.Path.length; i++) {
         const coord = path.Path[i];
-        if (VectorMod(new Vector(coord, mousePoint)) < width / 2) return true;
+        if (VectorMod(new Vector(coord, mousePoint)) < width / 2) return coord;
         if (i < path.Path.length - 1) {
             const dot2 = path.Path[i + 1];
             if (PathMousePointInsideSquareOf2Points(coord, dot2, mousePoint)) {
-                if (PathSearchBetween2Points(coord, dot2, mousePoint, width)) return true;
+                return PathSearchBetween2Points(coord, dot2, mousePoint, width);
             }
         }
     }
-    return false;
+    return null;
 }
 
 function PathMousePointInsideSquareOf2Points(p1: Point, p2: Point, mousePoint: Point): boolean {
@@ -139,7 +139,7 @@ function PathMousePointInsideSquareOf2Points(p1: Point, p2: Point, mousePoint: P
     return InsideYLimiter && InsideXLimiter;
 }
 
-function PathSearchBetween2Points(p1: Point, p2: Point, mousePoint: Point, width: number): boolean {
+function PathSearchBetween2Points(p1: Point, p2: Point, mousePoint: Point, width: number): Point | null {
     const vec = new Vector(p1, p2);
     vec.x *= 0.5;
     vec.y *= 0.5;
@@ -155,7 +155,7 @@ function PathSearchBetween2Points(p1: Point, p2: Point, mousePoint: Point, width
         const j = Math.ceil((low + high) / 2);
         const quadraticCurveP = quadraticCurvePoint(p1, p2, pMid, j / 100);
         const dist = VectorMod(new Vector(quadraticCurveP, mousePoint));
-        if (dist < width / 2) return true;
+        if (dist < width / 2) return quadraticCurveP;
         const quadraticCurvePMore = quadraticCurvePoint(p1, p2, pMid, (j + 1) / 100);
         const quadraticCurvePLess = quadraticCurvePoint(p1, p2, pMid, (j - 1) / 100);
         const distM = VectorMod(new Vector(quadraticCurvePMore, mousePoint));
@@ -166,7 +166,7 @@ function PathSearchBetween2Points(p1: Point, p2: Point, mousePoint: Point, width
             high = j - 1;
         }
     }
-    return false;
+    return null;
 }
 
 function quadraticCurvePoint(origin: Point, end: Point, control: Point, porsentage: number): Point {

@@ -16,7 +16,7 @@ export abstract class BaseObject {
         return obj.ctxSetting.strokeWidth != 0;
     }
     //this function is not ideal to evey path reason https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fill second example;
-    pointInRange(obj: typeof this, mousePoint: Point, width: number, tolerance: number): boolean {
+    pointInRange(obj: typeof this, mousePoint: Point, width: number, tolerance: number): Point | null {
         return BaseObjectPointInRange(obj, mousePoint, width, tolerance);
     }
 }
@@ -124,7 +124,7 @@ export function BaseObjectDraw<T extends BaseObject>(obj: T): CanvasRenderingCon
 }
 
 //this function is not ideal to evey path reason https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fill second example;
-export function BaseObjectPointInRange(obj: BaseObject, mousePoint: Point, width: number, tolerance: number): boolean {
+export function BaseObjectPointInRange(obj: BaseObject, mousePoint: Point, width: number, tolerance: number): Point | null {
     const ctx = BaseObjectDraw(obj);
 
     while (width > 0) {
@@ -146,20 +146,16 @@ export function BaseObjectPointInRange(obj: BaseObject, mousePoint: Point, width
             VectorRotate(vec, ang);
         }
 
-        const inside = arr.some((x) => {
-            if (ctx.isPointInPath(x.x, x.y)) {
-                return true;
-            }
-            if (obj.shouldStroke(obj))
-                return ctx.isPointInStroke(x.x, x.y);
-            return false;
-        });
+        for (let j = 0; j < arr.length; j++) {
 
-        if (inside) return true;
+            if (obj.shouldFill(obj) && ctx.isPointInPath(arr[j].x, arr[j].y) || obj.shouldStroke(obj) && ctx.isPointInStroke(arr[j].x, arr[j].y))
+                return arr[j];
+        }
+
         width--;
     }
 
-    return false;
+    return null;
 }
 
 export function BaseObjectCanvasData(obj: BaseObject): Uint32Array {
