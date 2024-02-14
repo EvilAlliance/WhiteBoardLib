@@ -32,7 +32,7 @@ function EraserAllMouseMove(canvas: Canvas<EraserAll>, e: MouseEvent) {
     }
 }
 
-function EraserAllEraseObject(canvas: Canvas, object: CanvasObjectContainer) {
+export function EraserAllEraseObject(canvas: Canvas, object: CanvasObjectContainer) {
     canvas.Objects.splice(canvas.Objects.indexOf(object), 1);
     CanvasClear(canvas);
     CanvasRender(canvas);
