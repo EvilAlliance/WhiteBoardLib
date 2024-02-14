@@ -15,7 +15,6 @@ export class Eraser extends BaseBrush<WeakMap<BaseObject, Path>>{
         Object.assign(this, obj);
     }
 
-    //@ts-ignore
     mouseDown(canvas: Canvas<this>): WeakMap<BaseObject, Path> {
         return new WeakMap<BaseObject, Path>();
     }
@@ -24,10 +23,8 @@ export class Eraser extends BaseBrush<WeakMap<BaseObject, Path>>{
         EraserMouseMove(canvas, e, obj);
     }
 
-    //@ts-ignore
     mouseUp(canvas: Canvas<this>, e: MouseEvent, obj: WeakMap<BaseObject, Path>): void {
         for (const object of canvas.Objects) {
-            console.log(object.Object.erased);
             if (obj.delete(object.Object)) {
                 if (BaseObjectCanvasData(object.Object).every((x) => x == 0)) EraserAllEraseObject(canvas, object);
             }
@@ -53,6 +50,7 @@ export function EraserMouseMove(canvas: Canvas<Eraser>, e: MouseEvent, obj: Weak
                 });
 
                 object.Object.erased.push(p);
+                obj.set(object.Object, p);
 
                 //const afterData = BaseObjectCanvasData(object.Object);
 
