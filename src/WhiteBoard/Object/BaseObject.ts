@@ -158,45 +158,25 @@ export function BaseObjectPointInRange(obj: BaseObject, mousePoint: Point, width
     return null;
 }
 
-export function BaseObjectCanvasData(obj: BaseObject): Uint32Array {
+export function BaseObjectCanvasData(obj: BaseObject, { tl, tr, bl, br }: BoundingBox = BaseObjectGetBoundingBoxTransformed(obj)): ImageData {
     const canvas = document.createElement('canvas');
 
     const ctx = canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
 
-    const b = obj.getBoundingBox(obj);
-    const centerPoint = getCenterPoint(obj.ctxTransformation, b);
-
-    const transformationMat = new DOMMatrix();
-
-    transformationMat.a = obj.ctxTransformation.scaleX;
-    transformationMat.b = obj.ctxTransformation.skewY;
-    transformationMat.c = obj.ctxTransformation.skewX;
-    transformationMat.d = obj.ctxTransformation.scaleY;
-    transformationMat.e = centerPoint.x;
-    transformationMat.f = centerPoint.y;
-
-    transformationMat.rotateSelf(obj.ctxTransformation.angle / Math.PI * 180);
-    transformationMat.translateSelf(-centerPoint.x, -centerPoint.y);
-
-    const tlT = new DOMPointReadOnly(b.tl.x, b.tl.y).matrixTransform(transformationMat);
-    const trT = new DOMPointReadOnly(b.tr.x, b.tr.y).matrixTransform(transformationMat);
-    const blT = new DOMPointReadOnly(b.bl.x, b.bl.y).matrixTransform(transformationMat);
-    const brT = new DOMPointReadOnly(b.br.x, b.br.y).matrixTransform(transformationMat);
-
-    const tl = new Point(
-        Math.min(tlT.x, trT.x, blT.x, brT.x),
-        Math.min(tlT.y, trT.y, blT.y, brT.y)
+    const canvasTL = new Point(
+        Math.min(tl.x, tr.x, bl.x, br.x),
+        Math.min(tl.y, tr.y, bl.y, br.y)
     );
 
-    const br = new Point(
-        Math.max(tlT.x, trT.x, blT.x, brT.x),
-        Math.max(tlT.y, trT.y, blT.y, brT.y)
+    const canvasBR = new Point(
+        Math.max(tl.x, tr.x, bl.x, br.x),
+        Math.max(tl.y, tr.y, bl.y, br.y)
     );
 
-    canvas.width = br.x - tl.x;
-    canvas.height = br.y - tl.y;
+    canvas.width = canvasBR.x - canvasTL.x;
+    canvas.height = canvasBR.y - canvasTL.y;
 
-    ctx.translate(-tl.x, -tl.y);
+    ctx.translate(-canvasTL.x, -canvasTL.y);
 
     ctx.save();
 
@@ -213,8 +193,36 @@ export function BaseObjectCanvasData(obj: BaseObject): Uint32Array {
         BaseObjectRender(ctx, obj.erased[i]);
     }
 
-    return new Uint32Array(ctx.getImageData(0, 0, canvas.width, canvas.height).data.buffer);
+    return ctx.getImageData(0, 0, canvas.width, canvas.height);
 }
+
+export function BaseObjectGetBoundingBoxTransformed(obj: BaseObject, b: BoundingBox = obj.getBoundingBox(obj), transformationMat: DOMMatrix = BaseObjectGetTransformationMatrix(obj, b)): BoundingBox {
+    return {
+        tl: new DOMPointReadOnly(b.tl.x, b.tl.y).matrixTransform(transformationMat),
+        tr: new DOMPointReadOnly(b.tr.x, b.tr.y).matrixTransform(transformationMat),
+        bl: new DOMPointReadOnly(b.bl.x, b.bl.y).matrixTransform(transformationMat),
+        br: new DOMPointReadOnly(b.br.x, b.br.y).matrixTransform(transformationMat)
+    };
+}
+
+export function BaseObjectGetTransformationMatrix(obj: BaseObject, boundingBox: BoundingBox = obj.getBoundingBox(obj)): DOMMatrix {
+    const centerPoint = getCenterPoint(obj.ctxTransformation, boundingBox);
+
+    const transformationMat = new DOMMatrix();
+
+    transformationMat.a = obj.ctxTransformation.scaleX;
+    transformationMat.b = obj.ctxTransformation.skewY;
+    transformationMat.c = obj.ctxTransformation.skewX;
+    transformationMat.d = obj.ctxTransformation.scaleY;
+    transformationMat.e = centerPoint.x;
+    transformationMat.f = centerPoint.y;
+
+    transformationMat.rotateSelf(obj.ctxTransformation.angle / Math.PI * 180);
+    transformationMat.translateSelf(-centerPoint.x, -centerPoint.y);
+
+    return transformationMat;
+}
+
 
 export const OriginXY = Object.freeze({
     top: 0,

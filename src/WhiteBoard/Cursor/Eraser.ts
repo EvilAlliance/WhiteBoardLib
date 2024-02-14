@@ -26,7 +26,7 @@ export class Eraser extends BaseBrush<WeakMap<BaseObject, Path>>{
     mouseUp(canvas: Canvas<this>, e: MouseEvent, obj: WeakMap<BaseObject, Path>): void {
         for (const object of canvas.Objects) {
             if (obj.delete(object.Object)) {
-                if (BaseObjectCanvasData(object.Object).every((x) => x == 0)) EraserAllEraseObject(canvas, object);
+                if (new Uint32Array(BaseObjectCanvasData(object.Object).data.buffer).every((x) => x == 0)) EraserAllEraseObject(canvas, object);
             }
         }
     }
@@ -77,7 +77,7 @@ export function EraserMouseMove(canvas: Canvas<Eraser>, e: MouseEvent, obj: Weak
             CanvasRender(canvas);
         } else {
             if (obj.delete(object.Object)) {
-                if (BaseObjectCanvasData(object.Object).every((x) => x == 0)) EraserAllEraseObject(canvas, object);
+                if (new Uint32Array(BaseObjectCanvasData(object.Object).data.buffer).every((x) => x == 0)) EraserAllEraseObject(canvas, object);
             }
         }
     }
