@@ -2,7 +2,7 @@ import { BaseBrush, BaseBrushMouseDown } from './Cursor/BaseBrush';
 import { Brush } from './Cursor/Brush';
 import { BaseObject, BaseObjectRender } from './Object/BaseObject';
 import { CanvasObjectContainer, CanvasObjectContainerEvent } from './Object/CanvasObjectContainer';
-import { Observable, TEventCallback } from './Observable';
+import { Observable } from './Observable';
 
 export type CanvasEvents = {
     'render:Before': null;
@@ -15,7 +15,7 @@ export type CanvasEvents = {
 export class Canvas<T extends BaseBrush<any> = BaseBrush<any>> extends Observable<CanvasEvents> {
     public Canvas: HTMLCanvasElement;
     public ctx: CanvasRenderingContext2D;
-    public Objects: CanvasObjectContainer[];
+    public Objects: CanvasObjectContainer[] = [];
     public height: number;
     public width: number;
     public cursor: T;
@@ -39,10 +39,6 @@ export class Canvas<T extends BaseBrush<any> = BaseBrush<any>> extends Observabl
 
         this.width = width;
         this.height = height;
-
-        this.Objects = [];
-
-        this.eventListener = {} as Record<keyof CanvasEvents, TEventCallback<CanvasEvents[keyof CanvasEvents]>[]>;
 
         this.Canvas.addEventListener('mousedown', (e) => {
             this.fire('mouse:down', e);
