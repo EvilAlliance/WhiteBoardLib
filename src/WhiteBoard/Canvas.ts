@@ -2,7 +2,7 @@ import { BaseBrush, BaseBrushMouseDown } from './Cursor/BaseBrush';
 import { Brush } from './Cursor/Brush';
 import { BaseObject, BaseObjectRender } from './Object/BaseObject';
 import { CanvasObjectContainer, CanvasObjectContainerEvent } from './Object/CanvasObjectContainer';
-import { TEventCallback, fire, on } from './Observable';
+import { Observable, TEventCallback } from './Observable';
 
 export type CanvasEvents = {
     'render:Before': null;
@@ -12,16 +12,16 @@ export type CanvasEvents = {
     'mouse:up': MouseEvent;
 }
 
-export class Canvas<T extends BaseBrush<any> = BaseBrush<any>> {
+export class Canvas<T extends BaseBrush<any> = BaseBrush<any>> extends Observable<CanvasEvents> {
     public Canvas: HTMLCanvasElement;
     public ctx: CanvasRenderingContext2D;
     public Objects: CanvasObjectContainer[];
-    public eventListener: Record<keyof CanvasEvents, TEventCallback<CanvasEvents[keyof CanvasEvents]>[]>;
     public height: number;
     public width: number;
     public cursor: T;
 
     constructor(tag: string | HTMLCanvasElement, width: number, height: number, baseBrush: BaseBrush<any> = new Brush()) {
+        super();
         if (tag instanceof HTMLCanvasElement) {
             this.Canvas = tag;
         } else {
@@ -45,18 +45,18 @@ export class Canvas<T extends BaseBrush<any> = BaseBrush<any>> {
         this.eventListener = {} as Record<keyof CanvasEvents, TEventCallback<CanvasEvents[keyof CanvasEvents]>[]>;
 
         this.Canvas.addEventListener('mousedown', (e) => {
-            fire<CanvasEvents, 'mouse:down'>(this, 'mouse:down', e);
+            this.fire('mouse:down', e);
         });
 
         this.Canvas.addEventListener('mousemove', (e) => {
-            fire<CanvasEvents, 'mouse:move'>(this, 'mouse:move', e);
+            this.fire('mouse:move', e);
         });
 
         this.Canvas.addEventListener('mouseup', (e) => {
-            fire<CanvasEvents, 'mouse:up'>(this, 'mouse:up', e);
+            this.fire('mouse:up', e);
         });
 
-        on<CanvasEvents, 'mouse:down'>(this, 'mouse:down', function(this: Canvas, e) {
+        this.on('mouse:down', function(this: Canvas, e) {
             BaseBrushMouseDown(this, e);
         });
     }
@@ -84,13 +84,13 @@ export class Canvas<T extends BaseBrush<any> = BaseBrush<any>> {
     }
 
     render() {
-        fire<CanvasEvents, 'render:Before'>(this, 'render:Before', null);
+        this.fire('render:Before', null);
         for (const Object of this.Objects) {
             fire<CanvasObjectContainerEvent, 'render:Before'>(Object, 'render:Before', null);
             if (!Object.render) continue;
             BaseObjectRender(this.ctx, Object.Object);
             fire<CanvasObjectContainerEvent, 'render:After'>(Object, 'render:After', null);
         }
-        fire<CanvasEvents, 'render:After'>(this, 'render:After', null);
+        this.fire('render:After', null);
     }
 }
