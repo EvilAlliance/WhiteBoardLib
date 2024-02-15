@@ -1,4 +1,4 @@
-import { TEventCallback } from '../Observable';
+import { Observable, TEventCallback } from '../Observable';
 import { BaseObject } from './BaseObject';
 
 export type CanvasObjectContainerEvent = {
@@ -6,11 +6,11 @@ export type CanvasObjectContainerEvent = {
     'render:After': null;
 }
 
-export class CanvasObjectContainer {
+export class CanvasObjectContainer extends Observable<CanvasObjectContainerEvent> {
     public render: boolean;
-    public eventListener: Record<keyof CanvasObjectContainerEvent, TEventCallback<CanvasObjectContainerEvent[keyof CanvasObjectContainerEvent]>[]>;
     public Object: BaseObject;
     constructor(obj: BaseObject) {
+        super();
         this.render = true;
         this.eventListener = {} as Record<keyof CanvasObjectContainerEvent, TEventCallback<CanvasObjectContainerEvent[keyof CanvasObjectContainerEvent]>[]>;
         this.Object = obj;
