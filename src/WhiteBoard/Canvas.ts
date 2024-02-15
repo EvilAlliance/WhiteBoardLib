@@ -60,37 +60,37 @@ export class Canvas<T extends BaseBrush<any> = BaseBrush<any>> {
             BaseBrushMouseDown(this, e);
         });
     }
-}
 
-export function CanvasClear(canvas: Canvas) {
-    canvas.ctx.clearRect(0, 0, canvas.width, canvas.height);
-}
-
-export function CanvasAddCanvasObject(canvas: Canvas, obj: BaseObject) {
-    canvas.Objects.push(new CanvasObjectContainer(obj));
-}
-
-export function CanvasAddCanvasObjectRender(canvas: Canvas, obj: BaseObject) {
-    canvas.Objects.push(new CanvasObjectContainer(obj));
-    CanvasRender(canvas);
-}
-
-export function CanvasAddCanvasObjectContainer(canvas: Canvas, obj: CanvasObjectContainer) {
-    canvas.Objects.push(obj);
-}
-
-export function CanvasAddCanvasObjectContainerRender(canvas: Canvas, obj: CanvasObjectContainer) {
-    canvas.Objects.push(obj);
-    CanvasRender(canvas);
-}
-
-export function CanvasRender(canvas: Canvas) {
-    fire<CanvasEvents, 'render:Before'>(canvas, 'render:Before', null);
-    for (const Object of canvas.Objects) {
-        fire<CanvasObjectContainerEvent, 'render:Before'>(Object, 'render:Before', null);
-        if (!Object.render) continue;
-        BaseObjectRender(canvas.ctx, Object.Object);
-        fire<CanvasObjectContainerEvent, 'render:After'>(Object, 'render:After', null);
+    clear() {
+        this.ctx.clearRect(0, 0, this.width, this.height);
     }
-    fire<CanvasEvents, 'render:After'>(canvas, 'render:After', null);
+
+    addCanvasObject(obj: BaseObject) {
+        this.Objects.push(new CanvasObjectContainer(obj));
+    }
+
+    addCanvasObjectRender(obj: BaseObject) {
+        this.addCanvasObject(obj);
+        this.render();
+    }
+
+    addCanvasObjectContainer(obj: CanvasObjectContainer) {
+        this.Objects.push(obj);
+    }
+
+    CanvasAddCanvasObjectContainerRender(obj: CanvasObjectContainer) {
+        this.addCanvasObjectContainer(obj);
+        this.render();
+    }
+
+    render() {
+        fire<CanvasEvents, 'render:Before'>(this, 'render:Before', null);
+        for (const Object of this.Objects) {
+            fire<CanvasObjectContainerEvent, 'render:Before'>(Object, 'render:Before', null);
+            if (!Object.render) continue;
+            BaseObjectRender(this.ctx, Object.Object);
+            fire<CanvasObjectContainerEvent, 'render:After'>(Object, 'render:After', null);
+        }
+        fire<CanvasEvents, 'render:After'>(this, 'render:After', null);
+    }
 }
