@@ -39,7 +39,7 @@ export class Observable<T = Object>{
     fire<K extends keyof T>(eventName: K, options: T[K]) {
         const events = this.eventListener[eventName] || [];
         for (let i = 0; i < events.length; i++) {
-            events[i](options || {});
+            events[i].call(this, options || {});
         }
     }
 }
