@@ -11,7 +11,7 @@ export class Rect extends BaseObject {
     public top: number = 0;
     public left: number = 0;
     ctxSetting: CtxSetting = new CtxSetting();
-    ctxTranformation: CtxTransformation = new CtxTransformation();
+    ctxTransformation: CtxTransformation = new CtxTransformation();
 
     constructor(obj: Partial<Rect>) {
         super();
@@ -20,7 +20,7 @@ export class Rect extends BaseObject {
 
     render(ctx: CanvasRenderingContext2D): void {
         this.ctxSetting.setSettingSetContextOption(ctx);
-        this.ctxTranformation.setContextTransformation(ctx, this.getBoundingBox());
+        this.ctxTransformation.setContextTransformation(ctx, this.getBoundingBox());
 
         let { top, left, height, width } = this;
 
@@ -56,7 +56,7 @@ export class Rect extends BaseObject {
 
     pointInside(point: Point): boolean {
         const boundingBox = this.getBoundingBox();
-        const transMat = this.ctxTranformation.GetTransformationMatrix(boundingBox);
+        const transMat = this.ctxTransformation.GetTransformationMatrix(boundingBox);
         transMat.invertSelf();
 
         const pointC = new Point(point.x, point.y);
