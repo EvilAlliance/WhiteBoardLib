@@ -4,6 +4,7 @@ export class Observable<T = Object>{
     eventListener: Record<keyof T, TEventCallback[]> = {} as Record<keyof T, TEventCallback[]>;
 
     on<K extends keyof T = keyof T>(evtName: K, handler: TEventCallback<T[K]>): VoidFunction {
+        if (!this.eventListener[evtName]) this.eventListener[evtName] = [];
         this.eventListener[evtName].push(handler);
         return () => this.off(evtName, handler);
     }
