@@ -1,6 +1,6 @@
-import { BaseBrush, BaseBrushMouseDown } from './Cursor/BaseBrush';
+import { BaseBrush } from './Cursor/BaseBrush';
 import { Brush } from './Cursor/Brush';
-import { BaseObject, BaseObjectRender } from './Object/BaseObject';
+import { BaseObject } from './Object/BaseObject';
 import { CanvasObjectContainer } from './Object/CanvasObjectContainer';
 import { Observable } from './Observable';
 
@@ -53,7 +53,7 @@ export class Canvas<T extends BaseBrush<any> = BaseBrush<any>> extends Observabl
         });
 
         this.on('mouse:down', function(this: Canvas, e) {
-            BaseBrushMouseDown(this, e);
+            this.cursor.init(this, e);
         });
     }
 
@@ -84,7 +84,7 @@ export class Canvas<T extends BaseBrush<any> = BaseBrush<any>> extends Observabl
         for (const Object of this.Objects) {
             Object.fire('render:Before', null);
             if (!Object.render) continue;
-            BaseObjectRender(this.ctx, Object.Object);
+            Object.Object.render(this.ctx);
             Object.fire('render:After', null);
         }
         this.fire('render:After', null);
