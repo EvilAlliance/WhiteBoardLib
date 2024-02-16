@@ -13,4 +13,11 @@ export class Point {
         this.x += v.x;
         this.y += v.y;
     }
+
+    transform(transMat: DOMMatrix): void {
+        const p = new DOMPointReadOnly(this.x, this.y)
+        p.matrixTransform(transMat);
+        this.x = p.x;
+        this.y = p.y;
+    }
 }
