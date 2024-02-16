@@ -8,28 +8,27 @@ export class Vector {
         this.x = final.x - initial.x;
         this.y = final.y - initial.y;
     }
+    mod(): number {
+        return Math.hypot(this.x, this.y);
+    }
+
+    // Creo que en rad
+    phase(): number {
+        const x = Math.sign(this.x) == -1 ? Math.PI : 0;
+        return Math.atan(this.y / this.x) + x;
+    }
+
+    translatePoint(p: Point): void {
+        p.x += this.x;
+        p.y += this.y;
+    }
+
+    // x in rad
+    rotate(x: number) {
+        const mod = this.mod();
+        const ang = this.phase() + x;
+        this.x = mod * Math.cos(ang);
+        this.y = mod * Math.sin(ang);
+    }
 }
 
-export function VectorMod(Vec: Vector): number {
-    return Math.hypot(Vec.x, Vec.y);
-}
-
-export function VectorAng(vec: Vector): number {
-    const x = Math.sign(vec.x) == -1 ? Math.PI : 0;
-    return Math.atan(vec.y / vec.x) + x;
-}
-
-export function VectorTranslatePoint(vec: Vector, p: Point) {
-    p.x += vec.x;
-    p.y += vec.y;
-}
-
-/**
- * x rad
- * */
-export function VectorRotate(vec: Vector, x: number) {
-    const mod = VectorMod(vec);
-    const ang = VectorAng(vec) + x;
-    vec.x = mod * Math.cos(ang);
-    vec.y = mod * Math.sin(ang);
-}
