@@ -3,7 +3,7 @@ import { Point } from '../GeoSpace/Point';
 import { BoundingBox } from './BoundingBox';
 import { CtxSetting } from './CtxSetting';
 import { CtxTransformation } from './CtxTransformation';
-const kRect = 1 - 0.5522847498;
+//const kRect = 1 - 0.5522847498;
 
 export class Rect extends BaseObject {
     public width: number = 0;
