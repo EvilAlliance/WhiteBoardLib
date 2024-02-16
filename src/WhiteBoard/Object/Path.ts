@@ -18,6 +18,8 @@ export class Path extends BaseObject {
     render(ctx: CanvasRenderingContext2D): void {
         if (this.Path.length == 0) return;
 
+        ctx.save();
+
         this.ctxSetting.setSettingSetContextOption(ctx);
         this.ctxTransformation.setContextTransformation(ctx, this.getBoundingBox());
 
@@ -50,6 +52,8 @@ export class Path extends BaseObject {
         ctx.lineTo(p2.x, p2.y);
 
         ctx.stroke();
+
+        ctx.restore();
     }
 
     getBoundingBox(): BoundingBox {

@@ -19,6 +19,8 @@ export class Rect extends BaseObject {
     }
 
     render(ctx: CanvasRenderingContext2D): void {
+        ctx.save();
+
         this.ctxSetting.setSettingSetContextOption(ctx);
         this.ctxTransformation.setContextTransformation(ctx, this.getBoundingBox());
 
@@ -43,6 +45,8 @@ export class Rect extends BaseObject {
 
         if (this.ctxSetting.fillColor) ctx.fill();
         if (this.ctxSetting.strokeWidth > 0) ctx.stroke();
+
+        ctx.restore();
     }
 
     getBoundingBox(): BoundingBox {
