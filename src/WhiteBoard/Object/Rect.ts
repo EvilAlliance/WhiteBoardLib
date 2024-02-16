@@ -1,5 +1,8 @@
-import { BaseObject, BoundingBox } from './BaseObject';
+import { BaseObject } from './BaseObject';
 import { Point } from '../GeoSpace/Point';
+import { BoundingBox } from './BoundingBox';
+import { CtxSetting } from './CtxSetting';
+import { CtxTransformation } from './CtxTransformation';
 const kRect = 1 - 0.5522847498;
 
 export class Rect extends BaseObject {
@@ -7,96 +10,67 @@ export class Rect extends BaseObject {
     public height: number = 0;
     public top: number = 0;
     public left: number = 0;
-    public rx: number = 0;
-    public ry: number = 0;
+    ctxSetting: CtxSetting = new CtxSetting();
+    ctxTranformation: CtxTransformation = new CtxTransformation();
+
     constructor(obj: Partial<Rect>) {
         super();
-        RectUpdateRxRy(obj);
         Object.assign(this, obj);
     }
 
-    draw(ctx: CanvasRenderingContext2D, obj: this): void {
-        RectDraw(ctx, obj);
+    render(ctx: CanvasRenderingContext2D): void {
+        this.ctxSetting.setSettingSetContextOption(ctx);
+        this.ctxTranformation.setContextTransformation(ctx, this.getBoundingBox());
+
+        let { top, left, height, width } = this;
+
+        top += this.ctxSetting.strokeWidth / 2;
+        left += this.ctxSetting.strokeWidth / 2;
+
+        width -= this.ctxSetting.strokeWidth;
+        height -= this.ctxSetting.strokeWidth;
+
+        ctx.beginPath();
+
+        ctx.moveTo(left, top);
+
+        ctx.lineTo(left + width, top);
+        ctx.lineTo(left + width, top + height);
+        ctx.lineTo(left, top + height);
+        ctx.lineTo(left, top);
+
+        ctx.closePath();
+
+        if (this.ctxSetting.fillColor) ctx.fill();
+        if (this.ctxSetting.strokeWidth > 0) ctx.stroke();
     }
 
-    getBoundingBox(obj: this): BoundingBox {
-        return RectGetBoundingBox(obj);
+    getBoundingBox(): BoundingBox {
+        return new BoundingBox(
+            new Point(this.left, this.top),
+            new Point(this.left + this.width, this.top),
+            new Point(this.left, this.top + this.height),
+            new Point(this.left + this.width, this.top + this.height)
+        );
     }
-}
 
-function RectUpdateRxRy(obj: { rx?: number, ry?: number }) {
-    if (obj.rx && !obj.ry) {
-        obj.ry = obj.rx;
-    } else if (obj.ry && !obj.rx) {
-        obj.rx = obj.ry;
+    pointInside(point: Point): boolean {
+        const boundingBox = this.getBoundingBox();
+        const transMat = this.ctxTranformation.GetTransformationMatrix(boundingBox);
+        transMat.invertSelf();
+
+        const pointC = new Point(point.x, point.y);
+
+        if (this.ctxSetting.fillColor)
+            return boundingBox.tl.x <= pointC.x &&
+                boundingBox.bl.x <= pointC.x &&
+                boundingBox.tr.x >= pointC.x &&
+                boundingBox.br.x >= pointC.x &&
+                boundingBox.tl.y <= pointC.y &&
+                boundingBox.tr.y <= pointC.y &&
+                boundingBox.bl.y >= pointC.y &&
+                boundingBox.br.y >= pointC.y;
+        if (this.ctxSetting.strokeWidth > 0)
+            console.log("TODO: Point in only stroke");
     }
-}
-
-export function RectDraw(ctx: CanvasRenderingContext2D, rect: Rect) {
-    const {
-        rx,
-        ry,
-    } = rect;
-
-    let { top, left, height, width } = rect;
-
-    top += rect.ctxSetting.strokeWidth / 2;
-    left += rect.ctxSetting.strokeWidth / 2;
-
-    width -= rect.ctxSetting.strokeWidth;
-    height -= rect.ctxSetting.strokeWidth;
-
-    ctx.beginPath();
-
-    ctx.moveTo(left + rx, top);
-
-    ctx.lineTo(left + width - rx, top);
-    ctx.bezierCurveTo(
-        left + width - rx * kRect,
-        top,
-        left + width,
-        top + ry * kRect,
-        left + width,
-        top + ry,
-    );
-
-    ctx.lineTo(left + width, top + height - ry);
-    ctx.bezierCurveTo(
-        left + width,
-        top + height - ry * kRect,
-        left + width - rx * kRect,
-        top + height,
-        left + width - rx,
-        top + height,
-    );
-
-    ctx.lineTo(left + rx, top + height);
-    ctx.bezierCurveTo(
-        left + rx * kRect,
-        top + height,
-        left,
-        top + height - ry * kRect,
-        left,
-        top + height - ry,
-    );
-
-    ctx.lineTo(left, top + ry);
-    ctx.bezierCurveTo(
-        left,
-        top + ry * kRect,
-        left + rx * kRect,
-        top,
-        left + rx,
-        top,
-    );
-
-    ctx.closePath();
-}
-
-export function RectGetBoundingBox(obj: Rect): BoundingBox {
-    const tl = new Point(obj.left, obj.top);
-    const tr = new Point(obj.left + obj.width, obj.top);
-    const bl = new Point(tl.x, obj.top + obj.height);
-    const br = new Point(tr.x, bl.y);
-    return { tl, tr, bl, br };
 }
