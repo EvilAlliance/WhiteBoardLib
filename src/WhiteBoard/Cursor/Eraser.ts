@@ -23,14 +23,14 @@ export class Eraser extends BaseBrush<WeakMap<BaseObject, Path>>{
         const mousePoint = new Point(e.offsetX, e.offsetY);
         for (const object of canvas.Objects) {
             if (!object.render) return;
-            if (object.Object.pointInRange(mousePoint, canvas.cursor.width, canvas.cursor.tolerance)) {
+            if (object.Object.pointInRange(mousePoint, this.width, this.tolerance)) {
                 const path = obj.get(object.Object);
                 if (!path) {
                     //const beforeData = BaseObjectCanvasData(object.Object);
                     const p = new Path({
                         ctxSetting: new CtxSetting({
-                            strokeWidth: canvas.cursor.width,
-                            lineCap: canvas.cursor.lineCap,
+                            strokeWidth: this.width,
+                            lineCap: this.lineCap,
                             globalCompositeOperation: 'destination-out',
                         }),
                         Path: [mousePoint],
