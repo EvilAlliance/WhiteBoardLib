@@ -1,8 +1,6 @@
 import { Canvas } from '../Canvas';
-import { arrIdentical } from '../CommonMethod';
 import { Point } from '../GeoSpace/Point';
 import { BaseObject } from '../Object/BaseObject';
-import { CanvasObjectContainer } from '../Object/CanvasObjectContainer';
 import { CtxSetting } from '../Object/CtxSetting';
 import { Path } from '../Object/Path';
 import { BaseBrush } from './BaseBrush';
@@ -11,7 +9,6 @@ import { EraserAllObjectCeaseExist } from './EraserAll';
 export class Eraser extends BaseBrush<WeakMap<BaseObject, Path>>{
     tolerance: number = 5;
     lineCap: CanvasLineCap = 'round';
-    activeWorker: WeakMap<CanvasObjectContainer, Worker> = new WeakMap();
 
     constructor(obj: Partial<Eraser> = {}) {
         super();
@@ -27,7 +24,6 @@ export class Eraser extends BaseBrush<WeakMap<BaseObject, Path>>{
         for (const object of canvas.Objects) {
             if (!object.render) return;
             if (object.Object.pointInRange(mousePoint, canvas.cursor.width, canvas.cursor.tolerance)) {
-                canvas.cursor.activeWorker.delete(object);
                 const path = obj.get(object.Object);
                 if (!path) {
                     //const beforeData = BaseObjectCanvasData(object.Object);
@@ -68,7 +64,7 @@ export class Eraser extends BaseBrush<WeakMap<BaseObject, Path>>{
                 canvas.render();
             } else {
                 if (obj.delete(object.Object)) {
-                    canvas.cursor.activeWorker.set(object, EraserAllObjectCeaseExist(canvas, object));
+                    EraserAllObjectCeaseExist(canvas, object);
                 }
             }
         }
@@ -77,7 +73,7 @@ export class Eraser extends BaseBrush<WeakMap<BaseObject, Path>>{
     mouseUp(canvas: Canvas<this>, e: MouseEvent, obj: WeakMap<BaseObject, Path>): void {
         for (const object of canvas.Objects) {
             if (obj.delete(object.Object)) {
-                canvas.cursor.activeWorker.set(object, EraserAllObjectCeaseExist(canvas, object));
+                EraserAllObjectCeaseExist(canvas, object);
             }
         }
     }
