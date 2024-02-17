@@ -69,17 +69,38 @@ export class Rect extends BaseObject {
 
         const p = new DOMPointReadOnly(point.x, point.y).matrixTransform(transMat);
 
-        if (this.ctxSetting.fillColor)
+        const insideOuterBoudingBox = boundingBox.tl.x <= p.x &&
+            boundingBox.bl.x <= p.x &&
+            boundingBox.tr.x >= p.x &&
+            boundingBox.br.x >= p.x &&
+            boundingBox.tl.y <= p.y &&
+            boundingBox.tr.y <= p.y &&
+            boundingBox.bl.y >= p.y &&
+            boundingBox.br.y >= p.y;
+
         if (this.ctxSetting.fill)
-            return boundingBox.tl.x <= p.x &&
-                boundingBox.bl.x <= p.x &&
-                boundingBox.tr.x >= p.x &&
-                boundingBox.br.x >= p.x &&
-                boundingBox.tl.y <= p.y &&
-                boundingBox.tr.y <= p.y &&
-                boundingBox.bl.y >= p.y &&
-                boundingBox.br.y >= p.y;
-        if (this.ctxSetting.strokeWidth > 0)
-            console.log("TODO: Point in only stroke");
+            return insideOuterBoudingBox;
+        if (this.ctxSetting.strokeWidth > 0) {
+            const innerBoundingBox = new BoundingBox(
+                new Point(boundingBox.tl.x, boundingBox.tl.y),
+                new Point(boundingBox.tr.x, boundingBox.tr.y),
+                new Point(boundingBox.bl.x, boundingBox.bl.y),
+                new Point(boundingBox.br.x, boundingBox.br.y)
+            );
+            innerBoundingBox.addPadding(-this.ctxSetting.strokeWidth);
+
+            const insideInnerBoundingBox = innerBoundingBox.tl.x <= p.x &&
+                innerBoundingBox.bl.x <= p.x &&
+                innerBoundingBox.tr.x >= p.x &&
+                innerBoundingBox.br.x >= p.x &&
+                innerBoundingBox.tl.y <= p.y &&
+                innerBoundingBox.bl.y >= p.y &&
+                innerBoundingBox.tr.y <= p.y &&
+                innerBoundingBox.br.y >= p.y;
+
+            return insideOuterBoudingBox && !insideInnerBoundingBox;
+        }
+
+        return false;
     }
 }
