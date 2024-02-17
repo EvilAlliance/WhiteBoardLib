@@ -54,6 +54,10 @@ export class Path extends BaseObject {
         ctx.stroke();
 
         ctx.restore();
+
+        for (const eraser of this.erased) {
+            eraser.render(ctx);
+        }
     }
 
     getBoundingBox(): BoundingBox {

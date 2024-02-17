@@ -47,6 +47,10 @@ export class Rect extends BaseObject {
         if (this.ctxSetting.strokeWidth > 0) ctx.stroke();
 
         ctx.restore();
+
+        for (const eraser of this.erased) {
+            eraser.render(ctx);
+        }
     }
 
     getBoundingBox(): BoundingBox {
@@ -63,17 +67,17 @@ export class Rect extends BaseObject {
         const transMat = this.ctxTransformation.GetTransformationMatrix(boundingBox);
         transMat.invertSelf();
 
-        const pointC = new Point(point.x, point.y);
+        const p = new DOMPointReadOnly(point.x, point.y).matrixTransform(transMat);
 
         if (this.ctxSetting.fillColor)
-            return boundingBox.tl.x <= pointC.x &&
-                boundingBox.bl.x <= pointC.x &&
-                boundingBox.tr.x >= pointC.x &&
-                boundingBox.br.x >= pointC.x &&
-                boundingBox.tl.y <= pointC.y &&
-                boundingBox.tr.y <= pointC.y &&
-                boundingBox.bl.y >= pointC.y &&
-                boundingBox.br.y >= pointC.y;
+            return boundingBox.tl.x <= p.x &&
+                boundingBox.bl.x <= p.x &&
+                boundingBox.tr.x >= p.x &&
+                boundingBox.br.x >= p.x &&
+                boundingBox.tl.y <= p.y &&
+                boundingBox.tr.y <= p.y &&
+                boundingBox.bl.y >= p.y &&
+                boundingBox.br.y >= p.y;
         if (this.ctxSetting.strokeWidth > 0)
             console.log("TODO: Point in only stroke");
     }
