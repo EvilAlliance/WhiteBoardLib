@@ -1,7 +1,7 @@
-import { Point } from "../GeoSpace/Point";
-import { Vector } from "../GeoSpace/Vector";
-import { BoundingBox } from "./BoundingBox";
-import { Path } from "./Path";
+import { Point } from '../GeoSpace/Point';
+import { Vector } from '../GeoSpace/Vector';
+import { BoundingBox } from './BoundingBox';
+import { Path } from './Path';
 
 
 

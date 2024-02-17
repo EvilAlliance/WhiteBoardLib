@@ -1,4 +1,4 @@
-import { CanvasParseColor, Color } from "../Utils/Color";
+import { CanvasParseColor, Color } from '../Utils/Color';
 
 export class CtxSetting {
     lineCap: CanvasLineCap = 'round';

@@ -1,4 +1,4 @@
-import { Point } from "../GeoSpace/Point";
+import { Point } from '../GeoSpace/Point';
 
 export class BoundingBox {
     tl: Point;
@@ -30,10 +30,10 @@ export class BoundingBox {
     }
 
     addPadding(x: number) {
-        this.tl.x -= x
-        this.tl.y -= x
+        this.tl.x -= x;
+        this.tl.y -= x;
 
-        this.tr.x += x
+        this.tr.x += x;
         this.tr.y -= x;
 
         this.bl.x -= x;

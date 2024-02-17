@@ -1,4 +1,4 @@
-import { Vector } from "./Vector";
+import { Vector } from './Vector';
 
 export class Point {
     public x: number;
@@ -15,7 +15,7 @@ export class Point {
     }
 
     transform(transMat: DOMMatrix): void {
-        const p = new DOMPointReadOnly(this.x, this.y)
+        const p = new DOMPointReadOnly(this.x, this.y);
         p.matrixTransform(transMat);
         this.x = p.x;
         this.y = p.y;

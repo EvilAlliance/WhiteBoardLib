@@ -10,7 +10,7 @@ export abstract class BaseBrush<T = void> {
 
         const x = canvas.on('mouse:move', function(this: Canvas, e: MouseEvent) {
             canvas.cursor.mouseMove(canvas, e, temp);
-        })
+        });
 
         canvas.once('mouse:up', function(this: Canvas, e: MouseEvent) {
             x();

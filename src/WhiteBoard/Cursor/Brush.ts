@@ -51,7 +51,7 @@ export class Brush extends BaseBrush<Path> {
 
     //simplify path prototype not used 
     mouseUp(canvas: Canvas<this>, e: MouseEvent, path: Path): void {
-        return
+        return;
         const p = JSON.parse(JSON.stringify(path));
         let curr = path.Path[0];
         let i = 1;
