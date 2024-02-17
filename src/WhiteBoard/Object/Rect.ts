@@ -43,7 +43,7 @@ export class Rect extends BaseObject {
 
         ctx.closePath();
 
-        if (this.ctxSetting.fillColor) ctx.fill();
+        if (this.ctxSetting.fill) ctx.fill();
         if (this.ctxSetting.strokeWidth > 0) ctx.stroke();
 
         ctx.restore();
