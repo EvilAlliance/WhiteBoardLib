@@ -33,7 +33,7 @@ export function EraserAllObjectCeaseExist(canvas: Canvas, object: CanvasObjectCo
     worker.addEventListener('message', (e) => {
         worker.terminate();
         if (typeof e.data != 'boolean') throw new Error('Expected a Boolean');
-        EraserAllEraseObject(canvas, object);
+        if (e.data) EraserAllEraseObject(canvas, object);
     });
     return worker;
 }
