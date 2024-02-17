@@ -1,5 +1,5 @@
-import { Point } from "../GeoSpace/Point";
-import { BoundingBox } from "./BoundingBox";
+import { Point } from '../GeoSpace/Point';
+import { BoundingBox } from './BoundingBox';
 
 export const OriginXY = Object.freeze({
     top: 0,
