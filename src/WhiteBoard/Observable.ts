@@ -1,6 +1,6 @@
 export type TEventCallback<T = any> = (options: T) => void;
 
-export class Observable<T = Object>{
+export class Observable<T = object>{
     eventListener: Map<keyof T, TEventCallback[]> = new Map<keyof T, TEventCallback[]>();
 
     on<K extends keyof T = keyof T>(evtName: K, handler: TEventCallback<T[K]>): VoidFunction {
