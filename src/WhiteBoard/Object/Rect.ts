@@ -70,6 +70,7 @@ export class Rect extends BaseObject {
         const p = new DOMPointReadOnly(point.x, point.y).matrixTransform(transMat);
 
         if (this.ctxSetting.fillColor)
+        if (this.ctxSetting.fill)
             return boundingBox.tl.x <= p.x &&
                 boundingBox.bl.x <= p.x &&
                 boundingBox.tr.x >= p.x &&
