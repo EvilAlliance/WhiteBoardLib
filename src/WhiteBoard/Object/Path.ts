@@ -121,7 +121,15 @@ export class Path extends BaseObject {
     }
 
     // ignores everithing exept the stroke;
-    pointInRange(mousePoint: Point, width: number): Point | null {
+    pointInRange(p: Point, width: number): Point | null {
+        const boundingBox = this.getBoundingBox();
+        const transMat = this.ctxTransformation.GetTransformationMatrix(boundingBox);
+        transMat.invertSelf();
+
+        const point = new DOMPointReadOnly(p.x, p.y).matrixTransform(transMat);
+        const mousePoint = new Point(point.x, point.y);
+
+
         for (let i = 0; i < this.Path.length; i++) {
             const coord = this.Path[i];
             if (new Vector(coord, mousePoint).mod() < width / 2) return coord;
