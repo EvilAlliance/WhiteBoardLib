@@ -3,6 +3,7 @@ import { Brush } from './Cursor/Brush';
 import { BaseObject } from './Object/BaseObject';
 import { CanvasObjectContainer } from './Object/CanvasObjectContainer';
 import { Observable } from './Observable';
+import { CanvasParseColor, Color, ColorRGBAParse } from './Utils/Color';
 
 export type CanvasEvents = {
     'render:Before': null;
@@ -19,8 +20,9 @@ export class Canvas<T extends BaseBrush<any> = BaseBrush<any>> extends Observabl
     public height: number;
     public width: number;
     public cursor: T;
+    bgColor: Color = 'White';
 
-    constructor(tag: string | HTMLCanvasElement, width: number, height: number, baseBrush: BaseBrush<any> = new Brush()) {
+    constructor(tag: string | HTMLCanvasElement, width: number, height: number, backgroundColor: Color, baseBrush: BaseBrush<any> = new Brush()) {
         super();
         if (tag instanceof HTMLCanvasElement) {
             this.Canvas = tag;
@@ -39,6 +41,8 @@ export class Canvas<T extends BaseBrush<any> = BaseBrush<any>> extends Observabl
 
         this.width = width;
         this.height = height;
+
+        this.changeBGColor(backgroundColor);
 
         this.Canvas.addEventListener('mousedown', (e) => {
             this.fire('mouse:down', e);
@@ -88,5 +92,10 @@ export class Canvas<T extends BaseBrush<any> = BaseBrush<any>> extends Observabl
             Object.fire('render:After', null);
         }
         this.fire('render:After', null);
+    }
+
+    changeBGColor(x: Color) {
+        this.bgColor = x;
+        this.Canvas.style.backgroundColor = CanvasParseColor(x);
     }
 }
