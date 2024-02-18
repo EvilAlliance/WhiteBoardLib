@@ -64,7 +64,7 @@ export class Eraser extends BaseBrush<WeakMap<BaseObject, Path>>{
                 canvas.render();
             } else {
                 if (obj.delete(object.Object)) {
-                    EraserAllObjectCeaseExist(canvas, object);
+                    //EraserAllObjectCeaseExist(canvas, object);
                 }
             }
         }
@@ -73,7 +73,7 @@ export class Eraser extends BaseBrush<WeakMap<BaseObject, Path>>{
     mouseUp(canvas: Canvas<this>, e: MouseEvent, obj: WeakMap<BaseObject, Path>): void {
         for (const object of canvas.Objects) {
             if (obj.delete(object.Object)) {
-                EraserAllObjectCeaseExist(canvas, object);
+                //EraserAllObjectCeaseExist(canvas, object);
             }
         }
     }
