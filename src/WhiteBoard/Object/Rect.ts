@@ -104,7 +104,7 @@ export class Rect extends BaseObject {
         return false;
     }
 
-    pointInRange(mousePoint: Point, width: number, tolerance: number): Point | null {
+    pointInRange(mousePoint: Point, range: number, tolerance: number): Point | null {
         if (this.pointInside(mousePoint)) return mousePoint;
         const boundingBox = this.getBoundingBox();
         const transMat = this.ctxTransformation.GetTransformationMatrix(boundingBox);
@@ -112,7 +112,7 @@ export class Rect extends BaseObject {
 
         const p = new DOMPointReadOnly(mousePoint.x, mousePoint.y).matrixTransform(transMat);
 
-        boundingBox.addPadding(width);
+        boundingBox.addPadding(range);
         const insideOuterBoudingBox = boundingBox.tl.x <= p.x &&
             boundingBox.bl.x <= p.x &&
             boundingBox.tr.x >= p.x &&
@@ -143,7 +143,7 @@ export class Rect extends BaseObject {
                 new Point(boundingBox.br.x, boundingBox.br.y)
             );
 
-            innerBoundingBox.addPadding(-this.ctxSetting.strokeWidth - (width * 2));
+            innerBoundingBox.addPadding(-this.ctxSetting.strokeWidth - (range * 2));
 
             const insideInnerBoundingBox = innerBoundingBox.tl.x <= p.x &&
                 innerBoundingBox.bl.x <= p.x &&

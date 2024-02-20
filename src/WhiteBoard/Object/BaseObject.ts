@@ -10,18 +10,17 @@ export abstract class BaseObject {
     abstract render(ctx: CanvasRenderingContext2D): void;
     abstract pointInside(point: Point): boolean;
     abstract getBoundingBox(): BoundingBox;
-    pointInRange(mousePoint: Point, width: number, tolerance: number): Point | null {
+    pointInRange(mousePoint: Point, range: number, tolerance: number): Point | null {
         let count = 0;
-        while (width > 0) {
+        while (range > 0) {
             let i = 3;
-            while (width * Math.sin(Math.PI / i) > tolerance) {
+            while (range * Math.sin(Math.PI / i) > tolerance) {
                 i += 1;
             }
             count += i;
 
-            const mod = width / 2;
             const ang = 2 * Math.PI / i;
-            const vec = new Vector(new Point(0, 0), new Point(mod * Math.sin(ang), mod * Math.cos(ang)));
+            const vec = new Vector(new Point(0, 0), new Point(range * Math.sin(ang), range * Math.cos(ang)));
 
             for (let j = 0; j < i; j++) {
                 const p = Object.assign({}, mousePoint);
@@ -31,7 +30,7 @@ export abstract class BaseObject {
                 vec.rotate(ang);
             }
 
-            width--;
+            range--;
         }
 
         return null;
