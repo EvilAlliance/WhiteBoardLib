@@ -4,7 +4,7 @@ export abstract class BaseBrush<T = void> {
     width: number = 10;
 
     init(canvas: Canvas<typeof this>, e: MouseEvent) {
-        const temp = canvas.cursor.mouseDown(canvas);
+        const temp = canvas.cursor.mouseDown(canvas, e);
 
         canvas.cursor.mouseMove(canvas, e, temp);
 
