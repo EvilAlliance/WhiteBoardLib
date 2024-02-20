@@ -104,7 +104,7 @@ export class Rect extends BaseObject {
         return false;
     }
 
-    pointInRange(mousePoint: Point, range: number, tolerance: number): Point | null {
+    pointInRange(mousePoint: Point, range: number): Point | null {
         if (this.pointInside(mousePoint)) return mousePoint;
         const boundingBox = this.getBoundingBox();
         const transMat = this.ctxTransformation.GetTransformationMatrix(boundingBox);
