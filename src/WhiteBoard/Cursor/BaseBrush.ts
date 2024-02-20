@@ -1,7 +1,7 @@
 import { Canvas } from '../Canvas';
 
 export abstract class BaseBrush<T = void> {
-    radius: number = 10;
+    diameter: number = 10;
 
     init(canvas: Canvas<typeof this>, e: MouseEvent) {
         const temp = canvas.cursor.mouseDown(canvas, e);

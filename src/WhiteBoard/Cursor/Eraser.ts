@@ -4,7 +4,6 @@ import { BaseObject } from '../Object/BaseObject';
 import { CtxSetting } from '../Object/CtxSetting';
 import { Path } from '../Object/Path';
 import { BaseBrush } from './BaseBrush';
-import { EraserAllObjectCeaseExist } from './EraserAll';
 
 export class Eraser extends BaseBrush<WeakMap<BaseObject, Path>>{
     tolerance: number = 5;
@@ -15,7 +14,7 @@ export class Eraser extends BaseBrush<WeakMap<BaseObject, Path>>{
         Object.assign(this, obj);
     }
 
-    mouseDown(canvas: Canvas<this>): WeakMap<BaseObject, Path> {
+    mouseDown(_: Canvas<this>): WeakMap<BaseObject, Path> {
         return new WeakMap<BaseObject, Path>();
     }
 
@@ -23,13 +22,13 @@ export class Eraser extends BaseBrush<WeakMap<BaseObject, Path>>{
         const mousePoint = new Point(e.offsetX, e.offsetY);
         for (const object of canvas.Objects) {
             if (!object.render) return;
-            if (object.Object.pointInRange(mousePoint, this.width, this.tolerance)) {
+            if (object.Object.pointInRange(mousePoint, this.diameter / 2, this.tolerance)) {
                 const path = obj.get(object.Object);
                 if (!path) {
                     //const beforeData = BaseObjectCanvasData(object.Object);
                     const p = new Path({
                         ctxSetting: new CtxSetting({
-                            strokeWidth: this.width,
+                            strokeWidth: this.diameter,
                             lineCap: this.lineCap,
                             globalCompositeOperation: 'destination-out',
                         }),
@@ -70,7 +69,7 @@ export class Eraser extends BaseBrush<WeakMap<BaseObject, Path>>{
         }
     }
 
-    mouseUp(canvas: Canvas<this>, e: MouseEvent, obj: WeakMap<BaseObject, Path>): void {
+    mouseUp(canvas: Canvas<this>, _: MouseEvent, obj: WeakMap<BaseObject, Path>): void {
         for (const object of canvas.Objects) {
             if (obj.delete(object.Object)) {
                 //EraserAllObjectCeaseExist(canvas, object);

@@ -21,7 +21,7 @@ export class Brush extends BaseBrush<Path> {
     mouseDown(canvas: Canvas<this>): Path {
         const p = new Path({
             ctxSetting: new CtxSetting({
-                strokeWidth: canvas.cursor.width,
+                strokeWidth: canvas.cursor.diameter,
                 strokeColor: canvas.cursor.color,
                 lineCap: canvas.cursor.lineCap,
                 globalCompositeOperation: canvas.cursor.globalCompositeOperation,
@@ -40,7 +40,7 @@ export class Brush extends BaseBrush<Path> {
             path.Path.push(p);
         } else {
             const v = new Vector(p, path.Path[path.Path.length - 1]);
-            if (v.mod() >= canvas.cursor.width / 2) {
+            if (v.mod() >= canvas.cursor.diameter / 3) {
                 path.Path.push(p);
             }
         }
@@ -50,7 +50,7 @@ export class Brush extends BaseBrush<Path> {
     }
 
     //simplify path prototype not used 
-    mouseUp(canvas: Canvas<this>, e: MouseEvent, path: Path): void {
+    mouseUp(canvas: Canvas<this>, _: MouseEvent, path: Path): void {
         return;
         const p = JSON.parse(JSON.stringify(path));
         let curr = path.Path[0];
