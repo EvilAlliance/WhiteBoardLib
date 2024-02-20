@@ -14,7 +14,16 @@ export class Vector {
 
     // Creo que en rad
     phase(): number {
-        const x = Math.sign(this.x) == -1 ? Math.PI : 0;
+        let x = 0;
+
+        if (Math.sign(this.x) === -1) {
+            if (Math.sign(this.y) === -1) {
+                x = -Math.PI;
+            } else {
+                x = Math.PI
+            }
+        }
+
         return Math.atan(this.y / this.x) + x;
     }
 
