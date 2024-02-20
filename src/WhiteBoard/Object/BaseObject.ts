@@ -11,29 +11,24 @@ export abstract class BaseObject {
     abstract pointInside(point: Point): boolean;
     abstract getBoundingBox(): BoundingBox;
     pointInRange(mousePoint: Point, width: number, tolerance: number): Point | null {
+        let count = 0;
         while (width > 0) {
             let i = 3;
             while (width * Math.sin(Math.PI / i) > tolerance) {
                 i += 1;
             }
+            count += i;
 
             const mod = width / 2;
             const ang = 2 * Math.PI / i;
             const vec = new Vector(new Point(0, 0), new Point(mod * Math.sin(ang), mod * Math.cos(ang)));
 
-            const arr = new Array(i);
-
-            for (let j = 0; j < arr.length; j++) {
+            for (let j = 0; j < i; j++) {
                 const p = Object.assign({}, mousePoint);
                 vec.translatePoint(p);
-                arr[j] = p;
+                if (this.pointInside(p))
+                    return p;
                 vec.rotate(ang);
-            }
-
-            for (let j = 0; j < arr.length; j++) {
-
-                if (this.pointInside(arr[j]))
-                    return arr[j];
             }
 
             width--;
