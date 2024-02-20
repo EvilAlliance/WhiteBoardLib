@@ -20,7 +20,7 @@ export abstract class BaseObject {
             count += i;
 
             const ang = 2 * Math.PI / i;
-            const vec = new Vector(new Point(0, 0), new Point(range * Math.sin(ang), range * Math.cos(ang)));
+            const vec = new Vector(new Point(0, 0), new Point(range * Math.cos(ang), range * Math.sin(ang)));
 
             for (let j = 0; j < i; j++) {
                 const p = Object.assign({}, mousePoint);
