@@ -18,7 +18,7 @@ export abstract class BaseBrush<T = void> {
         });
     }
 
-    abstract mouseDown(canvas: Canvas<typeof this>): T;
+    abstract mouseDown(canvas: Canvas<typeof this>, e: MouseEvent): T;
     abstract mouseMove(canvas: Canvas<typeof this>, e: MouseEvent, obj: T): void;
     abstract mouseUp(canvas: Canvas<typeof this>, e: MouseEvent, obj: T): void;
 }
