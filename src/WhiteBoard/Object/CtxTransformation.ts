@@ -10,8 +10,8 @@ export const OriginXY = Object.freeze({
 });
 
 export class CtxTransformation {
-    originX: 'left' | 'center' | 'right' | number = 'left';
-    originY: 'top' | 'center' | 'bottom' | number = 'top';
+    originX: 'left' | 'center' | 'right' | number = 'center';
+    originY: 'top' | 'center' | 'bottom' | number = 'center';
     skewY: number = 0;
     skewX: number = 0;
     scaleY: number = 1;
