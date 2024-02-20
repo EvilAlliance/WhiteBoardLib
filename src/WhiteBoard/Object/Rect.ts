@@ -103,4 +103,70 @@ export class Rect extends BaseObject {
 
         return false;
     }
+
+    pointInRange(mousePoint: Point, width: number, tolerance: number): Point | null {
+        if (this.pointInside(mousePoint)) return mousePoint;
+        const boundingBox = this.getBoundingBox();
+        const transMat = this.ctxTransformation.GetTransformationMatrix(boundingBox);
+        transMat.invertSelf();
+
+        const p = new DOMPointReadOnly(mousePoint.x, mousePoint.y).matrixTransform(transMat);
+
+        boundingBox.addPadding(width);
+        const insideOuterBoudingBox = boundingBox.tl.x <= p.x &&
+            boundingBox.bl.x <= p.x &&
+            boundingBox.tr.x >= p.x &&
+            boundingBox.br.x >= p.x &&
+            boundingBox.tl.y <= p.y &&
+            boundingBox.tr.y <= p.y &&
+            boundingBox.bl.y >= p.y &&
+            boundingBox.br.y >= p.y;
+
+        if (this.ctxSetting.fill && insideOuterBoudingBox) {
+            const tl = new DOMPointReadOnly(this.left, this.top).matrixTransform(transMat);
+
+            const differenceXLatter = mousePoint.x - tl.x;
+            const differenceYLatter = mousePoint.y - tl.y;
+
+            transMat.invertSelf();
+
+            const pointInside = new Point(mousePoint.x - differenceXLatter, mousePoint.y - differenceYLatter);
+
+            return pointInside;
+        }
+
+        if (this.ctxSetting.strokeWidth > 0 && insideOuterBoudingBox) {
+            const innerBoundingBox = new BoundingBox(
+                new Point(boundingBox.tl.x, boundingBox.tl.y),
+                new Point(boundingBox.tr.x, boundingBox.tr.y),
+                new Point(boundingBox.bl.x, boundingBox.bl.y),
+                new Point(boundingBox.br.x, boundingBox.br.y)
+            );
+
+            innerBoundingBox.addPadding(-this.ctxSetting.strokeWidth - (width * 2));
+
+            const insideInnerBoundingBox = innerBoundingBox.tl.x <= p.x &&
+                innerBoundingBox.bl.x <= p.x &&
+                innerBoundingBox.tr.x >= p.x &&
+                innerBoundingBox.br.x >= p.x &&
+                innerBoundingBox.tl.y <= p.y &&
+                innerBoundingBox.bl.y >= p.y &&
+                innerBoundingBox.tr.y <= p.y &&
+                innerBoundingBox.br.y >= p.y;
+
+            if (!insideInnerBoundingBox) {
+                const br = new DOMPointReadOnly(this.left + this.width, this.top + this.height).matrixTransform(transMat);
+
+                const differenceXLatter = mousePoint.x - br.x;
+                const differenceYLatter = mousePoint.y - br.y;
+
+                transMat.invertSelf();
+
+                const pointInside = new Point(mousePoint.x - differenceXLatter, mousePoint.y - differenceYLatter);
+
+                return pointInside;
+            }
+        }
+        return null;
+    }
 }
