@@ -121,7 +121,7 @@ export class Path extends BaseObject {
     }
 
     // ignores everithing exept the stroke;
-    pointInRange(p: Point, width: number): Point | null {
+    pointInRange(p: Point, range: number): Point | null {
         const boundingBox = this.getBoundingBox();
         const transMat = this.ctxTransformation.GetTransformationMatrix(boundingBox);
         transMat.invertSelf();
@@ -132,11 +132,11 @@ export class Path extends BaseObject {
 
         for (let i = 0; i < this.Path.length; i++) {
             const coord = this.Path[i];
-            if (new Vector(coord, mousePoint).mod() < width / 2) return coord;
+            if (new Vector(coord, mousePoint).mod() < range + this.ctxSetting.strokeWidth) return coord;
             if (i < this.Path.length - 1) {
                 const coord2 = this.Path[i + 1];
                 if (this.mousePointInsideSquareOf2Points(coord, coord2, mousePoint)) {
-                    return this.searchBetween2Points(coord, coord2, mousePoint, width);
+                    return this.searchBetween2Points(coord, coord2, mousePoint, range);
                 }
             }
         }
@@ -149,7 +149,7 @@ export class Path extends BaseObject {
         return InsideYLimiter && InsideXLimiter;
     }
 
-    searchBetween2Points(p1: Point, p2: Point, mousePoint: Point, width: number): Point | null {
+    searchBetween2Points(p1: Point, p2: Point, mousePoint: Point, range: number): Point | null {
         const vec = new Vector(p1, p2);
         vec.x *= 0.5;
         vec.y *= 0.5;
@@ -163,7 +163,7 @@ export class Path extends BaseObject {
             const j = Math.ceil((low + high) / 2);
             const quadraticCurveP = this.quadraticCurvePoint(p1, p2, pMid, j / 100);
             const dist = new Vector(quadraticCurveP, mousePoint).mod();
-            if (dist < width / 2) return quadraticCurveP;
+            if (dist < range + this.ctxSetting.strokeWidth) return quadraticCurveP;
             const quadraticCurvePMore = this.quadraticCurvePoint(p1, p2, pMid, (j + 1) / 100);
             const quadraticCurvePLess = this.quadraticCurvePoint(p1, p2, pMid, (j - 1) / 100);
             const distM = new Vector(quadraticCurvePMore, mousePoint).mod();
