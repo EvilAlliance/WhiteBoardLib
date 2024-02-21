@@ -15,8 +15,7 @@ export class Point {
     }
 
     transform(transMat: DOMMatrix): void {
-        const p = new DOMPointReadOnly(this.x, this.y);
-        p.matrixTransform(transMat);
+        const p = new DOMPointReadOnly(this.x, this.y).matrixTransform(transMat);
         this.x = p.x;
         this.y = p.y;
     }
