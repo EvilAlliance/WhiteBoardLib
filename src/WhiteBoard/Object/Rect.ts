@@ -106,13 +106,15 @@ export class Rect extends BaseObject {
 
     pointInRange(mousePoint: Point, range: number): Point | null {
         if (this.pointInside(mousePoint)) return mousePoint;
+
         const boundingBox = this.getBoundingBox();
         const transMat = this.ctxTransformation.GetTransformationMatrix(boundingBox);
         transMat.invertSelf();
 
         const p = new DOMPointReadOnly(mousePoint.x, mousePoint.y).matrixTransform(transMat);
 
-        boundingBox.addPadding(range);
+        boundingBox.addPadding(range - 1);
+
         const insideOuterBoudingBox = boundingBox.tl.x <= p.x &&
             boundingBox.bl.x <= p.x &&
             boundingBox.tr.x >= p.x &&
@@ -123,19 +125,39 @@ export class Rect extends BaseObject {
             boundingBox.br.y >= p.y;
 
         if (this.ctxSetting.fill && insideOuterBoudingBox) {
-            const tl = new DOMPointReadOnly(this.left, this.top).matrixTransform(transMat);
-
-            const differenceXLatter = mousePoint.x - tl.x;
-            const differenceYLatter = mousePoint.y - tl.y;
+            if (p.y > this.top && p.y < this.top + this.height) {
+                const differenceX = this.left + (p.x > this.left + this.width ? this.width : 0) - p.x;
+                p.x += differenceX;
+            } else if (p.x > this.left && p.x < this.left + this.width) {
+                const differenceY = this.top + (p.y > this.top + this.height ? this.height : 0) - p.y;
+                p.y += differenceY;
+            } else {
+                const nearUp = this.top > p.y;
+                const nearLeft = this.left > p.x;
+                if (nearUp && nearLeft) {
+                    p.x = this.left;
+                    p.y = this.top;
+                } else if (nearUp && !nearLeft) {
+                    p.x = this.left + this.width;
+                    p.y = this.top;
+                } else if (!nearUp && nearLeft) {
+                    p.x = this.left;
+                    p.y = this.top + this.height;
+                } else if (!(nearUp || nearLeft)) {
+                    p.x = this.left + this.width;
+                    p.y = this.top + this.height;
+                }
+            }
 
             transMat.invertSelf();
+            const newPoint = new Point(p.x, p.y);
+            newPoint.transform(transMat);
 
-            const pointInside = new Point(mousePoint.x - differenceXLatter, mousePoint.y - differenceYLatter);
-
-            return pointInside;
+            return newPoint;
         }
 
         if (this.ctxSetting.strokeWidth > 0 && insideOuterBoudingBox) {
+
             const innerBoundingBox = new BoundingBox(
                 new Point(boundingBox.tl.x, boundingBox.tl.y),
                 new Point(boundingBox.tr.x, boundingBox.tr.y),
@@ -143,7 +165,20 @@ export class Rect extends BaseObject {
                 new Point(boundingBox.br.x, boundingBox.br.y)
             );
 
-            innerBoundingBox.addPadding(-this.ctxSetting.strokeWidth - (range * 2));
+            innerBoundingBox.addPadding(-(this.ctxSetting.strokeWidth + range * 2 + 1));
+
+            const insideInnerRectBoundingBox = innerBoundingBox.tl.x <= p.x &&
+                innerBoundingBox.bl.x <= p.x &&
+                innerBoundingBox.tr.x >= p.x &&
+                innerBoundingBox.br.x >= p.x &&
+                innerBoundingBox.tl.y <= p.y &&
+                innerBoundingBox.bl.y >= p.y &&
+                innerBoundingBox.tr.y <= p.y &&
+                innerBoundingBox.br.y >= p.y;
+
+            if (insideInnerRectBoundingBox) return null;
+
+            innerBoundingBox.addPadding(range);
 
             const insideInnerBoundingBox = innerBoundingBox.tl.x <= p.x &&
                 innerBoundingBox.bl.x <= p.x &&
@@ -155,17 +190,63 @@ export class Rect extends BaseObject {
                 innerBoundingBox.br.y >= p.y;
 
             if (!insideInnerBoundingBox) {
-                const br = new DOMPointReadOnly(this.left + this.width, this.top + this.height).matrixTransform(transMat);
-
-                const differenceXLatter = mousePoint.x - br.x;
-                const differenceYLatter = mousePoint.y - br.y;
-
-                transMat.invertSelf();
-
-                const pointInside = new Point(mousePoint.x - differenceXLatter, mousePoint.y - differenceYLatter);
-
-                return pointInside;
+                if (p.y > this.top && p.y < this.top + this.height) {
+                    const differenceX = this.left + (p.x > this.left + this.width ? this.width : 0) - p.x;
+                    p.x += differenceX;
+                } else if (p.x > this.left && p.x < this.left + this.width) {
+                    const differenceY = this.top + (p.y > this.top + this.height ? this.height : 0) - p.y;
+                    p.y += differenceY;
+                } else {
+                    const nearUp = this.top > p.y;
+                    const nearLeft = this.left > p.x;
+                    if (nearUp && nearLeft) {
+                        p.x = this.left;
+                        p.y = this.top;
+                    } else if (nearUp && !nearLeft) {
+                        p.x = this.left + this.width;
+                        p.y = this.top;
+                    } else if (!nearUp && nearLeft) {
+                        p.x = this.left;
+                        p.y = this.top + this.height;
+                    } else if (!(nearUp || nearLeft)) {
+                        p.x = this.left + this.width;
+                        p.y = this.top + this.height;
+                    }
+                }
+            } else {
+                if (p.y > this.top + this.ctxSetting.strokeWidth && p.y < this.top + this.height - this.ctxSetting.strokeWidth) {
+                    console.log('x')
+                    const differenceX = this.left + (p.x > this.left + this.width / 2 ? this.width : 0) - p.x;
+                    p.x += differenceX + (p.x > this.left + this.width / 2 ? -1 : 1) * this.ctxSetting.strokeWidth + 1;
+                } else if (p.x > this.left + this.ctxSetting.strokeWidth && p.x < this.left + this.width - this.ctxSetting.strokeWidth) {
+                    console.log('y')
+                    const differenceY = this.top + (p.y > this.top + this.height / 2 ? this.height : 0) - p.y;
+                    p.x += differenceY + (p.y > this.top + this.height / 2 ? -1 : 1) * this.ctxSetting.strokeWidth + 1;
+                } else {
+                    const nearUp = this.top > p.y;
+                    const nearLeft = this.left > p.x;
+                    if (nearUp && nearLeft) {
+                        p.x = this.left;
+                        p.y = this.top;
+                    } else if (nearUp && !nearLeft) {
+                        p.x = this.left + this.width;
+                        p.y = this.top;
+                    } else if (!nearUp && nearLeft) {
+                        p.x = this.left;
+                        p.y = this.top + this.height;
+                    } else if (!(nearUp || nearLeft)) {
+                        p.x = this.left + this.width;
+                        p.y = this.top + this.height;
+                    }
+                }
             }
+
+
+            transMat.invertSelf();
+            const newPoint = new Point(p.x, p.y);
+            newPoint.transform(transMat);
+
+            return newPoint;
         }
         return null;
     }
