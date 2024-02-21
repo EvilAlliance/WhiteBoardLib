@@ -32,7 +32,7 @@ export class Canvas<T extends BaseBrush<any> = BaseBrush<any>> extends Observabl
             this.Canvas = x as HTMLCanvasElement;
         }
 
-        this.cursor = baseBrush as T;
+        this.setBrush(baseBrush);
 
         this.Canvas.width = width;
         this.Canvas.height = height;
@@ -97,5 +97,19 @@ export class Canvas<T extends BaseBrush<any> = BaseBrush<any>> extends Observabl
     changeBGColor(x: Color) {
         this.bgColor = x;
         this.Canvas.style.backgroundColor = CanvasParseColor(x);
+    }
+
+    /**
+     * The canvas must have the the aspect ratio of 1/1 
+     * **/
+    changeCursor(canvas: HTMLCanvasElement) {
+        const w = canvas.height / 2;
+        this.Canvas.style.cursor = 'url(' + canvas.toDataURL() + ') ' + w + ' ' + w + ' , auto';
+    }
+
+    setBrush(b: BaseBrush<any>) {
+        this.cursor = b as T;
+        const canvas = b.renderCursor();
+        this.changeCursor(canvas);
     }
 }
