@@ -18,7 +18,7 @@ export class EraserAll extends BaseBrush {
         const mousePoint: Point = new Point(e.offsetX, e.offsetY);
         const Objects = canvas.Objects;
         for (const object of Objects) {
-            if (object.Object.pointInRange(mousePoint, canvas.cursor.width, canvas.cursor.tolerance)) EraserAllEraseObject(canvas, object);
+            if (object.Object.pointInRange(mousePoint, canvas.cursor.diameter, canvas.cursor.tolerance)) EraserAllEraseObject(canvas, object);
         }
     }
 
