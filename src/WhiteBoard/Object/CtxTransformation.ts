@@ -56,9 +56,11 @@ export class CtxTransformation {
         return transformationMat;
     }
 
-    getCenterPoint({ tl }: BoundingBox): Point {
-        const x = OriginXY[(this.originX ?? 'left') as keyof typeof OriginXY] ?? this.originX;
-        const y = OriginXY[(this.originY ?? 'top') as keyof typeof OriginXY] ?? this.originY;
-        return new Point(tl.x + tl.x * x, tl.y + tl.y * y,);
+    getCenterPoint({ tl, br }: BoundingBox): Point {
+        const heigth = br.y - tl.y;
+        const width = br.x - tl.x;
+        const x = OriginXY[this.originX as keyof typeof OriginXY] ?? this.originX;
+        const y = OriginXY[this.originY as keyof typeof OriginXY] ?? this.originY;
+        return new Point(tl.x + width * x, tl.y + heigth * y,);
     }
 }
