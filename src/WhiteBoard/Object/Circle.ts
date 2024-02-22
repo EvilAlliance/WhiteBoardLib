@@ -1,9 +1,9 @@
-import { Point } from "../GeoSpace/Point";
-import { Vector } from "../GeoSpace/Vector";
-import { BaseObject } from "./BaseObject";
-import { BoundingBox } from "./BoundingBox";
-import { CtxSetting } from "./CtxSetting";
-import { CtxTransformation } from "./CtxTransformation";
+import { Point } from '../GeoSpace/Point';
+import { Vector } from '../GeoSpace/Vector';
+import { BaseObject } from './BaseObject';
+import { BoundingBox } from './BoundingBox';
+import { CtxSetting } from './CtxSetting';
+import { CtxTransformation } from './CtxTransformation';
 
 export class Circle extends BaseObject {
     radius: number;

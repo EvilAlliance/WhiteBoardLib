@@ -20,7 +20,7 @@ export class Vector {
             if (Math.sign(this.y) === -1) {
                 x = -Math.PI;
             } else {
-                x = Math.PI
+                x = Math.PI;
             }
         }
 
