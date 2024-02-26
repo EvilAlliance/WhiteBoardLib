@@ -7,10 +7,10 @@ export class BoundingBox {
     br: Point;
 
     constructor(tl: Point, tr: Point, bl: Point, br: Point) {
-        this.tl = tl;
-        this.tr = tr;
-        this.bl = bl;
-        this.br = br;
+        this.tl = tl.copy();
+        this.tr = tr.copy();
+        this.bl = bl.copy();
+        this.br = br.copy();
     }
 
     tranform(transformationMat: DOMMatrix) {
@@ -41,5 +41,9 @@ export class BoundingBox {
 
         this.br.x += x;
         this.br.y += x;
+    }
+
+    copy(): BoundingBox {
+        return new BoundingBox(this.tl.copy(), this.tr.copy(), this.bl.copy(), this.br.copy());
     }
 }

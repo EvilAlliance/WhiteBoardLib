@@ -1,3 +1,4 @@
+import { ZEROZEROPOINT } from '../Constantes/Used';
 import { Point } from './Point';
 
 export class Vector {
@@ -38,6 +39,10 @@ export class Vector {
         const ang = this.phase() + x;
         this.x = mod * Math.cos(ang);
         this.y = mod * Math.sin(ang);
+    }
+
+    copy(): Vector {
+        return new Vector(ZEROZEROPOINT, new Point(this.x, this.y));
     }
 }
 
