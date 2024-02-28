@@ -22,7 +22,12 @@ export class Eraser extends BaseBrush<WeakMap<BaseObject, Path>>{
         const mousePoint = new Point(e.offsetX, e.offsetY);
         for (const object of canvas.Objects) {
             if (!object.render) return;
-            if (object.Object.pointInRange(mousePoint, this.diameter / 2, this.tolerance)) {
+            const p = object.Object.pointInRange(mousePoint, this.diameter / 2, this.tolerance);
+            if (p) {
+                console.log('Esta dentro ' + object.Object.pointInside(p));
+                canvas.ctx.beginPath();
+                canvas.ctx.arc(p.x, p.y, 1, 0, 2 * Math.PI);
+                canvas.ctx.fill();
                 const path = obj.get(object.Object);
                 if (!path) {
                     //const beforeData = BaseObjectCanvasData(object.Object);
@@ -35,7 +40,7 @@ export class Eraser extends BaseBrush<WeakMap<BaseObject, Path>>{
                         Path: [mousePoint],
                     });
 
-                    object.Object.erased.push(p);
+                    //object.Object.erased.push(p);
                     obj.set(object.Object, p);
 
                     //const afterData = BaseObjectCanvasData(object.Object);
@@ -59,8 +64,8 @@ export class Eraser extends BaseBrush<WeakMap<BaseObject, Path>>{
                     }
                     */
                 }
-                canvas.clear();
-                canvas.render();
+                //canvas.clear();
+                //canvas.render();
             } else {
                 if (obj.delete(object.Object)) {
                     //EraserAllObjectCeaseExist(canvas, object);

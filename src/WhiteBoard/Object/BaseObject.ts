@@ -20,6 +20,7 @@ export abstract class BaseObject {
             count += i;
 
             const ang = 2 * Math.PI / i;
+
             const vec = new Vector(new Point(0, 0), new Point(range * Math.cos(ang), range * Math.sin(ang)));
 
             for (let j = 0; j < i; j++) {
@@ -27,7 +28,7 @@ export abstract class BaseObject {
                 vec.translatePoint(p);
                 if (this.pointInside(p))
                     return p;
-                vec.rotate(ang);
+                vec.phase += ang;
             }
 
             range--;

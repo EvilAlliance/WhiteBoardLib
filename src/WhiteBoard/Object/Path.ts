@@ -39,12 +39,11 @@ export class Path extends BaseObject {
         ctx.moveTo(p1.x, p1.y);
         for (let i = 1; i < this.Path.length - 1; i++) {
             const vec = new Vector(p1, p2);
-            vec.x *= 0.5;
-            vec.y *= 0.5;
-            const pMid = {
-                x: p1.x + vec.x,
-                y: p1.y + vec.y,
-            };
+            vec.mod *= 0.5;
+
+            const pMid = p1.copy();
+            pMid.translate(vec);
+
             ctx.quadraticCurveTo(p1.x, p1.y, pMid.x, pMid.y);
             p1 = this.Path[i];
             p2 = this.Path[i + 1];
@@ -132,7 +131,7 @@ export class Path extends BaseObject {
 
         for (let i = 0; i < this.Path.length; i++) {
             const coord = this.Path[i];
-            if (new Vector(coord, mousePoint).mod() < range + this.ctxSetting.strokeWidth) return coord;
+            if (new Vector(coord, mousePoint).mod < range + this.ctxSetting.strokeWidth) return coord;
             if (i < this.Path.length - 1) {
                 const coord2 = this.Path[i + 1];
                 if (this.mousePointInsideSquareOf2Points(coord, coord2, mousePoint)) {
@@ -151,10 +150,10 @@ export class Path extends BaseObject {
 
     searchBetween2Points(p1: Point, p2: Point, mousePoint: Point, range: number): Point | null {
         const vec = new Vector(p1, p2);
-        vec.x *= 0.5;
-        vec.y *= 0.5;
+        vec.mod *= 0.5;
 
-        const pMid = new Point(p1.x + vec.x, p1.y + vec.y);
+        const pMid = p1.copy();
+        pMid.translate(vec);
 
         let low = 0;
         let high = 100;
@@ -162,12 +161,12 @@ export class Path extends BaseObject {
         while (low < high) {
             const j = Math.ceil((low + high) / 2);
             const quadraticCurveP = this.quadraticCurvePoint(p1, p2, pMid, j / 100);
-            const dist = new Vector(quadraticCurveP, mousePoint).mod();
+            const dist = new Vector(quadraticCurveP, mousePoint).mod;
             if (dist < range + this.ctxSetting.strokeWidth) return quadraticCurveP;
             const quadraticCurvePMore = this.quadraticCurvePoint(p1, p2, pMid, (j + 1) / 100);
             const quadraticCurvePLess = this.quadraticCurvePoint(p1, p2, pMid, (j - 1) / 100);
-            const distM = new Vector(quadraticCurvePMore, mousePoint).mod();
-            const distL = new Vector(quadraticCurvePLess, mousePoint).mod();
+            const distM = new Vector(quadraticCurvePMore, mousePoint).mod;
+            const distL = new Vector(quadraticCurvePLess, mousePoint).mod;
             if (distM < distL) {
                 low = j + 1;
             } else {

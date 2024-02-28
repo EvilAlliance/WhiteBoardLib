@@ -40,7 +40,7 @@ export class Brush extends BaseBrush<Path> {
             path.Path.push(p);
         } else {
             const v = new Vector(p, path.Path[path.Path.length - 1]);
-            if (v.mod() >= canvas.cursor.diameter / 3) {
+            if (v.mod >= canvas.cursor.diameter / 3) {
                 path.Path.push(p);
             }
         }

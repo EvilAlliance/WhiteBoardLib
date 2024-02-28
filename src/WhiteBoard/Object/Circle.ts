@@ -16,30 +16,32 @@ export class Circle extends BaseObject {
         Object.assign(this, obj);
     }
 
+    /*
+     * Point wont be edited;
+     * */
     pointInside(point: Point): boolean {
         const boundingBox = this.getBoundingBox();
         const transMat = this.ctxTransformation.GetTransformationMatrix(boundingBox);
         transMat.invertSelf();
 
-        const p = new DOMPointReadOnly(point.x, point.y).matrixTransform(transMat);
-        const newPoint = new Point(p.x, p.y);
+        const newPoint = point.copy();
+        newPoint.transform(transMat);
 
         const distanceVec = new Vector(this.center, newPoint);
-        const distance = Math.abs(distanceVec.mod());
 
-        const inside = distance <= this.radius;
+        const inside = distanceVec.mod <= this.radius;
         if (this.ctxSetting.fill)
             return inside;
 
         if (this.ctxSetting.strokeWidth > 0 && inside) {
-            return !(distance <= this.radius - this.ctxSetting.strokeWidth);
+            return !(distanceVec.mod < this.radius - this.ctxSetting.strokeWidth);
         }
 
         return false;
     }
 
     pointInRange(mousePoint: Point, range: number): Point | null {
-        if (this.pointInside(mousePoint)) return mousePoint;
+        if (this.pointInside(mousePoint)) return mousePoint.copy();
 
         const boundingBox = this.getBoundingBox();
         const transMat = this.ctxTransformation.GetTransformationMatrix(boundingBox);
@@ -51,16 +53,12 @@ export class Circle extends BaseObject {
 
         const distanceVec = new Vector(newPoint, this.center);
 
-        const distance = Math.abs(distanceVec.mod());
-
         if (this.ctxSetting.fill) {
-            const inRange = distance <= this.radius + range;
+            const inRange = distanceVec.mod < this.radius + range;
             if (!inRange) return null;
-            const distanceToMove = distance - this.radius + 1;
-            const ang = distanceVec.phase();
-            const vec = new Vector(new Point(0, 0), new Point(distanceToMove * Math.cos(ang), distanceToMove * Math.sin(ang)));
+            distanceVec.mod -= this.radius + 1;
 
-            newPoint.translate(vec);
+            newPoint.translate(distanceVec);
 
             transMat.invertSelf();
             newPoint.transform(transMat);
@@ -69,27 +67,22 @@ export class Circle extends BaseObject {
         }
 
         if (this.ctxSetting.strokeWidth > 0) {
-            const inOutSideRange = distance <= this.radius + range;
-            const inInSideRange = !(distance <= this.radius - this.ctxSetting.strokeWidth - range);
+            const inOutSideRange = distanceVec.mod <= this.radius + range;
+            const inInSideRange = !(distanceVec.mod <= this.radius - this.ctxSetting.strokeWidth - range);
             if (!(inOutSideRange && inInSideRange)) return null;
-            const distanceToMoveOut = distance - this.radius + 1;
-            if (distanceToMoveOut > 0) {
-                const ang = distanceVec.phase();
-                const vec = new Vector(new Point(0, 0), new Point(distanceToMoveOut * Math.cos(ang), distanceToMoveOut * Math.sin(ang)));
-
-                newPoint.translate(vec);
+            distanceVec.mod -= this.radius + 1;
+            if (distanceVec.mod > 0) {
+                newPoint.translate(distanceVec);
 
                 transMat.invertSelf();
                 newPoint.transform(transMat);
                 return newPoint;
             }
 
-            if (distanceToMoveOut < 0) {
-                const distanceToMoveIn = distance - this.radius + this.ctxSetting.strokeWidth;
-                const ang = distanceVec.phase();
-                const vec = new Vector(new Point(0, 0), new Point(distanceToMoveIn * Math.cos(ang), distanceToMoveIn * Math.sin(ang)));
+            if (distanceVec.mod < 0) {
+                distanceVec.mod -= this.radius + this.ctxSetting.strokeWidth;
 
-                newPoint.translate(vec);
+                newPoint.translate(distanceVec);
 
                 transMat.invertSelf();
                 newPoint.transform(transMat);

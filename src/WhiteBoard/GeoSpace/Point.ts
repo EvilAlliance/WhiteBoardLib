@@ -10,8 +10,8 @@ export class Point {
     }
 
     translate(v: Vector): void {
-        this.x += v.x;
-        this.y += v.y;
+        this.x += v.getX();
+        this.y += v.getY();
     }
 
     transform(transMat: DOMMatrix): void {

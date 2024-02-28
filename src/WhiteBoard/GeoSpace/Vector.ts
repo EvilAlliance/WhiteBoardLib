@@ -1,48 +1,46 @@
-import { ZEROZEROPOINT } from '../Constantes/Used';
-import { Point } from './Point';
+import { ORIGIN } from "../Constantes/Used";
+import { Point } from "./Point";
 
 export class Vector {
-    public x: number;
-    public y: number;
+    public mod: number;
+    public phase: number;
 
     constructor(initial: Point, final: Point) {
-        this.x = final.x - initial.x;
-        this.y = final.y - initial.y;
-    }
-    mod(): number {
-        return Math.hypot(this.x, this.y);
-    }
+        const x = final.x - initial.x;
+        const y = final.y - initial.y;
 
-    // Creo que en rad
-    phase(): number {
-        let x = 0;
+        this.mod = Math.hypot(x, y);
 
-        if (Math.sign(this.x) === -1) {
-            if (Math.sign(this.y) === -1) {
-                x = -Math.PI;
+        let correction = 0;
+
+        if (Math.sign(x) === -1) {
+            if (Math.sign(x) === -1) {
+                correction = -Math.PI;
             } else {
-                x = Math.PI;
+                correction = Math.PI;
             }
         }
 
-        return Math.atan(this.y / this.x) + x;
+        this.phase = Math.atan(y / x) + correction;
+    }
+
+    getX(): number {
+        return this.mod * Math.cos(this.phase);
+    }
+
+    getY(): number {
+        return this.mod * Math.sin(this.phase);
     }
 
     translatePoint(p: Point): void {
-        p.x += this.x;
-        p.y += this.y;
-    }
+        const x = this.getX();
+        const y = this.getY();
 
-    // x in rad
-    rotate(x: number) {
-        const mod = this.mod();
-        const ang = this.phase() + x;
-        this.x = mod * Math.cos(ang);
-        this.y = mod * Math.sin(ang);
+        p.x += x;
+        p.y += y;
     }
 
     copy(): Vector {
-        return new Vector(ZEROZEROPOINT, new Point(this.x, this.y));
+        return new Vector(ORIGIN, new Point(this.getX(), this.getY()));
     }
 }
-
