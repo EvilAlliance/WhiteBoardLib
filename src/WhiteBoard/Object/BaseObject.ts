@@ -1,5 +1,6 @@
+import Stack from '../../DataStructures/Stack';
 import { Point } from '../GeoSpace/Point';
-import { Vector } from '../GeoSpace/Vector';
+import { NORMAL, Vector } from '../GeoSpace/Vector';
 import { BoundingBox } from './BoundingBox';
 import { Path } from './Path';
 
@@ -10,28 +11,26 @@ export abstract class BaseObject {
     abstract render(ctx: CanvasRenderingContext2D): void;
     abstract pointInside(point: Point): boolean;
     abstract getBoundingBox(): BoundingBox;
-    pointInRange(mousePoint: Point, range: number, tolerance: number): Point | null {
-        let count = 0;
-        while (range > 0) {
-            let i = 3;
-            while (range * Math.sin(Math.PI / i) > tolerance) {
-                i += 1;
-            }
-            count += i;
+    abstract pointDistance(p: Point): number;
 
-            const ang = 2 * Math.PI / i;
+    pointInRange(mousePoint: Point, range: number): Point | null {
+        const stack = new Stack<Point>(mousePoint.copy());
+        let distance = Number.POSITIVE_INFINITY;
 
-            const vec = new Vector(new Point(0, 0), new Point(range * Math.cos(ang), range * Math.sin(ang)));
+        while (stack.peek()) {
+            const p = stack.pop() as Point;
 
-            for (let j = 0; j < i; j++) {
-                const p = Object.assign({}, mousePoint);
-                vec.translatePoint(p);
-                if (this.pointInside(p))
-                    return p;
-                vec.phase += ang;
-            }
+            const currentDistance = this.pointDistance(p);
 
-            range--;
+            if (currentDistance > range || new Vector(mousePoint, p).mod > range || currentDistance >= distance) continue;
+            if (currentDistance == 0) return p;
+
+            distance = currentDistance;
+
+            stack.push(p.copy().translate(NORMAL.x));
+            stack.push(p.copy().translate(NORMAL.xI));
+            stack.push(p.copy().translate(NORMAL.y));
+            stack.push(p.copy().translate(NORMAL.yI));
         }
 
         return null;

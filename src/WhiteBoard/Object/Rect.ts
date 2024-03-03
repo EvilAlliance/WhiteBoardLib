@@ -1,8 +1,9 @@
 import { BaseObject } from './BaseObject';
-import { Point } from '../GeoSpace/Point';
+import { ORIGIN, Point } from '../GeoSpace/Point';
 import { BoundingBox } from './BoundingBox';
 import { CtxSetting } from './CtxSetting';
 import { CtxTransformation } from './CtxTransformation';
+import { Vector } from '../GeoSpace/Vector';
 //const kRect = 1 - 0.5522847498;
 
 export class Rect extends BaseObject {
@@ -70,184 +71,76 @@ export class Rect extends BaseObject {
         const p = new DOMPointReadOnly(point.x, point.y).matrixTransform(transMat);
 
         const insideOuterBoudingBox = boundingBox.tl.x <= p.x &&
-            boundingBox.bl.x <= p.x &&
-            boundingBox.tr.x >= p.x &&
             boundingBox.br.x >= p.x &&
             boundingBox.tl.y <= p.y &&
-            boundingBox.tr.y <= p.y &&
-            boundingBox.bl.y >= p.y &&
             boundingBox.br.y >= p.y;
 
         if (this.ctxSetting.fill)
             return insideOuterBoudingBox;
-        if (this.ctxSetting.strokeWidth > 0) {
-            const innerBoundingBox = new BoundingBox(
-                new Point(boundingBox.tl.x, boundingBox.tl.y),
-                new Point(boundingBox.tr.x, boundingBox.tr.y),
-                new Point(boundingBox.bl.x, boundingBox.bl.y),
-                new Point(boundingBox.br.x, boundingBox.br.y)
-            );
-            innerBoundingBox.addPadding(-this.ctxSetting.strokeWidth);
 
-            const insideInnerBoundingBox = innerBoundingBox.tl.x <= p.x &&
-                innerBoundingBox.bl.x <= p.x &&
-                innerBoundingBox.tr.x >= p.x &&
-                innerBoundingBox.br.x >= p.x &&
-                innerBoundingBox.tl.y <= p.y &&
-                innerBoundingBox.bl.y >= p.y &&
-                innerBoundingBox.tr.y <= p.y &&
-                innerBoundingBox.br.y >= p.y;
+        if (this.ctxSetting.strokeWidth > 0 && insideOuterBoudingBox) {
+            boundingBox.addPadding(-this.ctxSetting.strokeWidth);
 
-            return insideOuterBoudingBox && !insideInnerBoundingBox;
+            const insideInnerBoundingBox = boundingBox.tl.x < p.x &&
+                boundingBox.br.x > p.x &&
+                boundingBox.tl.y < p.y &&
+                boundingBox.br.y > p.y;
+
+            return !insideInnerBoundingBox;
         }
 
         return false;
     }
 
-    pointInRange(mousePoint: Point, range: number): Point | null {
-        if (this.pointInside(mousePoint)) return mousePoint;
+    pointDistance(point: Point): number {
+        if (this.pointInside(point)) return 0;
 
         const boundingBox = this.getBoundingBox();
         const transMat = this.ctxTransformation.GetTransformationMatrix(boundingBox);
         transMat.invertSelf();
 
-        const p = new DOMPointReadOnly(mousePoint.x, mousePoint.y).matrixTransform(transMat);
+        const p = new DOMPointReadOnly(point.x, point.y).matrixTransform(transMat);
 
-        boundingBox.addPadding(range - 1);
+        const distanceX = this.left - p.x;
+        const distanceY = this.top - p.y;
 
-        const insideOuterBoudingBox = boundingBox.tl.x <= p.x &&
-            boundingBox.bl.x <= p.x &&
-            boundingBox.tr.x >= p.x &&
-            boundingBox.br.x >= p.x &&
-            boundingBox.tl.y <= p.y &&
-            boundingBox.tr.y <= p.y &&
-            boundingBox.bl.y >= p.y &&
-            boundingBox.br.y >= p.y;
+        const xGreater0 = distanceX > 0;
+        const yGreater0 = distanceY > 0;
 
-        if (this.ctxSetting.fill && insideOuterBoudingBox) {
-            if (p.y > this.top && p.y < this.top + this.height) {
-                const differenceX = this.left + (p.x > this.left + this.width ? this.width : 0) - p.x;
-                p.x += differenceX;
-            } else if (p.x > this.left && p.x < this.left + this.width) {
-                const differenceY = this.top + (p.y > this.top + this.height ? this.height : 0) - p.y;
-                p.y += differenceY;
-            } else {
-                const nearUp = this.top > p.y;
-                const nearLeft = this.left > p.x;
-                if (nearUp && nearLeft) {
-                    p.x = this.left;
-                    p.y = this.top;
-                } else if (nearUp && !nearLeft) {
-                    p.x = this.left + this.width;
-                    p.y = this.top;
-                } else if (!nearUp && nearLeft) {
-                    p.x = this.left;
-                    p.y = this.top + this.height;
-                } else if (!(nearUp || nearLeft)) {
-                    p.x = this.left + this.width;
-                    p.y = this.top + this.height;
-                }
-            }
+        const correctionDistanceX = distanceX + this.width;
+        const correctionDistanceY = distanceY + this.width;
 
-            transMat.invertSelf();
-            const newPoint = new Point(p.x, p.y);
-            newPoint.transform(transMat);
+        if (correctionDistanceX < 0 && yGreater0) return new Vector(ORIGIN, new Point(correctionDistanceX, distanceY)).mod;
+        if (xGreater0 && correctionDistanceY < 0) return new Vector(ORIGIN, new Point(distanceX, correctionDistanceY)).mod;
+        if (!xGreater0 && yGreater0) return new Vector(ORIGIN, new Point(0, distanceY)).mod;
+        if (xGreater0 && !yGreater0) return new Vector(ORIGIN, new Point(distanceX, 0)).mod;
+        if (xGreater0 && yGreater0) return new Vector(ORIGIN, new Point(distanceX, distanceY)).mod;
 
-            return newPoint;
-        }
+        const distanceXDown = this.width + distanceX;
+        const distanceYDown = this.height + distanceY;
 
-        if (this.ctxSetting.strokeWidth > 0 && insideOuterBoudingBox) {
+        const xLesserDown0 = distanceXDown < 0;
+        const yLesserDown0 = distanceYDown < 0;
 
-            const innerBoundingBox = new BoundingBox(
-                new Point(boundingBox.tl.x, boundingBox.tl.y),
-                new Point(boundingBox.tr.x, boundingBox.tr.y),
-                new Point(boundingBox.bl.x, boundingBox.bl.y),
-                new Point(boundingBox.br.x, boundingBox.br.y)
-            );
+        if (!xLesserDown0 && yLesserDown0) return new Vector(ORIGIN, new Point(0, distanceYDown)).mod;
+        if (xLesserDown0 && !yLesserDown0) return new Vector(ORIGIN, new Point(distanceXDown, 0)).mod;
+        if (xLesserDown0 && yLesserDown0) return new Vector(ORIGIN, new Point(distanceXDown, distanceYDown)).mod;
 
-            innerBoundingBox.addPadding(-(this.ctxSetting.strokeWidth + range * 2 + 1));
+        if (this.ctxSetting.fill) return 0;
 
-            const insideInnerRectBoundingBox = innerBoundingBox.tl.x <= p.x &&
-                innerBoundingBox.bl.x <= p.x &&
-                innerBoundingBox.tr.x >= p.x &&
-                innerBoundingBox.br.x >= p.x &&
-                innerBoundingBox.tl.y <= p.y &&
-                innerBoundingBox.bl.y >= p.y &&
-                innerBoundingBox.tr.y <= p.y &&
-                innerBoundingBox.br.y >= p.y;
+        if (this.ctxSetting.strokeWidth <= 0) return 0;
 
-            if (insideInnerRectBoundingBox) return null;
+        const distanceXStroke = distanceX + this.ctxSetting.strokeWidth;
+        const distanceYStroke = distanceY + this.ctxSetting.strokeWidth;
 
-            innerBoundingBox.addPadding(range);
+        const distanceXStrokeDown = distanceXDown - this.ctxSetting.strokeWidth;
+        const distanceYStrokeDown = distanceYDown - this.ctxSetting.strokeWidth;
 
-            const insideInnerBoundingBox = innerBoundingBox.tl.x <= p.x &&
-                innerBoundingBox.bl.x <= p.x &&
-                innerBoundingBox.tr.x >= p.x &&
-                innerBoundingBox.br.x >= p.x &&
-                innerBoundingBox.tl.y <= p.y &&
-                innerBoundingBox.bl.y >= p.y &&
-                innerBoundingBox.tr.y <= p.y &&
-                innerBoundingBox.br.y >= p.y;
+        const xLess = Math.abs(distanceXStrokeDown) < Math.abs(distanceXStroke) ? distanceXStrokeDown : distanceXStroke;
+        const yLess = Math.abs(distanceYStrokeDown) < Math.abs(distanceYStroke) ? distanceYStrokeDown : distanceYStroke;
 
-            if (!insideInnerBoundingBox) {
-                if (p.y > this.top && p.y < this.top + this.height) {
-                    const differenceX = this.left + (p.x > this.left + this.width ? this.width : 0) - p.x;
-                    p.x += differenceX;
-                } else if (p.x > this.left && p.x < this.left + this.width) {
-                    const differenceY = this.top + (p.y > this.top + this.height ? this.height : 0) - p.y;
-                    p.y += differenceY;
-                } else {
-                    const nearUp = this.top > p.y;
-                    const nearLeft = this.left > p.x;
-                    if (nearUp && nearLeft) {
-                        p.x = this.left;
-                        p.y = this.top;
-                    } else if (nearUp && !nearLeft) {
-                        p.x = this.left + this.width;
-                        p.y = this.top;
-                    } else if (!nearUp && nearLeft) {
-                        p.x = this.left;
-                        p.y = this.top + this.height;
-                    } else if (!(nearUp || nearLeft)) {
-                        p.x = this.left + this.width;
-                        p.y = this.top + this.height;
-                    }
-                }
-            } else {
-                if (p.y > this.top + this.ctxSetting.strokeWidth && p.y < this.top + this.height - this.ctxSetting.strokeWidth) {
-                    console.log('x')
-                    const differenceX = this.left + (p.x > this.left + this.width / 2 ? this.width : 0) - p.x;
-                    p.x += differenceX + (p.x > this.left + this.width / 2 ? -1 : 1) * this.ctxSetting.strokeWidth + 1;
-                } else if (p.x > this.left + this.ctxSetting.strokeWidth && p.x < this.left + this.width - this.ctxSetting.strokeWidth) {
-                    console.log('y')
-                    const differenceY = this.top + (p.y > this.top + this.height / 2 ? this.height : 0) - p.y;
-                    p.x += differenceY + (p.y > this.top + this.height / 2 ? -1 : 1) * this.ctxSetting.strokeWidth + 1;
-                } else {
-                    const nearUp = this.top > p.y;
-                    const nearLeft = this.left > p.x;
-                    if (nearUp && nearLeft) {
-                        p.x = this.left;
-                        p.y = this.top;
-                    } else if (nearUp && !nearLeft) {
-                        p.x = this.left + this.width;
-                        p.y = this.top;
-                    } else if (!nearUp && nearLeft) {
-                        p.x = this.left;
-                        p.y = this.top + this.height;
-                    } else if (!(nearUp || nearLeft)) {
-                        p.x = this.left + this.width;
-                        p.y = this.top + this.height;
-                    }
-                }
-            }
+        const xLessery = Math.abs(xLess) < Math.abs(yLess);
 
-
-            transMat.invertSelf();
-            const newPoint = new Point(p.x, p.y);
-            newPoint.transform(transMat);
-
-            return newPoint;
-        }
-        return null;
+        return new Vector(ORIGIN, new Point(xLessery ? xLess : 0, xLessery ? 0 : yLess)).mod;
     }
 }
