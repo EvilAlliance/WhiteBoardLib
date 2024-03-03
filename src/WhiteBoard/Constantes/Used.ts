@@ -1,3 +1,3 @@
 import { Point } from "../GeoSpace/Point";
+import { Vector } from "../GeoSpace/Vector";
 
-export const ORIGIN = new Point(0, 0);
