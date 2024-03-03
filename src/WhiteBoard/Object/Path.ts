@@ -59,6 +59,11 @@ export class Path extends BaseObject {
         }
     }
 
+    pointDistance(p: Point): number {
+        console.log('TODO pointDistance Path');
+        return 0;
+    }
+
     getBoundingBox(): BoundingBox {
         const tl = new Point(this.Path[0].x, this.Path[0].y);
 
