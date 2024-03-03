@@ -1,5 +1,4 @@
-import { ORIGIN } from "../Constantes/Used";
-import { Point } from "./Point";
+import { ORIGIN, Point } from "./Point";
 
 export class Vector {
     public mod: number;
@@ -32,15 +31,24 @@ export class Vector {
         return this.mod * Math.sin(this.phase);
     }
 
-    translatePoint(p: Point): void {
+    translatePoint(p: Point): this {
         const x = this.getX();
         const y = this.getY();
 
         p.x += x;
         p.y += y;
+
+        return this;
     }
 
     copy(): Vector {
         return new Vector(ORIGIN, new Point(this.getX(), this.getY()));
     }
+}
+
+export const NORMAL = {
+    x: new Vector(ORIGIN, new Point(1, 0)),
+    y: new Vector(ORIGIN, new Point(0, 1)),
+    xI: new Vector(ORIGIN, new Point(-1, 0)),
+    yI: new Vector(ORIGIN, new Point(0, -1)),
 }
