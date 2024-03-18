@@ -1,4 +1,4 @@
-import { ORIGIN, Point } from "./Point";
+import { ORIGIN, Point } from './Point';
 
 export class Vector {
     public mod: number;
@@ -51,4 +51,4 @@ export const NORMAL = {
     y: new Vector(ORIGIN, new Point(0, 1)),
     xI: new Vector(ORIGIN, new Point(-1, 0)),
     yI: new Vector(ORIGIN, new Point(0, -1)),
-}
+};
