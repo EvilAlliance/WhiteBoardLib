@@ -48,6 +48,6 @@ export class BoundingBox {
     }
 
     getValues() {
-        return [this.tl, this.tr, this.bl, this.br];
+        return [this.tl, this.tr, this.br, this.bl];
     }
 }

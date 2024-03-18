@@ -1,4 +1,5 @@
 import { Point } from '../GeoSpace/Point';
+import { Vector } from '../GeoSpace/Vector';
 import { BoundingBox } from './BoundingBox';
 import { Path } from './Path';
 
@@ -12,7 +13,15 @@ export abstract class BaseObject {
     abstract pointDistance(p: Point): number;
 
     distanceBetweenSegmentToPoint(s1: Point, s2: Point, p: Point): number {
-        return Math.abs((s2.x - s1.x) * (s1.y - p.y) - (s1.x - p.x) * (s2.y - s1.y)) / Math.hypot(s2.x - s1.x, s2.y - s1.y);
+        const dist2 = Math.pow(s1.x - s2.x, 2) + Math.pow(s1.y - s2.y, 2);
+        if (dist2 == 0) return Math.hypot(s2.x - p.x, s2.y - p.y);
+
+        let t = ((p.x - s1.x) * (s2.x - s1.x) + (p.y - s1.y) * (s2.y - s1.y)) / dist2;
+        t = Math.max(0, Math.min(1, t));
+
+        const projection = new Point(s1.x + t * (s2.x - s1.x), s1.y + t * (s2.y - s1.y));
+
+        return new Vector(projection, p).mod;
     }
 
     pointInRange(mousePoint: Point, range: number): boolean {
