@@ -1,6 +1,4 @@
-import Stack from '../../DataStructures/Stack';
 import { Point } from '../GeoSpace/Point';
-import { NORMAL, Vector } from '../GeoSpace/Vector';
 import { BoundingBox } from './BoundingBox';
 import { Path } from './Path';
 
@@ -13,27 +11,12 @@ export abstract class BaseObject {
     abstract getBoundingBox(): BoundingBox;
     abstract pointDistance(p: Point): number;
 
-    pointInRange(mousePoint: Point, range: number): Point | null {
-        const stack = new Stack<Point>(mousePoint.copy());
-        let distance = Number.POSITIVE_INFINITY;
+    distanceBetweenSegmentToPoint(s1: Point, s2: Point, p: Point): number {
+        return Math.abs((s2.x - s1.x) * (s1.y - p.y) - (s1.x - p.x) * (s2.y - s1.y)) / Math.hypot(s2.x - s1.x, s2.y - s1.y);
+    }
 
-        while (stack.peek()) {
-            const p = stack.pop() as Point;
-
-            const currentDistance = this.pointDistance(p);
-
-            if (currentDistance > range || new Vector(mousePoint, p).mod > range || currentDistance >= distance) continue;
-            if (currentDistance == 0) return p;
-
-            distance = currentDistance;
-
-            stack.push(p.copy().translate(NORMAL.x));
-            stack.push(p.copy().translate(NORMAL.xI));
-            stack.push(p.copy().translate(NORMAL.y));
-            stack.push(p.copy().translate(NORMAL.yI));
-        }
-
-        return null;
+    pointInRange(mousePoint: Point, range: number): boolean {
+        return this.pointDistance(mousePoint) <= range;
     }
 
     getCanvasData() {

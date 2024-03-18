@@ -50,8 +50,8 @@ export class Circle extends BaseObject {
         newPoint.transform(transMat);
 
         const vec = new Vector(this.center, newPoint);
-        let distance = vec.mod - this.radius;
-        console.log(distance);
+        const distance = vec.mod - this.radius;
+
         if (distance > 0 || this.ctxSetting.fill) return Math.max(distance, 0);
 
         if (distance + this.ctxSetting.strokeWidth > this.radius + this.ctxSetting.strokeWidth) return 0;

@@ -1,9 +1,8 @@
 import { BaseObject } from './BaseObject';
-import { ORIGIN, Point } from '../GeoSpace/Point';
+import { Point } from '../GeoSpace/Point';
 import { BoundingBox } from './BoundingBox';
 import { CtxSetting } from './CtxSetting';
 import { CtxTransformation } from './CtxTransformation';
-import { Vector } from '../GeoSpace/Vector';
 //const kRect = 1 - 0.5522847498;
 
 export class Rect extends BaseObject {
@@ -99,48 +98,17 @@ export class Rect extends BaseObject {
         const transMat = this.ctxTransformation.GetTransformationMatrix(boundingBox);
         transMat.invertSelf();
 
-        const p = new DOMPointReadOnly(point.x, point.y).matrixTransform(transMat);
+        const p = point.copy().transform(transMat);
 
-        const distanceX = this.left - p.x;
-        const distanceY = this.top - p.y;
+        const boundingBoxVal = boundingBox.getValues();
 
-        const xGreater0 = distanceX > 0;
-        const yGreater0 = distanceY > 0;
+        let min = Number.MAX_SAFE_INTEGER;
 
-        const correctionDistanceX = distanceX + this.width;
-        const correctionDistanceY = distanceY + this.width;
+        for (let i = 0; i < boundingBoxVal.length; i++) {
+            let j = (i + 1) % boundingBoxVal.length;
+            min = Math.min(min, this.distanceBetweenSegmentToPoint(boundingBoxVal[i], boundingBoxVal[j], p));
+        }
 
-        if (correctionDistanceX < 0 && yGreater0) return new Vector(ORIGIN, new Point(correctionDistanceX, distanceY)).mod;
-        if (xGreater0 && correctionDistanceY < 0) return new Vector(ORIGIN, new Point(distanceX, correctionDistanceY)).mod;
-        if (!xGreater0 && yGreater0) return new Vector(ORIGIN, new Point(0, distanceY)).mod;
-        if (xGreater0 && !yGreater0) return new Vector(ORIGIN, new Point(distanceX, 0)).mod;
-        if (xGreater0 && yGreater0) return new Vector(ORIGIN, new Point(distanceX, distanceY)).mod;
-
-        const distanceXDown = this.width + distanceX;
-        const distanceYDown = this.height + distanceY;
-
-        const xLesserDown0 = distanceXDown < 0;
-        const yLesserDown0 = distanceYDown < 0;
-
-        if (!xLesserDown0 && yLesserDown0) return new Vector(ORIGIN, new Point(0, distanceYDown)).mod;
-        if (xLesserDown0 && !yLesserDown0) return new Vector(ORIGIN, new Point(distanceXDown, 0)).mod;
-        if (xLesserDown0 && yLesserDown0) return new Vector(ORIGIN, new Point(distanceXDown, distanceYDown)).mod;
-
-        if (this.ctxSetting.fill) return 0;
-
-        if (this.ctxSetting.strokeWidth <= 0) return 0;
-
-        const distanceXStroke = distanceX + this.ctxSetting.strokeWidth;
-        const distanceYStroke = distanceY + this.ctxSetting.strokeWidth;
-
-        const distanceXStrokeDown = distanceXDown - this.ctxSetting.strokeWidth;
-        const distanceYStrokeDown = distanceYDown - this.ctxSetting.strokeWidth;
-
-        const xLess = Math.abs(distanceXStrokeDown) < Math.abs(distanceXStroke) ? distanceXStrokeDown : distanceXStroke;
-        const yLess = Math.abs(distanceYStrokeDown) < Math.abs(distanceYStroke) ? distanceYStrokeDown : distanceYStroke;
-
-        const xLessery = Math.abs(xLess) < Math.abs(yLess);
-
-        return new Vector(ORIGIN, new Point(xLessery ? xLess : 0, xLessery ? 0 : yLess)).mod;
+        return min;
     }
 }

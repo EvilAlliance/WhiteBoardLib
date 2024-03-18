@@ -46,4 +46,8 @@ export class BoundingBox {
     copy(): BoundingBox {
         return new BoundingBox(this.tl.copy(), this.tr.copy(), this.bl.copy(), this.br.copy());
     }
+
+    getValues() {
+        return [this.tl, this.tr, this.bl, this.br];
+    }
 }
