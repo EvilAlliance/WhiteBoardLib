@@ -59,63 +59,6 @@ export class Circle extends BaseObject {
         return 0;
     }
 
-    /*
-    pointInRange(mousePoint: Point, range: number): Point | null {
-        if (this.pointInside(mousePoint)) return mousePoint.copy();
-    
-        const boundingBox = this.getBoundingBox();
-        const transMat = this.ctxTransformation.GetTransformationMatrix(boundingBox);
-        transMat.invertSelf();
-    
-        const p = new DOMPointReadOnly(mousePoint.x, mousePoint.y).matrixTransform(transMat);
-        const newPoint = new Point(p.x, p.y);
-    
-        newPoint.x = Math.ceil(newPoint.x);
-        newPoint.y = Math.ceil(newPoint.y);
-    
-        const distanceVec = new Vector(newPoint, this.center);
-        distanceVec.mod = Math.ceil(distanceVec.mod);
-    
-        if (this.ctxSetting.fill) {
-            const inRange = distanceVec.mod < this.radius + range;
-            if (!inRange) return null;
-            distanceVec.mod -= this.radius;
-    
-            newPoint.translate(distanceVec);
-    
-            transMat.invertSelf();
-            newPoint.transform(transMat);
-    
-            return newPoint;
-        }
-    
-        if (this.ctxSetting.strokeWidth > 0) {
-            const inOutSideRange = distanceVec.mod <= this.radius + range;
-            const inInSideRange = !(distanceVec.mod <= this.radius - this.ctxSetting.strokeWidth - range);
-            if (!(inOutSideRange && inInSideRange)) return null;
-            distanceVec.mod -= this.radius;
-            if (distanceVec.mod > 0) {
-                newPoint.translate(distanceVec);
-    
-                transMat.invertSelf();
-                newPoint.transform(transMat);
-                return newPoint;
-            }
-    
-            if (distanceVec.mod < 0) {
-                distanceVec.mod += this.ctxSetting.strokeWidth;
-                newPoint.translate(distanceVec);
-    
-                transMat.invertSelf();
-                newPoint.transform(transMat);
-                return newPoint;
-            }
-        }
-    
-        return null;
-    }
-        */
-
     getBoundingBox(): BoundingBox {
         const tl = new Point(this.center.x - this.radius, this.center.y - this.radius);
         const tr = new Point(this.center.x + this.radius, this.center.y - this.radius);
