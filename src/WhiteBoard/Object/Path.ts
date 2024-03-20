@@ -59,7 +59,7 @@ export class Path extends BaseObject {
         }
     }
 
-    pointDistance(p: Point): number {
+    pointDistance(_: Point): number {
         console.log('TODO pointDistance Path');
         return 0;
     }
@@ -125,7 +125,7 @@ export class Path extends BaseObject {
     }
 
     // ignores everithing exept the stroke;
-    pointInRange(p: Point, range: number): Point | null {
+    pointInRange(p: Point, range: number): boolean {
         const boundingBox = this.getBoundingBox();
         const transMat = this.ctxTransformation.GetTransformationMatrix(boundingBox);
         transMat.invertSelf();
@@ -136,7 +136,7 @@ export class Path extends BaseObject {
 
         for (let i = 0; i < this.Path.length; i++) {
             const coord = this.Path[i];
-            if (new Vector(coord, mousePoint).mod < range + this.ctxSetting.strokeWidth) return coord;
+            if (new Vector(coord, mousePoint).mod < range + this.ctxSetting.strokeWidth) return true;
             if (i < this.Path.length - 1) {
                 const coord2 = this.Path[i + 1];
                 if (this.mousePointInsideSquareOf2Points(coord, coord2, mousePoint)) {
@@ -144,7 +144,7 @@ export class Path extends BaseObject {
                 }
             }
         }
-        return null;
+        return false;
     }
 
     mousePointInsideSquareOf2Points(p1: Point, p2: Point, mousePoint: Point) {
@@ -153,7 +153,7 @@ export class Path extends BaseObject {
         return InsideYLimiter && InsideXLimiter;
     }
 
-    searchBetween2Points(p1: Point, p2: Point, mousePoint: Point, range: number): Point | null {
+    searchBetween2Points(p1: Point, p2: Point, mousePoint: Point, range: number): boolean {
         const vec = new Vector(p1, p2);
         vec.mod *= 0.5;
 
@@ -167,7 +167,7 @@ export class Path extends BaseObject {
             const j = Math.ceil((low + high) / 2);
             const quadraticCurveP = this.quadraticCurvePoint(p1, p2, pMid, j / 100);
             const dist = new Vector(quadraticCurveP, mousePoint).mod;
-            if (dist < range + this.ctxSetting.strokeWidth) return quadraticCurveP;
+            if (dist < range + this.ctxSetting.strokeWidth) return true;
             const quadraticCurvePMore = this.quadraticCurvePoint(p1, p2, pMid, (j + 1) / 100);
             const quadraticCurvePLess = this.quadraticCurvePoint(p1, p2, pMid, (j - 1) / 100);
             const distM = new Vector(quadraticCurvePMore, mousePoint).mod;
@@ -178,7 +178,7 @@ export class Path extends BaseObject {
                 high = j - 1;
             }
         }
-        return null;
+        return false;
     }
 
     quadraticCurvePoint(origin: Point, end: Point, control: Point, porsentage: number): Point {
