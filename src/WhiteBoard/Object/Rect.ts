@@ -105,8 +105,14 @@ export class Rect extends BaseObject {
         let min = Number.MAX_SAFE_INTEGER;
 
         for (let i = 0; i < boundingBoxVal.length; i++) {
-            let j = (i + 1) % boundingBoxVal.length;
-            min = Math.min(min, this.distanceBetweenSegmentToPoint(boundingBoxVal[i], boundingBoxVal[j], p));
+            min = Math.min(min, this.distanceBetweenSegmentToPoint(boundingBoxVal[i], boundingBoxVal[(i + 1) % boundingBoxVal.length], p));
+        }
+
+        if (this.ctxSetting.fill) return min;
+
+        boundingBox.addPadding(-this.ctxSetting.strokeWidth);
+        for (let i = 0; i < boundingBoxVal.length; i++) {
+            min = Math.min(min, this.distanceBetweenSegmentToPoint(boundingBoxVal[i], boundingBoxVal[(i + 1) % boundingBoxVal.length], p));
         }
 
         return min;
