@@ -2,6 +2,7 @@ import { Canvas } from './WhiteBoard/Canvas';
 import { Brush } from './WhiteBoard/Cursor/Brush';
 import { Eraser } from './WhiteBoard/Cursor/Eraser';
 import { EraserAll } from './WhiteBoard/Cursor/EraserAll';
+import { FloofFill } from './WhiteBoard/Cursor/FloodFill';
 import { Point } from './WhiteBoard/GeoSpace/Point';
 import { Circle } from './WhiteBoard/Object/Circle';
 import { CtxSetting } from './WhiteBoard/Object/CtxSetting';
@@ -10,18 +11,25 @@ import { Rect } from './WhiteBoard/Object/Rect';
 
 
 const eraserAll = new EraserAll({ diameter: 5 });
+const floodFill = new FloofFill({ diameter: 5 });
 const brush = new Brush({
     color: 'Purple',
     diameter: 50,
 });
 
-const eraser = new Eraser({ diameter: 100 });
+const eraser = new Eraser({ diameter: 25 });
 
-const canvas = new Canvas('canvas', 1000, 800, 'Orange', brush);
+export const canvas = new Canvas('canvas', 1000, 800, 'Orange', brush);
 
 const eraserAllB = document.querySelector('#eraserAll');
 const brushB = document.querySelector('#brush');
 const eraserB = document.querySelector('#eraser');
+const floodFillB = document.querySelector('#floodFill');
+
+
+floodFillB?.addEventListener('click', () => {
+    canvas.setBrush(floodFill);
+});
 
 eraserAllB?.addEventListener('click', () => {
     canvas.setBrush(eraserAll);
@@ -41,7 +49,7 @@ const p = new Rect({
     width: 150,
     height: 150,
     ctxSetting: new CtxSetting({
-        fill: true,
+        //fill: true,
         strokeColor: 'Cabo',
         strokeWidth: 20,
     }),
@@ -54,10 +62,9 @@ const p = new Rect({
 });
 
 const x = new Circle({
-    center: new Point(300, 300),
+    center: new Point(350, 350),
     radius: 40,
     ctxSetting: new CtxSetting({
-        fill: true,
         strokeColor: 'Cabo',
         strokeWidth: 20,
     }),
@@ -70,4 +77,5 @@ const x = new Circle({
 });
 
 canvas.addCanvasObjectRender(p);
-canvas.addCanvasObjectRender(x);
+
+//canvas.addCanvasObjectRender(x);
