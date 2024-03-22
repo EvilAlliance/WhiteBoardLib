@@ -27,6 +27,8 @@ export class BoundingBox {
         this.bl.y = bl.y;
         this.br.x = br.x;
         this.br.y = br.y;
+
+        return this;
     }
 
     addPadding(x: number) {

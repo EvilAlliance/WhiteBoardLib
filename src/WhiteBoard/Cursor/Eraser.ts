@@ -31,6 +31,7 @@ export class Eraser extends BaseBrush<WeakMap<BaseObject, Path>> {
                             strokeWidth: this.diameter,
                             lineCap: this.lineCap,
                             globalCompositeOperation: 'destination-out',
+                            strokeColor: 'Black',
                         }),
                         Path: [mousePoint],
                     });
@@ -49,7 +50,7 @@ export class Eraser extends BaseBrush<WeakMap<BaseObject, Path>> {
                     */
                 } else {
                     //const beforeData = BaseObjectCanvasData(object.Object);
-                    path.Path.push(mousePoint);
+                    path.addPoint(mousePoint);
                     //const afterData = BaseObjectCanvasData(object.Object);
                     /*
                     if (arrIdentical(beforeData, afterData)) {

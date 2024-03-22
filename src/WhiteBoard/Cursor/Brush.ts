@@ -37,11 +37,11 @@ export class Brush extends BaseBrush<Path> {
         const p = new Point(e.offsetX, e.offsetY);
 
         if (path.Path.length == 0) {
-            path.Path.push(p);
+            path.addPoint(p);
         } else {
             const v = new Vector(p, path.Path[path.Path.length - 1]);
             if (v.mod >= canvas.cursor.diameter / 3) {
-                path.Path.push(p);
+                path.addPoint(p);
             }
         }
 

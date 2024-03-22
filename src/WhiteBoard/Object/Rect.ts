@@ -1,8 +1,6 @@
 import { BaseObject } from './BaseObject';
 import { Point } from '../GeoSpace/Point';
 import { BoundingBox } from './BoundingBox';
-import { CtxSetting } from './CtxSetting';
-import { CtxTransformation } from './CtxTransformation';
 //const kRect = 1 - 0.5522847498;
 
 export class Rect extends BaseObject {
@@ -10,20 +8,12 @@ export class Rect extends BaseObject {
     public height: number = 0;
     public top: number = 0;
     public left: number = 0;
-    ctxSetting: CtxSetting = new CtxSetting();
-    ctxTransformation: CtxTransformation = new CtxTransformation();
-
     constructor(obj: Partial<Rect>) {
         super();
         Object.assign(this, obj);
     }
 
-    render(ctx: CanvasRenderingContext2D): void {
-        ctx.save();
-
-        this.ctxSetting.setSettingSetContextOption(ctx);
-        this.ctxTransformation.setContextTransformation(ctx, this.getBoundingBox());
-
+    _drawObject(ctx: CanvasRenderingContext2D): void {
         let { top, left, height, width } = this;
 
         top += this.ctxSetting.strokeWidth / 2;
@@ -45,12 +35,6 @@ export class Rect extends BaseObject {
 
         if (this.ctxSetting.fill) ctx.fill();
         if (this.ctxSetting.strokeWidth > 0) ctx.stroke();
-
-        ctx.restore();
-
-        for (const eraser of this.erased) {
-            eraser.render(ctx);
-        }
     }
 
     getBoundingBox(): BoundingBox {
