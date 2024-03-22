@@ -2,14 +2,10 @@ import { Point } from '../GeoSpace/Point';
 import { Vector } from '../GeoSpace/Vector';
 import { BaseObject } from './BaseObject';
 import { BoundingBox } from './BoundingBox';
-import { CtxSetting } from './CtxSetting';
-import { CtxTransformation } from './CtxTransformation';
 
 export class Circle extends BaseObject {
     radius: number;
     center: Point;
-    ctxSetting: CtxSetting = new CtxSetting();
-    ctxTransformation: CtxTransformation = new CtxTransformation();
 
     constructor(obj: Partial<Circle>) {
         super();
@@ -68,12 +64,7 @@ export class Circle extends BaseObject {
         return new BoundingBox(tl, tr, bl, br);
     }
 
-    render(ctx: CanvasRenderingContext2D): void {
-        ctx.save();
-
-        this.ctxSetting.setSettingSetContextOption(ctx);
-        this.ctxTransformation.setContextTransformation(ctx, this.getBoundingBox());
-
+    _drawObject(ctx: CanvasRenderingContext2D): void {
         let { radius } = this;
 
         radius -= this.ctxSetting.strokeWidth / 2;
@@ -84,11 +75,5 @@ export class Circle extends BaseObject {
 
         if (this.ctxSetting.fill) ctx.fill();
         if (this.ctxSetting.strokeWidth > 0) ctx.stroke();
-
-        ctx.restore();
-
-        for (const eraser of this.erased) {
-            eraser.render(ctx);
-        }
     }
 }

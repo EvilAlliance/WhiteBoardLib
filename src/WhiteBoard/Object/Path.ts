@@ -2,26 +2,17 @@ import { Point } from '../GeoSpace/Point';
 import { Vector } from '../GeoSpace/Vector';
 import { BaseObject } from './BaseObject';
 import { BoundingBox } from './BoundingBox';
-import { CtxSetting } from './CtxSetting';
-import { CtxTransformation } from './CtxTransformation';
 
 export class Path extends BaseObject {
     Path: Point[] = [];
-    ctxSetting: CtxSetting = new CtxSetting();
-    ctxTransformation: CtxTransformation = new CtxTransformation();
 
     constructor(obj: Partial<Path> = {}) {
         super();
         Object.assign(this, obj);
     }
 
-    render(ctx: CanvasRenderingContext2D): void {
+    _drawObject(ctx: CanvasRenderingContext2D): void {
         if (this.Path.length == 0) return;
-
-        ctx.save();
-
-        this.ctxSetting.setSettingSetContextOption(ctx);
-        this.ctxTransformation.setContextTransformation(ctx, this.getBoundingBox());
 
         if (this.Path.length == 1) {
             const point = this.Path[0];
@@ -51,12 +42,6 @@ export class Path extends BaseObject {
         ctx.lineTo(p2.x, p2.y);
 
         ctx.stroke();
-
-        ctx.restore();
-
-        for (const eraser of this.erased) {
-            eraser.render(ctx);
-        }
     }
 
     pointDistance(_: Point): number {
@@ -190,5 +175,10 @@ export class Path extends BaseObject {
 
     quadraticCurve(origin: number, end: number, control: number, porsentage: number) {
         return Math.pow(1 - porsentage, 2) * origin + 2 * (1 - porsentage) * porsentage * control + Math.pow(porsentage, 2) * end;
+    }
+
+    addPoint(p: Point) {
+        this.dirty = true;
+        this.Path.push(p);
     }
 }

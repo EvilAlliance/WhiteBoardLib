@@ -1,8 +1,33 @@
-export function arrIdentical(a1: Uint32Array, a2: Uint32Array) {
-    let i = a1.length;
-    if (i != a2.length) return false;
-    while (i--) {
-        if (a1[i] !== a2[i]) return false;
+export default class CommonMethod {
+    _setObject(obj: Partial<this>) {
+        for (const prop in obj) {
+            this._set(prop, obj[prop] as this[typeof prop]);
+        }
     }
-    return true;
+
+    set<T extends keyof typeof this>(key: T | Partial<typeof this>, value?: this[T]) {
+        if (typeof key === 'object') {
+            this._setObject(key);
+        } else if (value) {
+            this._set(key, value);
+        }
+        return this;
+    }
+
+    _set<T extends keyof typeof this>(key: T, value: this[T]) {
+        this[key] = value;
+    }
+
+    toggle(property: keyof this) {
+        const value = this.get(property);
+        if (typeof value === 'boolean') {
+            // @ts-ignore
+            this.set(property, !value);
+        }
+        return this;
+    }
+
+    get<T extends keyof this>(property: T): this[T] {
+        return this[property];
+    }
 }
