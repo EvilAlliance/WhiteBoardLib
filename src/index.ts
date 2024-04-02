@@ -2,16 +2,17 @@ import { Canvas } from './WhiteBoard/Canvas';
 import { Brush } from './WhiteBoard/Cursor/Brush';
 import { Eraser } from './WhiteBoard/Cursor/Eraser';
 import { EraserAll } from './WhiteBoard/Cursor/EraserAll';
-import { FloofFill } from './WhiteBoard/Cursor/FloodFill';
+import { FloodFill } from './WhiteBoard/Cursor/FloodFill';
 import { Point } from './WhiteBoard/GeoSpace/Point';
 import { Circle } from './WhiteBoard/Object/Circle';
 import { CtxSetting } from './WhiteBoard/Object/CtxSetting';
 import { CtxTransformation } from './WhiteBoard/Object/CtxTransformation';
+import { Flood } from './WhiteBoard/Object/Flood';
 import { Rect } from './WhiteBoard/Object/Rect';
 
 
 const eraserAll = new EraserAll({ diameter: 5 });
-const floodFill = new FloofFill({ diameter: 5 });
+const floodFill = new FloodFill({ diameter: 5 });
 const brush = new Brush({
     color: 'Purple',
     diameter: 50,
@@ -56,8 +57,8 @@ const p = new Rect({
     ctxTransformation: new CtxTransformation({
         originX: 'center',
         originY: 'center',
-        scaleX: 2,
-        skewY: Math.PI / 4
+        //scaleX: 2,
+        //skewY: Math.PI / 4
     })
 });
 
@@ -79,3 +80,10 @@ const x = new Circle({
 canvas.addCanvasObjectRender(p);
 
 //canvas.addCanvasObjectRender(x);
+
+setInterval(() => canvas.render(), 4000)
+canvas.on('mouse:down', function(e: MouseEvent) {
+    const p = new Point(e.offsetX, e.offsetY)
+    canvas.Objects.filter((x) => x.Object instanceof Flood).forEach((x) => console.log(x.Object.pointInside(p)));
+
+})

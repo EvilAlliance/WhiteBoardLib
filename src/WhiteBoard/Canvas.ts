@@ -3,7 +3,7 @@ import { Brush } from './Cursor/Brush';
 import { BaseObject } from './Object/BaseObject';
 import { CanvasObjectContainer } from './Object/CanvasObjectContainer';
 import { Observable } from './Observable';
-import { CanvasParseColor, Color } from './Utils/Color';
+import { CanvasParseColor, Color, ColorRGBAToParse } from './Utils/Color';
 
 export type CanvasEvents = {
     'render:Before': null;
@@ -84,6 +84,7 @@ export class Canvas<T extends BaseBrush<any> = BaseBrush<any>> extends Observabl
     }
 
     render() {
+        this.ctx.fillStyle = CanvasParseColor(this.bgColor)
         this.fire('render:Before', null);
         for (const Object of this.Objects) {
             Object.fire('render:Before', null);
@@ -96,7 +97,8 @@ export class Canvas<T extends BaseBrush<any> = BaseBrush<any>> extends Observabl
 
     changeBGColor(x: Color) {
         this.bgColor = x;
-        this.Canvas.style.backgroundColor = CanvasParseColor(x);
+        if (ColorRGBAToParse(x)[3] !== 1) throw new Error('Tranparency must be of value 1');
+        this.render();
     }
 
     /**
