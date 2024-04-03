@@ -63,4 +63,8 @@ export class CtxTransformation {
         const y = OriginXY[this.originY as keyof typeof OriginXY] ?? this.originY;
         return new Point(tl.x + width * x, tl.y + heigth * y,);
     }
+
+    copy(): CtxTransformation {
+        return new CtxTransformation(this);
+    }
 }

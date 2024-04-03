@@ -20,4 +20,8 @@ export class CtxSetting {
 
         ctx.globalCompositeOperation = this.globalCompositeOperation;
     }
+
+    copy(): CtxSetting {
+        return new CtxSetting(this);
+    }
 }

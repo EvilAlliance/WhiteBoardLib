@@ -76,4 +76,13 @@ export class Circle extends BaseObject {
         if (this.ctxSetting.fill) ctx.fill();
         if (this.ctxSetting.strokeWidth > 0) ctx.stroke();
     }
+
+    copy(): Circle {
+        return new Circle({
+            ctxTransformation: this.ctxTransformation.copy(),
+            ctxSetting: this.ctxSetting.copy(),
+            center: this.center.copy(),
+            radius: this.radius,
+        })
+    }
 }

@@ -7,7 +7,6 @@ import { Point } from './WhiteBoard/GeoSpace/Point';
 import { Circle } from './WhiteBoard/Object/Circle';
 import { CtxSetting } from './WhiteBoard/Object/CtxSetting';
 import { CtxTransformation } from './WhiteBoard/Object/CtxTransformation';
-import { Flood } from './WhiteBoard/Object/Flood';
 import { Rect } from './WhiteBoard/Object/Rect';
 
 
@@ -79,11 +78,6 @@ const x = new Circle({
 
 canvas.addCanvasObjectRender(p);
 
-//canvas.addCanvasObjectRender(x);
+canvas.addCanvasObjectRender(x);
 
-setInterval(() => canvas.render(), 4000)
-canvas.on('mouse:down', function(e: MouseEvent) {
-    const p = new Point(e.offsetX, e.offsetY)
-    canvas.Objects.filter((x) => x.Object instanceof Flood).forEach((x) => console.log(x.Object.pointInside(p)));
-
-})
+//setInterval(() => canvas.render(), 4000)

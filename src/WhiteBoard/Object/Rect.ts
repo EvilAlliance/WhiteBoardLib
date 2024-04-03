@@ -46,59 +46,14 @@ export class Rect extends BaseObject {
         );
     }
 
-    pointInside(point: Point): boolean {
-        const boundingBox = this.getBoundingBox();
-        const transMat = this.ctxTransformation.GetTransformationMatrix(boundingBox);
-        transMat.invertSelf();
-
-        const p = new DOMPointReadOnly(point.x, point.y).matrixTransform(transMat);
-
-        const insideOuterBoudingBox = boundingBox.tl.x <= p.x &&
-            boundingBox.br.x >= p.x &&
-            boundingBox.tl.y <= p.y &&
-            boundingBox.br.y >= p.y;
-
-        if (this.ctxSetting.fill)
-            return insideOuterBoudingBox;
-
-        if (this.ctxSetting.strokeWidth > 0 && insideOuterBoudingBox) {
-            boundingBox.addPadding(-this.ctxSetting.strokeWidth);
-
-            const insideInnerBoundingBox = boundingBox.tl.x < p.x &&
-                boundingBox.br.x > p.x &&
-                boundingBox.tl.y < p.y &&
-                boundingBox.br.y > p.y;
-
-            return !insideInnerBoundingBox;
-        }
-
-        return false;
-    }
-
-    pointDistance(point: Point): number {
-        if (this.pointInside(point)) return 0;
-
-        const boundingBox = this.getBoundingBox();
-        const transMat = this.ctxTransformation.GetTransformationMatrix(boundingBox);
-        transMat.invertSelf();
-
-        const p = point.copy().transform(transMat);
-
-        const boundingBoxVal = boundingBox.getValues();
-
-        let min = Number.MAX_SAFE_INTEGER;
-
-        for (let i = 0; i < boundingBoxVal.length; i++) {
-            min = Math.min(min, this.distanceBetweenSegmentToPoint(boundingBoxVal[i], boundingBoxVal[(i + 1) % boundingBoxVal.length], p));
-        }
-
-        if (this.ctxSetting.fill) return min;
-
-        boundingBox.addPadding(-this.ctxSetting.strokeWidth);
-        for (let i = 0; i < boundingBoxVal.length; i++) {
-            min = Math.min(min, this.distanceBetweenSegmentToPoint(boundingBoxVal[i], boundingBoxVal[(i + 1) % boundingBoxVal.length], p));
-        }
-
-        return min;
+    copy(): Rect {
+        return new Rect({
+            ctxSetting: this.ctxSetting.copy(),
+            ctxTransformation: this.ctxTransformation.copy(),
+            width: this.width,
+            height: this.height,
+            left: this.left,
+            top: this.top,
+        });
     }
 }

@@ -16,9 +16,8 @@ export abstract class BaseObject extends CommonMethod {
     ctxSetting: CtxSetting = new CtxSetting();
     ctxTransformation: CtxTransformation = new CtxTransformation();
     abstract _drawObject(ctx: CanvasRenderingContext2D): void;
-    abstract pointInside(point: Point): boolean;
     abstract getBoundingBox(): BoundingBox;
-    abstract pointDistance(p: Point): number;
+    abstract copy(): BaseObject;
 
     distanceBetweenSegmentToPoint(s1: Point, s2: Point, p: Point): number {
         const dist2 = Math.pow(s1.x - s2.x, 2) + Math.pow(s1.y - s2.y, 2);
@@ -32,8 +31,8 @@ export abstract class BaseObject extends CommonMethod {
         return new Vector(projection, p).mod;
     }
 
-    pointInRange(mousePoint: Point, range: number): boolean {
-        return this.pointDistance(mousePoint) <= range;
+    objectShareArea(o: BaseObject): boolean {
+        return this.getTranformedBoundigBox().shareArea(o.getTranformedBoundigBox());
     }
 
     getCanvasData() {
@@ -125,8 +124,17 @@ export abstract class BaseObject extends CommonMethod {
         }
     }
 
+    getTranformedBoundigBox(): BoundingBox {
+        const bb = this.getBoundingBox();
+        return bb.tranform(this.ctxTransformation.GetTransformationMatrix(bb));
+    }
+
     set<T extends keyof this>(key: Partial<this> | T, value?: this[T] | undefined): this {
         this.dirty = true;
         return super.set(key, value);
+    }
+
+    pointInside(p: Point) {
+        return this.getTranformedBoundigBox().pointInside(p);
     }
 }

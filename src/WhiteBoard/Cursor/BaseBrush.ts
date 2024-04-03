@@ -1,26 +1,26 @@
 import { Canvas } from '../Canvas';
 
-export abstract class BaseBrush<T = void> {
+export abstract class BaseBrush {
     diameter: number = 10;
 
     init(canvas: Canvas<typeof this>, e: MouseEvent) {
-        const temp = canvas.cursor.mouseDown(canvas, e);
+        canvas.cursor.mouseDown(canvas, e);
 
-        canvas.cursor.mouseMove(canvas, e, temp);
+        canvas.cursor.mouseMove(canvas, e);
 
         const x = canvas.on('mouse:move', function(this: Canvas, e: MouseEvent) {
-            canvas.cursor.mouseMove(canvas, e, temp);
+            canvas.cursor.mouseMove(canvas, e);
         });
 
         canvas.once('mouse:up', function(this: Canvas, e: MouseEvent) {
             x();
-            canvas.cursor.mouseUp(canvas, e, temp);
+            canvas.cursor.mouseUp(canvas, e);
         });
     }
 
-    abstract mouseDown(canvas: Canvas<typeof this>, e: MouseEvent): T;
-    abstract mouseMove(canvas: Canvas<typeof this>, e: MouseEvent, obj: T): void;
-    abstract mouseUp(canvas: Canvas<typeof this>, e: MouseEvent, obj: T): void;
+    abstract mouseDown(canvas: Canvas<typeof this>, e: MouseEvent): void;
+    abstract mouseMove(canvas: Canvas<typeof this>, e: MouseEvent): void;
+    abstract mouseUp(canvas: Canvas<typeof this>, e: MouseEvent): void;
 
     renderCursor(canvas: HTMLCanvasElement = document.createElement('canvas')) {
         const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;

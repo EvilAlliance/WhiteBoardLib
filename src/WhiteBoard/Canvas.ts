@@ -13,7 +13,7 @@ export type CanvasEvents = {
     'mouse:up': MouseEvent;
 }
 
-export class Canvas<T extends BaseBrush<any> = BaseBrush<any>> extends Observable<CanvasEvents> {
+export class Canvas<T extends BaseBrush = BaseBrush> extends Observable<CanvasEvents> {
     public Canvas: HTMLCanvasElement;
     public ctx: CanvasRenderingContext2D;
     public Objects: CanvasObjectContainer[] = [];
@@ -22,7 +22,7 @@ export class Canvas<T extends BaseBrush<any> = BaseBrush<any>> extends Observabl
     public cursor: T;
     bgColor: Color = 'White';
 
-    constructor(tag: string | HTMLCanvasElement, width: number, height: number, backgroundColor: Color = 'White', baseBrush: BaseBrush<any> = new Brush()) {
+    constructor(tag: string | HTMLCanvasElement, width: number, height: number, backgroundColor: Color = 'White', baseBrush: BaseBrush = new Brush()) {
         super();
         if (tag instanceof HTMLCanvasElement) {
             this.Canvas = tag;
@@ -84,7 +84,11 @@ export class Canvas<T extends BaseBrush<any> = BaseBrush<any>> extends Observabl
     }
 
     render() {
+        this.ctx.save();
         this.ctx.fillStyle = CanvasParseColor(this.bgColor)
+        this.ctx.fillRect(0, 0, this.width, this.height);
+        this.ctx.restore();
+
         this.fire('render:Before', null);
         for (const Object of this.Objects) {
             Object.fire('render:Before', null);
@@ -93,6 +97,10 @@ export class Canvas<T extends BaseBrush<any> = BaseBrush<any>> extends Observabl
             Object.fire('render:After', null);
         }
         this.fire('render:After', null);
+    }
+
+    renderSingleObject(obj: BaseObject) {
+        obj.render(this.ctx);
     }
 
     changeBGColor(x: Color) {
@@ -109,7 +117,7 @@ export class Canvas<T extends BaseBrush<any> = BaseBrush<any>> extends Observabl
         this.Canvas.style.cursor = 'url(' + canvas.toDataURL() + ') ' + w + ' ' + w + ' , auto';
     }
 
-    setBrush(b: BaseBrush<any>) {
+    setBrush(b: BaseBrush) {
         this.cursor = b as T;
         const canvas = b.renderCursor();
         this.changeCursor(canvas);

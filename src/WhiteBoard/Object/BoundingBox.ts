@@ -14,19 +14,10 @@ export class BoundingBox {
     }
 
     tranform(transformationMat: DOMMatrix) {
-        const tl = new DOMPointReadOnly(this.tl.x, this.tl.y).matrixTransform(transformationMat);
-        const tr = new DOMPointReadOnly(this.tr.x, this.tr.y).matrixTransform(transformationMat);
-        const bl = new DOMPointReadOnly(this.bl.x, this.bl.y).matrixTransform(transformationMat);
-        const br = new DOMPointReadOnly(this.br.x, this.br.y).matrixTransform(transformationMat);
-
-        this.tl.x = tl.x;
-        this.tl.y = tl.y;
-        this.tr.x = tr.x;
-        this.tr.y = tr.y;
-        this.bl.x = bl.x;
-        this.bl.y = bl.y;
-        this.br.x = br.x;
-        this.br.y = br.y;
+        this.tl.transform(transformationMat);
+        this.tr.transform(transformationMat);
+        this.bl.transform(transformationMat);
+        this.br.transform(transformationMat);
 
         return this;
     }
@@ -51,5 +42,44 @@ export class BoundingBox {
 
     getValues() {
         return [this.tl, this.tr, this.br, this.bl];
+    }
+
+    shareArea(bb: BoundingBox): boolean {
+        const coord = bb.getValues();
+        for (let i = 0; i < coord.length; i++) {
+            const point = coord[i];
+            const point1 = coord[(i + 1) % coord.length];
+            if (this.lineIntersectBoundingBox(point, point1) || this.pointInside(point)) return true;
+        }
+
+        return false;
+    }
+
+    lineIntersectBoundingBox(point: Point, point1: Point): boolean {
+        const coord = this.getValues();
+
+        for (let i = 0; i < coord.length; i++) {
+            const q1 = coord[i];
+            const q2 = coord[(i + 1) % coord.length];
+
+            if (this.lineIntersectLine(point, point1, q1, q2)) return true;
+        }
+        return false;
+    }
+
+    lineIntersectLine(p1: Point, p2: Point, q1: Point, q2: Point): boolean {
+        const t = Math.abs(((p1.x - q1.x) * (q1.y - q2.y) - (p1.y - q1.y) * (q1.x - q2.x)) /
+            ((p1.x - p2.x) * (q1.y - q2.y) - (p1.y - p2.y) * (q1.x - q2.x)));
+        const u = Math.abs(((p1.x - p2.x) * (p1.y - q1.y) - (p1.y - p2.y) * (p1.x - q1.x)) /
+            ((p1.x - p2.x) * (q1.y - q2.y) - (p1.y - p2.y) * (q1.x - q2.y)));
+
+        return 0 <= t && t <= 1 && 0 <= u && u <= 1;
+    }
+
+    pointInside(p: Point) {
+        return this.tl.x <= p.x &&
+            this.br.x >= p.x &&
+            this.tl.y <= p.y &&
+            this.br.y >= p.y;
     }
 }

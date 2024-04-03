@@ -105,80 +105,16 @@ export class Path extends BaseObject {
         return new BoundingBox(tl, tr, bl, br);
     }
 
-    pointInside(point: Point): boolean {
-        return !!this.pointInRange(point, this.ctxSetting.strokeWidth / 2);
-    }
-
-    // ignores everithing exept the stroke;
-    pointInRange(p: Point, range: number): boolean {
-        const boundingBox = this.getBoundingBox();
-        const transMat = this.ctxTransformation.GetTransformationMatrix(boundingBox);
-        transMat.invertSelf();
-
-        const point = new DOMPointReadOnly(p.x, p.y).matrixTransform(transMat);
-        const mousePoint = new Point(point.x, point.y);
-
-
-        for (let i = 0; i < this.Path.length; i++) {
-            const coord = this.Path[i];
-            if (new Vector(coord, mousePoint).mod < range + this.ctxSetting.strokeWidth) return true;
-            if (i < this.Path.length - 1) {
-                const coord2 = this.Path[i + 1];
-                if (this.mousePointInsideSquareOf2Points(coord, coord2, mousePoint)) {
-                    return this.searchBetween2Points(coord, coord2, mousePoint, range);
-                }
-            }
-        }
-        return false;
-    }
-
-    mousePointInsideSquareOf2Points(p1: Point, p2: Point, mousePoint: Point) {
-        const InsideYLimiter = (p1.y >= mousePoint.y && p2.y <= mousePoint.y) || (p2.y >= mousePoint.y && p1.y <= mousePoint.y);
-        const InsideXLimiter = (p1.x >= mousePoint.x && p2.x <= mousePoint.x) || (p2.x >= mousePoint.x && p1.x <= mousePoint.x);
-        return InsideYLimiter && InsideXLimiter;
-    }
-
-    searchBetween2Points(p1: Point, p2: Point, mousePoint: Point, range: number): boolean {
-        const vec = new Vector(p1, p2);
-        vec.mod *= 0.5;
-
-        const pMid = p1.copy();
-        pMid.translate(vec);
-
-        let low = 0;
-        let high = 100;
-
-        while (low < high) {
-            const j = Math.ceil((low + high) / 2);
-            const quadraticCurveP = this.quadraticCurvePoint(p1, p2, pMid, j / 100);
-            const dist = new Vector(quadraticCurveP, mousePoint).mod;
-            if (dist < range + this.ctxSetting.strokeWidth) return true;
-            const quadraticCurvePMore = this.quadraticCurvePoint(p1, p2, pMid, (j + 1) / 100);
-            const quadraticCurvePLess = this.quadraticCurvePoint(p1, p2, pMid, (j - 1) / 100);
-            const distM = new Vector(quadraticCurvePMore, mousePoint).mod;
-            const distL = new Vector(quadraticCurvePLess, mousePoint).mod;
-            if (distM < distL) {
-                low = j + 1;
-            } else {
-                high = j - 1;
-            }
-        }
-        return false;
-    }
-
-    quadraticCurvePoint(origin: Point, end: Point, control: Point, porsentage: number): Point {
-        return new Point(
-            this.quadraticCurve(origin.x, end.x, control.x, porsentage),
-            this.quadraticCurve(origin.y, end.y, control.y, porsentage)
-        );
-    }
-
-    quadraticCurve(origin: number, end: number, control: number, porsentage: number) {
-        return Math.pow(1 - porsentage, 2) * origin + 2 * (1 - porsentage) * porsentage * control + Math.pow(porsentage, 2) * end;
-    }
-
     addPoint(p: Point) {
         this.dirty = true;
         this.Path.push(p);
+    }
+
+    copy(): Path {
+        return new Path({
+            ctxSetting: this.ctxSetting.copy(),
+            ctxTransformation: this.ctxTransformation.copy(),
+            Path: this.Path.slice(),
+        });
     }
 }
