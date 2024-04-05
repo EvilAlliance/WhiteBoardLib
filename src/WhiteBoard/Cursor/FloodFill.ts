@@ -8,7 +8,7 @@ import { BaseBrush } from "./BaseBrush";
 
 export class FloodFill extends BaseBrush {
     targetColor: ColorRGBA = [255, 0, 0, 255];
-    tolerance: number = 10;
+    tolerance: number = 20;
 
     constructor(obj: Partial<FloodFill>) {
         super();
@@ -33,11 +33,13 @@ export class FloodFill extends BaseBrush {
     }
 
     RGBAtoRGB(bg: ColorRGB, fg: ColorRGBA): ColorRGB {
-        if (fg[3] === 1) return [fg[0], fg[1], fg[2]];
+        const alpha = fg[3] / 255;
+        if (alpha === 1) return [fg[0], fg[1], fg[2]];
+
         return [
-            this.getTintValue(fg[3], fg[0], bg[0]),
-            this.getTintValue(fg[3], fg[1], bg[1]),
-            this.getTintValue(fg[3], fg[2], bg[2])
+            this.getTintValue(alpha, fg[0], bg[0]),
+            this.getTintValue(alpha, fg[1], bg[1]),
+            this.getTintValue(alpha, fg[2], bg[2])
         ];
     }
 
@@ -52,8 +54,9 @@ export class FloodFill extends BaseBrush {
     colorMatch(current: ColorRGB, base: ColorRGB): number {
         const c = ColorRGBToLCH(current);
         const b = ColorRGBToLCH(base);
+        const result = Math.hypot(c[0] - b[0], (c[1] - b[1]) / (1 + 0.045 * c[1]), (c[2] - b[2]) / (1 + 0.015 * c[1]));
 
-        return Math.hypot(c[0] - b[0], (c[1] - b[1]) / (1 + 0.045 * c[1]), (c[2] - b[2]) / (1 + 0.015 * c[1]));
+        return result;
     }
 
     getPixel(imageData: ImageData, p: Point): ColorRGBA {
@@ -81,10 +84,11 @@ export class FloodFill extends BaseBrush {
         const visited = new Uint8Array(imageData.width * imageData.height);
 
         // get the color we're filling
-        const pixelColor = this.getPixel(imageData, p);
+        const pixelColorRGBA = this.getPixel(imageData, p);
+        const pixelColorRGB = this.RGBAtoRGB(bgColor, pixelColorRGBA);
 
         // check we are actually filling a different color
-        if (this.colorMatch(this.RGBAtoRGB(bgColor, pixelColor), this.RGBAtoRGB(bgColor, this.targetColor)) > this.tolerance) {
+        if (this.colorMatch(pixelColorRGB, this.RGBAtoRGB(bgColor, this.targetColor)) > 10) {
 
             const q = new Queue<Point>();
 
@@ -94,11 +98,12 @@ export class FloodFill extends BaseBrush {
             q.enqueue(p);
 
             while (q.peek()) {
-                const a = q.deque() as Point;
+                const a = q.dequeue() as Point;
 
+                if (a.x < 0 || a.y < 0 || a.x >= imageData.width || a.y >= imageData.height) continue;
                 const currentColor = this.getPixel(imageData, a);
                 if (!visited[a.y * imageData.width + a.x] &&
-                    this.colorMatch(this.RGBAtoRGB(bgColor, currentColor), this.RGBAtoRGB(bgColor, pixelColor)) <= this.tolerance) {
+                    this.colorMatch(this.RGBAtoRGB(bgColor, currentColor), pixelColorRGB) <= this.tolerance) {
                     this.setPixel(newImageData, a, this.targetColor);
 
                     visited[a.y * imageData.width + a.x] = 1;  // mark we were here already
@@ -143,7 +148,6 @@ export class FloodFill extends BaseBrush {
             const cctx = c.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
             cctx.putImageData(finalImageData, 0, 0);
 
-            console.log('pepe')
             return new Flood(c, cctx, tl.copy());
         }
         return null;

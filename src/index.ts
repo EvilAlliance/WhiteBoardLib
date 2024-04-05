@@ -19,7 +19,7 @@ const brush = new Brush({
 
 const eraser = new Eraser({ diameter: 25 });
 
-export const canvas = new Canvas('canvas', 1000, 800, 'Orange', brush);
+export const canvas = new Canvas('canvas', 1000, 800, 'Orange', floodFill);
 
 const eraserAllB = document.querySelector('#eraserAll');
 const brushB = document.querySelector('#brush');

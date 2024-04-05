@@ -39,7 +39,7 @@ export class Eraser extends BaseBrush {
             this.path.addPoint(p);
         } else {
             const v = new Vector(p, this.path.Path[this.path.Path.length - 1]);
-            if (v.mod >= canvas.cursor.diameter / 3) {
+            if (v.mod() >= 3) {
                 this.path.addPoint(p);
             }
         }

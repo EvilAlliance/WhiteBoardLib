@@ -28,7 +28,7 @@ export abstract class BaseObject extends CommonMethod {
 
         const projection = new Point(s1.x + t * (s2.x - s1.x), s1.y + t * (s2.y - s1.y));
 
-        return new Vector(projection, p).mod;
+        return new Vector(projection, p).mod();
     }
 
     objectShareArea(o: BaseObject): boolean {
@@ -75,7 +75,6 @@ export abstract class BaseObject extends CommonMethod {
     }
 
     createCacheCanvas() {
-        console.log('recreating cache', this.constructor.name);
         this.dirty = false;
 
         const { tl, tr, bl, br } = this.getBoundingBox().tranform(this.ctxTransformation.GetTransformationMatrix(this.getBoundingBox()));

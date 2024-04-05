@@ -23,7 +23,7 @@ export default class Queue<T> {
         this.tail = node;
     }
 
-    deque(): T | undefined {
+    dequeue(): T | undefined {
         if (!this.head) return undefined;
 
         this.length--;

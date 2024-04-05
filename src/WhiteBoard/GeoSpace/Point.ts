@@ -10,8 +10,8 @@ export class Point {
     }
 
     translate(v: Vector): Point {
-        this.x += v.getX();
-        this.y += v.getY();
+        this.x += v.x;
+        this.y += v.y;
 
         return this;
     }

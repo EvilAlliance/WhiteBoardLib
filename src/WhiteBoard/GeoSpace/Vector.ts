@@ -1,48 +1,49 @@
 import { ORIGIN, Point } from './Point';
 
 export class Vector {
-    public mod: number;
-    public phase: number;
+    x: number;
+    y: number;
+
 
     constructor(initial: Point, final: Point) {
-        const x = final.x - initial.x;
-        const y = final.y - initial.y;
+        this.x = final.x - initial.x;
+        this.y = final.y - initial.y;
+    }
 
-        this.mod = Math.hypot(x, y);
+    mod(): number {
+        return Math.hypot(this.x, this.y);
+    }
 
-        let correction = 0;
+    phase(): number {
+        let x = 0;
 
-        if (Math.sign(x) === -1) {
-            if (Math.sign(x) === -1) {
-                correction = -Math.PI;
+        if (Math.sign(this.x) === -1) {
+            if (Math.sign(this.y) === -1) {
+                x = -Math.PI;
             } else {
-                correction = Math.PI;
+                x = Math.PI;
             }
         }
 
-        this.phase = Math.atan(y / x) + correction;
+        return Math.atan(this.y / this.x) + x;
     }
 
-    getX(): number {
-        return this.mod * Math.cos(this.phase);
-    }
-
-    getY(): number {
-        return this.mod * Math.sin(this.phase);
+    rotate(x: number) {
+        const mod = this.mod();
+        const ang = this.phase() + x;
+        this.x = mod * Math.cos(ang);
+        this.y = mod * Math.sin(ang);
     }
 
     translatePoint(p: Point): this {
-        const x = this.getX();
-        const y = this.getY();
-
-        p.x += x;
-        p.y += y;
+        p.x += this.x;
+        p.y += this.y;
 
         return this;
     }
 
     copy(): Vector {
-        return new Vector(ORIGIN, new Point(this.getX(), this.getY()));
+        return new Vector(ORIGIN, new Point(this.x, this.y));
     }
 }
 

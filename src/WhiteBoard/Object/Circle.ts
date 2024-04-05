@@ -1,5 +1,4 @@
 import { Point } from '../GeoSpace/Point';
-import { Vector } from '../GeoSpace/Vector';
 import { BaseObject } from './BaseObject';
 import { BoundingBox } from './BoundingBox';
 
@@ -10,49 +9,6 @@ export class Circle extends BaseObject {
     constructor(obj: Partial<Circle>) {
         super();
         Object.assign(this, obj);
-    }
-
-    /*
-     * Point wont be edited;
-     * */
-    pointInside(point: Point): boolean {
-        const boundingBox = this.getBoundingBox();
-        const transMat = this.ctxTransformation.GetTransformationMatrix(boundingBox);
-        transMat.invertSelf();
-
-        const newPoint = point.copy();
-        newPoint.transform(transMat);
-
-        const distanceVec = new Vector(this.center, newPoint);
-
-        const inside = distanceVec.mod <= this.radius;
-
-        if (this.ctxSetting.fill)
-            return inside;
-
-        if (this.ctxSetting.strokeWidth > 0 && inside) {
-            return !(distanceVec.mod < this.radius - this.ctxSetting.strokeWidth);
-        }
-
-        return false;
-    }
-
-    pointDistance(p: Point): number {
-        const boundingBox = this.getBoundingBox();
-        const transMat = this.ctxTransformation.GetTransformationMatrix(boundingBox);
-        transMat.invertSelf();
-
-        const newPoint = p.copy();
-        newPoint.transform(transMat);
-
-        const vec = new Vector(this.center, newPoint);
-        const distance = vec.mod - this.radius;
-
-        if (distance > 0 || this.ctxSetting.fill) return Math.max(distance, 0);
-
-        if (distance + this.ctxSetting.strokeWidth > this.radius + this.ctxSetting.strokeWidth) return 0;
-
-        return 0;
     }
 
     getBoundingBox(): BoundingBox {

@@ -30,7 +30,8 @@ export class Path extends BaseObject {
         ctx.moveTo(p1.x, p1.y);
         for (let i = 1; i < this.Path.length - 1; i++) {
             const vec = new Vector(p1, p2);
-            vec.mod *= 0.5;
+            vec.x *= 0.5;
+            vec.y *= 0.5;
 
             const pMid = p1.copy();
             pMid.translate(vec);
