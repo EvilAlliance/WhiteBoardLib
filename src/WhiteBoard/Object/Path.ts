@@ -5,6 +5,7 @@ import { BoundingBox } from './BoundingBox';
 
 export class Path extends BaseObject {
     Path: Point[] = [];
+    check: Map<number, Point> = new Map();
 
     constructor(obj: Partial<Path> = {}) {
         super();
@@ -43,11 +44,6 @@ export class Path extends BaseObject {
         ctx.lineTo(p2.x, p2.y);
 
         ctx.stroke();
-    }
-
-    pointDistance(_: Point): number {
-        console.log('TODO pointDistance Path');
-        return 0;
     }
 
     getBoundingBox(): BoundingBox {
@@ -106,9 +102,77 @@ export class Path extends BaseObject {
         return new BoundingBox(tl, tr, bl, br);
     }
 
-    addPoint(p: Point) {
+    push(...p: Point[]) {
         this.dirty = true;
-        this.Path.push(p);
+        return this.Path.push(...p);
+    }
+
+    copyWithin(target: number, start: number, end?: number | undefined) {
+        this.dirty = true;
+        this.Path.copyWithin(target, start, end);
+        return this;
+    }
+
+    fill(value: Point, start?: number | undefined, end?: number | undefined) {
+        this.dirty = true;
+        return this.Path.fill(value, start, end);
+    }
+
+    pop(): Point | undefined {
+        this.dirty = true;
+        return this.Path.pop();
+    }
+
+    reverse(): Point[] {
+        this.dirty = true;
+        return this.Path.reverse();
+    }
+
+    shift(): Point | undefined {
+        this.dirty = true;
+        return this.Path.shift();
+    }
+
+    splice(start: number, deleteCount?: number | undefined): Point[];
+    splice(start: number, deleteCount: number, ...items: Point[]): Point[];
+    splice(start: number, deleteCount?: number, ...rest: Point[]): Point[] {
+        this.dirty = true;
+        if (!deleteCount) return this.Path.splice(start)
+        return this.Path.splice(start, deleteCount, ...rest);
+    }
+
+    unshift(...items: any[]): number {
+        this.dirty = true;
+        return this.Path.unshift(...items);
+    }
+
+    getPoint(i: number): Point {
+        const x = this.Path[i];
+        this.check.set(i, x.copy());
+        return x;
+    }
+
+    isDirty(): boolean {
+        if (super.isDirty()) return true;
+
+        for (const [key, value] of this.check.entries()) {
+            if (key >= this.Path.length || value != this.Path[key]) {
+                this.check.delete(key);
+                return true;
+            }
+            const x = this.Path[key];
+            if (value.x != x.x && value.y != x.y) return true;
+        }
+
+        return false;
+    }
+
+    checkDelete(i: number): boolean {
+        return this.check.delete(i);
+    }
+
+    clearCheck() {
+        this.check.clear();
     }
 
     copy(): Path {
@@ -119,3 +183,4 @@ export class Path extends BaseObject {
         });
     }
 }
+

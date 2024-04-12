@@ -1,3 +1,4 @@
+import CommonMethod from '../CommonMethod';
 import { Point } from '../GeoSpace/Point';
 import { BoundingBox } from './BoundingBox';
 
@@ -9,7 +10,7 @@ export const OriginXY = Object.freeze({
     bottom: 1,
 });
 
-export class CtxTransformation {
+export class CtxTransformation extends CommonMethod {
     originX: 'left' | 'center' | 'right' | number = 'center';
     originY: 'top' | 'center' | 'bottom' | number = 'center';
     skewY: number = 0;
@@ -17,7 +18,10 @@ export class CtxTransformation {
     scaleY: number = 1;
     scaleX: number = 1;
     angle: number = 0;
+    dirty: boolean = true;
+
     constructor(obj?: Partial<CtxTransformation>) {
+        super();
         Object.assign(this, obj);
     }
 
@@ -66,5 +70,10 @@ export class CtxTransformation {
 
     copy(): CtxTransformation {
         return new CtxTransformation(this);
+    }
+
+    set<T extends keyof this>(key: Partial<this> | T, value?: this[T] | undefined): this {
+        this.dirty = true;
+        return super.set(key, value);
     }
 }

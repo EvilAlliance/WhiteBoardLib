@@ -63,7 +63,7 @@ export abstract class BaseObject extends CommonMethod {
     }
 
     render(ctx: CanvasRenderingContext2D) {
-        if (!this.cacheCanvas || this.dirty || this.erased.some((x) => x.dirty)) this.cacheCanvas = this.createCacheCanvas();
+        if (!this.cacheCanvas || this.isDirty()) this.cacheCanvas = this.createCacheCanvas();
 
         ctx.save();
 
@@ -76,6 +76,8 @@ export abstract class BaseObject extends CommonMethod {
 
     createCacheCanvas() {
         this.dirty = false;
+        this.ctxTransformation.dirty = false;
+        this.ctxSetting.dirty = false;
 
         const { tl, tr, bl, br } = this.getBoundingBox().tranform(this.ctxTransformation.GetTransformationMatrix(this.getBoundingBox()));
 
@@ -136,4 +138,6 @@ export abstract class BaseObject extends CommonMethod {
     pointInside(p: Point) {
         return this.getTranformedBoundigBox().pointInside(p);
     }
+
+    isDirty(): boolean { return this.ctxSetting.dirty || this.ctxTransformation.dirty || this.dirty || this.erased.some((x) => x.dirty) }
 }

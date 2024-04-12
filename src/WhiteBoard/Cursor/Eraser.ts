@@ -36,19 +36,19 @@ export class Eraser extends BaseBrush {
         const p = new Point(e.offsetX, e.offsetY);
 
         if (this.path.Path.length == 0) {
-            this.path.addPoint(p);
+            this.path.push(p);
         } else {
             const v = new Vector(p, this.path.Path[this.path.Path.length - 1]);
             if (v.mod() >= 3) {
-                this.path.addPoint(p);
+                this.path.push(p);
             }
         }
 
         for (const object of canvas.Objects) {
             if (!object.render) continue;
-            if (this.erasingObjects.has(object.Object)) {
-                //@ts-ignore
-                this.erasingObjects.get(object.Object).addPoint(p);
+            const path = this.erasingObjects.get(object.Object);
+            if (path) {
+                path.push(p);
             } else if (object.Object.objectShareArea(this.path)) {
                 const path = this.path.copy();
                 object.Object.erased.push(path);

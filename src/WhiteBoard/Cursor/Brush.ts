@@ -36,11 +36,11 @@ export class Brush extends BaseBrush {
         const p = new Point(e.offsetX, e.offsetY);
 
         if (this.path.Path.length == 0) {
-            this.path.addPoint(p);
+            this.path.push(p);
         } else {
             const v = new Vector(p, this.path.Path[this.path.Path.length - 1]);
             if (v.mod() >= 3) {
-                this.path.addPoint(p);
+                this.path.push(p);
             }
         }
 
