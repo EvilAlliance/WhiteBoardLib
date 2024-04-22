@@ -47,59 +47,15 @@ export class Path extends BaseObject {
     }
 
     getBoundingBox(): BoundingBox {
-        const tl = new Point(this.Path[0].x, this.Path[0].y);
+        const boundingBox = new BoundingBox(this.Path[0].copy(), this.Path[0].copy(), this.Path[0].copy(), this.Path[0].copy());
 
-        if (this.Path.length == 1) {
-            return new BoundingBox(
-                new Point(tl.x - this.ctxSetting.strokeWidth / 2, tl.y - this.ctxSetting.strokeWidth / 2),
-                new Point(tl.x + this.ctxSetting.strokeWidth / 2, tl.y - this.ctxSetting.strokeWidth / 2),
-                new Point(tl.x - this.ctxSetting.strokeWidth / 2, tl.y + this.ctxSetting.strokeWidth / 2),
-                new Point(tl.x + this.ctxSetting.strokeWidth / 2, tl.y + this.ctxSetting.strokeWidth / 2)
-            );
-        }
-        const br = new Point(this.Path[1].x, this.Path[1].y);
-
-        if (tl.y > br.y) {
-            const temp = tl.y;
-            tl.y = br.y;
-            br.y = temp;
+        for (let i = 1; i < this.Path.length; i++) {
+            boundingBox.containPoint(this.Path[i]);
         }
 
-        if (tl.x > br.x) {
-            const temp = tl.x;
-            tl.x = br.x;
-            br.x = temp;
-        }
+        boundingBox.addPadding(this.ctxSetting.strokeWidth / 2);
 
-        for (let i = 0; i < this.Path.length; i++) {
-            const p = this.Path[i];
-
-            if (p.x < tl.x) {
-                tl.x = p.x;
-            } else if (p.x > br.x) {
-                br.x = p.x;
-            }
-
-            if (p.y < tl.y) {
-                tl.y = p.y;
-            } else if (p.y > br.y) {
-                br.y = p.y;
-            }
-        }
-
-        const bl = new Point(tl.x, br.y);
-        const tr = new Point(br.x, tl.y);
-
-        tl.x -= this.ctxSetting.strokeWidth / 2;
-        tl.y -= this.ctxSetting.strokeWidth / 2;
-        tr.x += this.ctxSetting.strokeWidth / 2;
-        tr.y -= this.ctxSetting.strokeWidth / 2;
-        bl.x -= this.ctxSetting.strokeWidth / 2;
-        bl.y += this.ctxSetting.strokeWidth / 2;
-        br.x += this.ctxSetting.strokeWidth / 2;
-        br.y += this.ctxSetting.strokeWidth / 2;
-
-        return new BoundingBox(tl, tr, bl, br);
+        return boundingBox;
     }
 
     push(...p: Point[]) {

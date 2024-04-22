@@ -9,6 +9,22 @@ export class Point {
         this.y = y;
     }
 
+    translateX(x: number): Point {
+        this.x += x;
+        return this;
+    }
+
+    translateY(y: number): Point {
+        this.y += y;
+        return this;
+    }
+
+    translateXY(x: number, y: number): Point {
+        this.x += x;
+        this.y += y;
+        return this;
+    }
+
     translate(v: Vector): Point {
         this.x += v.x;
         this.y += v.y;

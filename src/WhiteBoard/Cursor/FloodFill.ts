@@ -1,7 +1,7 @@
 import Queue from "../../DataStructures/Queue";
 import { Canvas } from "../Canvas";
 import { Point } from "../GeoSpace/Point";
-import { NORMAL } from "../GeoSpace/Vector";
+import { BoundingBox } from "../Object/BoundingBox";
 import { Flood } from "../Object/Flood";
 import { ColorRGB, ColorRGBA, ColorRGBToLCH, ColorRGBToParse } from "../Utils/Color";
 import { BaseBrush } from "./BaseBrush";
@@ -77,11 +77,9 @@ export class FloodFill extends BaseBrush {
     }
 
     floodFill(ctx: CanvasRenderingContext2D, p: Point, bgColor: ColorRGB): Flood | null {
+        /*
         const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
         const newImageData = new ImageData(ctx.canvas.width, ctx.canvas.height);
-
-        // flags for if we visited a pixel already
-        const visited = new Uint8Array(imageData.width * imageData.height);
 
         // get the color we're filling
         const pixelColorRGBA = this.getPixel(imageData, p);
@@ -102,11 +100,9 @@ export class FloodFill extends BaseBrush {
 
                 if (a.x < 0 || a.y < 0 || a.x >= imageData.width || a.y >= imageData.height) continue;
                 const currentColor = this.getPixel(imageData, a);
-                if (!visited[a.y * imageData.width + a.x] &&
-                    this.colorMatch(this.RGBAtoRGB(bgColor, currentColor), pixelColorRGB) <= this.tolerance) {
+                if (this.colorMatch(this.RGBAtoRGB(bgColor, this.getPixel(newImageData, a)), this.RGBAtoRGB(bgColor, this.targetColor)) && this.colorMatch(this.RGBAtoRGB(bgColor, currentColor), pixelColorRGB) <= this.tolerance) {
                     this.setPixel(newImageData, a, this.targetColor);
 
-                    visited[a.y * imageData.width + a.x] = 1;  // mark we were here already
                     q.enqueue(a.copy().translate(NORMAL.x));
                     q.enqueue(a.copy().translate(NORMAL.xI));
                     q.enqueue(a.copy().translate(NORMAL.y));
@@ -150,8 +146,100 @@ export class FloodFill extends BaseBrush {
 
             return new Flood(c, cctx, tl.copy());
         }
-        return null;
+        return null;*/
+
+        const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+        const pixelColorRGBA = this.getPixel(imageData, p);
+
+        const baseColorRGB = this.RGBAtoRGB(bgColor, pixelColorRGBA);
+
+        const targetColorRGB = this.RGBAtoRGB(bgColor, this.targetColor)
+
+        if (this.colorMatch(baseColorRGB, targetColorRGB) < 10) return null;
+
+        const boundingBox = new BoundingBox(p.copy(), p.copy(), p.copy(), p.copy());
+
+        const newImageData = new ImageData(ctx.canvas.width, ctx.canvas.height);
+
+        type Coord = {
+            x1: number,
+            x2: number,
+            y: number,
+            dy: number,
+        };
+
+        const q = new Queue<Coord>();
+
+        q.enqueue({ x1: p.x, x2: p.x, y: p.y, dy: 1 });
+        q.enqueue({ x1: p.x, x2: p.x, y: p.y, dy: - 1 });
+
+        console.log('start')
+        while (q.peek()) {
+            const { x1, x2, y, dy } = q.dequeue() as Coord;
+            if (y < 0 || y >= imageData.height) continue;
+
+            const leftP = new Point(x1, y).translateX(-1);
+            if (!this.colorMatch(this.RGBAtoRGB(bgColor, this.getPixel(newImageData, leftP)), targetColorRGB)) continue;
+
+            while (leftP.x >= 0 && this.colorMatch(this.RGBAtoRGB(bgColor, this.getPixel(imageData, leftP)), baseColorRGB) < this.tolerance) {
+                this.setPixel(newImageData, leftP, this.targetColor);
+                leftP.translateX(-1);
+            }
+
+            leftP.translateX(1);
+            boundingBox.containPoint(leftP);
+
+            if (leftP.x < x1) {
+                q.enqueue({ x1: leftP.x, x2: x1 - 1, y: y - dy, dy: -dy });
+            }
+
+            const rightP = new Point(x1, y);
+            while (rightP.x <= x2) {
+                while (rightP.x < imageData.width && (this.colorMatch(this.RGBAtoRGB(bgColor, this.getPixel(imageData, rightP)), baseColorRGB) < this.tolerance)) {
+                    this.setPixel(newImageData, rightP, this.targetColor);
+                    rightP.translateX(1);
+                }
+                boundingBox.containPoint(rightP);
+
+                const newX = rightP.x - 1;
+
+                if (rightP.x > leftP.x) {
+                    q.enqueue({ x1: leftP.x, x2: newX, y: y + dy, dy: dy });
+                }
+                if (newX > x2) {
+                    q.enqueue({ x1: x2 + 1, x2: newX, y: y - dy, dy: -dy });
+                }
+
+                while (rightP.x < imageData.width && rightP.x <= x2 && this.colorMatch(this.RGBAtoRGB(bgColor, this.getPixel(imageData, rightP)), baseColorRGB) >= this.tolerance) {
+                    rightP.translateX(1);
+                }
+
+                leftP.x = rightP.x;
+            }
+        }
+        console.log('end')
+
+        boundingBox.addPadding(1);
+        const finalImageData = new ImageData(boundingBox.br.x - boundingBox.tl.x, boundingBox.br.y - boundingBox.tl.y);
+
+        const point = boundingBox.tl.copy();
+        for (point.x = boundingBox.tl.x; point.x < boundingBox.br.x; point.x++) {
+            for (point.y = boundingBox.tl.y; point.y < boundingBox.br.y; point.y++) {
+                const temp = point.copy();
+                temp.x -= boundingBox.tl.x;
+                temp.y -= boundingBox.tl.y;
+                this.setPixel(finalImageData, temp, this.getPixel(newImageData, point));
+            }
+        }
+
+        const c = document.createElement('canvas');
+        c.width = finalImageData.width;
+        c.height = finalImageData.height;
+
+        const cctx = c.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        cctx.putImageData(finalImageData, 0, 0);
+
+        return new Flood(c, cctx, boundingBox.tl.copy());
     }
-
-
 }

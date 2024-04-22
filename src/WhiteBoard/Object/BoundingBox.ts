@@ -40,6 +40,20 @@ export class BoundingBox {
         return new BoundingBox(this.tl.copy(), this.tr.copy(), this.bl.copy(), this.br.copy());
     }
 
+    containPoint(a: Point) {
+        if (a.x < this.tl.x) {
+            this.tl.x = a.x;
+        } else if (a.x > this.br.x) {
+            this.br.x = a.x;
+        }
+
+        if (a.y < this.tl.y) {
+            this.tl.y = a.y;
+        } else if (a.y > this.br.y) {
+            this.br.y = a.y;
+        }
+    }
+
     getValues() {
         return [this.tl, this.tr, this.br, this.bl];
     }

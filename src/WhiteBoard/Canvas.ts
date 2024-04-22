@@ -37,7 +37,7 @@ export class Canvas<T extends BaseBrush = BaseBrush> extends Observable<CanvasEv
         this.Canvas.width = width;
         this.Canvas.height = height;
 
-        this.ctx = this.Canvas.getContext('2d') as CanvasRenderingContext2D;
+        this.ctx = this.Canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
 
         this.width = width;
         this.height = height;
