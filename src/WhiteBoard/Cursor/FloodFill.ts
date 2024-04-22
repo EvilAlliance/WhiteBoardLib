@@ -8,7 +8,7 @@ import { BaseBrush } from "./BaseBrush";
 
 export class FloodFill extends BaseBrush {
     targetColor: ColorRGBA = [255, 0, 0, 255];
-    tolerance: number = 20;
+    tolerance: number = 30;
 
     constructor(obj: Partial<FloodFill>) {
         super();
@@ -44,7 +44,7 @@ export class FloodFill extends BaseBrush {
     }
 
     getTintValue(alpha: number, tint: number, bgTint: number): number {
-        var tmp = Math.floor((1 - alpha) * bgTint + alpha * tint);
+        const tmp = Math.floor((1 - alpha) * bgTint + alpha * tint);
         if (tmp > 255) {
             return 255;
         }
@@ -178,10 +178,11 @@ export class FloodFill extends BaseBrush {
             const { x1, x2, y, dy } = q.dequeue() as Coord;
             if (y < 0 || y > imageData.height) continue;
 
-            const leftP = new Point(x1, y).translateX(-1);
+            const leftP = new Point(x1, y)
             if (!this.colorMatch(this.RGBAtoRGB(bgColor, this.getPixel(newImageData, leftP)), targetColorRGB)) continue;
 
-            while (leftP.x >= 0 && this.colorMatch(this.RGBAtoRGB(bgColor, this.getPixel(imageData, leftP)), baseColorRGB) < this.tolerance) {
+            leftP.translateX(-1);
+            while (leftP.x >= 0 && this.colorMatch(this.RGBAtoRGB(bgColor, this.getPixel(newImageData, leftP)), targetColorRGB) && this.colorMatch(this.RGBAtoRGB(bgColor, this.getPixel(imageData, leftP)), baseColorRGB) < this.tolerance) {
                 this.setPixel(newImageData, leftP, this.targetColor);
                 leftP.translateX(-1);
             }

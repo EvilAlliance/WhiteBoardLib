@@ -4,7 +4,7 @@ import { ColorRGBA, ColorRGBAParse, ColorRGBAToParse } from '../Utils/Color';
 import { Transitions } from './Transition';
 
 export function animate<T extends BaseObject, K extends keyof T>(canvas: Canvas, obj: T, prop: K, fromValue: T[K], toValue: T[K], Duration: number, Type: keyof typeof Transitions) {
-    console.log('TODO: Dont know how to arrange all the cases', arguments);
+    console.log('TODO: Dont know how to arrange all the cases', canvas, obj, prop, fromValue, toValue, Duration, Type);
     return;
     if (Duration < 0) return;
 

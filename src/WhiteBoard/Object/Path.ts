@@ -97,7 +97,7 @@ export class Path extends BaseObject {
         return this.Path.splice(start, deleteCount, ...rest);
     }
 
-    unshift(...items: any[]): number {
+    unshift(...items: Point[]): number {
         this.dirty = true;
         return this.Path.unshift(...items);
     }

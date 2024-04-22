@@ -21,7 +21,7 @@ export default class CommonMethod {
     toggle(property: keyof this) {
         const value = this.get(property);
         if (typeof value === 'boolean') {
-            // @ts-ignore
+            // @ts-expect-error ts es stupid
             this.set(property, !value);
         }
         return this;

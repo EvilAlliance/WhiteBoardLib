@@ -29,7 +29,7 @@ export class Canvas<T extends BaseBrush = BaseBrush> extends Observable<CanvasEv
         } else {
             const x = document.querySelector(tag);
             if (!(x && x instanceof HTMLCanvasElement)) throw new Error('Element does not exist or Element is not an HTMLCanvasElement');
-            this.Canvas = x as HTMLCanvasElement;
+            this.Canvas = x;
         }
 
         this.setBrush(baseBrush);

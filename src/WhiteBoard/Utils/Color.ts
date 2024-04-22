@@ -98,9 +98,9 @@ const KAPPA = 24389.0 / 27.0;
 export function ColorXYZToLAB(xyz: ColorXYZ): ColorLAB {
 
 
-    let fx = f(xyz[0] / 0.9504492182750991);
-    let fy = f(xyz[1]);
-    let fz = f(xyz[2] / 1.0889166484304715);
+    const fx = f(xyz[0] / 0.9504492182750991);
+    const fy = f(xyz[1]);
+    const fz = f(xyz[2] / 1.0889166484304715);
 
     return [
         116.0 * fy - 16.0,
