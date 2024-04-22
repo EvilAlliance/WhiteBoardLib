@@ -43,14 +43,18 @@ export class BoundingBox {
     containPoint(a: Point) {
         if (a.x < this.tl.x) {
             this.tl.x = a.x;
+            this.bl.x = a.x;
         } else if (a.x > this.br.x) {
             this.br.x = a.x;
+            this.tr.x = a.x;
         }
 
         if (a.y < this.tl.y) {
             this.tl.y = a.y;
+            this.tr.y = a.y;
         } else if (a.y > this.br.y) {
             this.br.y = a.y;
+            this.bl.y = a.y;
         }
     }
 

@@ -174,10 +174,9 @@ export class FloodFill extends BaseBrush {
         q.enqueue({ x1: p.x, x2: p.x, y: p.y, dy: 1 });
         q.enqueue({ x1: p.x, x2: p.x, y: p.y, dy: - 1 });
 
-        console.log('start')
         while (q.peek()) {
             const { x1, x2, y, dy } = q.dequeue() as Coord;
-            if (y < 0 || y >= imageData.height) continue;
+            if (y < 0 || y > imageData.height) continue;
 
             const leftP = new Point(x1, y).translateX(-1);
             if (!this.colorMatch(this.RGBAtoRGB(bgColor, this.getPixel(newImageData, leftP)), targetColorRGB)) continue;
@@ -211,6 +210,7 @@ export class FloodFill extends BaseBrush {
                     q.enqueue({ x1: x2 + 1, x2: newX, y: y - dy, dy: -dy });
                 }
 
+                rightP.translateX(1);
                 while (rightP.x < imageData.width && rightP.x <= x2 && this.colorMatch(this.RGBAtoRGB(bgColor, this.getPixel(imageData, rightP)), baseColorRGB) >= this.tolerance) {
                     rightP.translateX(1);
                 }
@@ -218,27 +218,13 @@ export class FloodFill extends BaseBrush {
                 leftP.x = rightP.x;
             }
         }
-        console.log('end')
-
-        boundingBox.addPadding(1);
-        const finalImageData = new ImageData(boundingBox.br.x - boundingBox.tl.x, boundingBox.br.y - boundingBox.tl.y);
-
-        const point = boundingBox.tl.copy();
-        for (point.x = boundingBox.tl.x; point.x < boundingBox.br.x; point.x++) {
-            for (point.y = boundingBox.tl.y; point.y < boundingBox.br.y; point.y++) {
-                const temp = point.copy();
-                temp.x -= boundingBox.tl.x;
-                temp.y -= boundingBox.tl.y;
-                this.setPixel(finalImageData, temp, this.getPixel(newImageData, point));
-            }
-        }
 
         const c = document.createElement('canvas');
-        c.width = finalImageData.width;
-        c.height = finalImageData.height;
+        c.width = boundingBox.tr.x - boundingBox.tl.x;
+        c.height = boundingBox.bl.y - boundingBox.tl.y;
 
         const cctx = c.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-        cctx.putImageData(finalImageData, 0, 0);
+        cctx.putImageData(newImageData, -boundingBox.tl.x, -boundingBox.tl.y);
 
         return new Flood(c, cctx, boundingBox.tl.copy());
     }
