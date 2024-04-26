@@ -1,7 +1,6 @@
 import { Canvas } from '../Canvas';
 import { Point } from '../GeoSpace/Point';
 import { Vector } from '../GeoSpace/Vector';
-import { BaseObject } from '../Object/BaseObject';
 import { CtxSetting } from '../Object/CtxSetting';
 import { Path } from '../Object/Path';
 import { BaseBrush } from './BaseBrush';
@@ -10,7 +9,6 @@ export class Eraser extends BaseBrush {
     tolerance: number = 5;
     lineCap: CanvasLineCap = 'round';
     erasing: boolean = false;
-    erasingObjects: Map<BaseObject, Path> = new Map();;
     path?: Path;
 
 
@@ -23,12 +21,13 @@ export class Eraser extends BaseBrush {
         this.erasing = true;
         this.path = new Path({
             ctxSetting: new CtxSetting({
-                strokeWidth: canvas.cursor.diameter,
-                strokeColor: 'Black',
+                strokeWidth: this.diameter,
+                strokeColor: canvas.bgColor,
                 lineCap: this.lineCap,
-                globalCompositeOperation: 'destination-out',
             })
         });
+
+        canvas.startRenderingSigle(this.path);
     }
 
     mouseMove(canvas: Canvas<this>, e: MouseEvent): void {
@@ -43,26 +42,19 @@ export class Eraser extends BaseBrush {
                 this.path.push(p);
             }
         }
-
-        for (const object of canvas.Objects) {
-            if (!object.render) continue;
-            const path = this.erasingObjects.get(object.Object);
-            if (path) {
-                path.push(p);
-            } else if (object.Object.objectShareArea(this.path)) {
-                const path = this.path.copy();
-                object.Object.erased.push(path);
-                this.erasingObjects.set(object.Object, path);
-            }
-        }
-
-        canvas.clear()
-        canvas.render()
+        canvas.renderSingle();
     }
 
-    mouseUp(_1: Canvas<this>, _: MouseEvent): void {
+    mouseUp(canvas: Canvas<this>, _: MouseEvent): void {
+        if (!this.path) return;
+        this.path.ctxSetting.globalCompositeOperation = 'destination-out';
         this.erasing = false;
+        for (const object of canvas.Objects) {
+            if (object.Object.objectShareArea(this.path)) {
+                object.Object.erased.push(this.path.copy());
+            }
+        }
+        canvas.stopRenderingSigle();
         this.path = undefined;
-        this.erasingObjects.clear();
     }
 }

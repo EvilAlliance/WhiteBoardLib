@@ -1,4 +1,4 @@
-import { Point } from '../GeoSpace/Point';
+import { ORIGIN, Point } from '../GeoSpace/Point';
 import { Vector } from '../GeoSpace/Vector';
 import { BaseObject } from './BaseObject';
 import { BoundingBox } from './BoundingBox';
@@ -47,6 +47,7 @@ export class Path extends BaseObject {
     }
 
     _getBoundingBox(): BoundingBox {
+        if (this.Path.length == 0) return new BoundingBox(ORIGIN.copy(), ORIGIN.copy(), ORIGIN.copy().translateY(1), ORIGIN.copy().translateX(1).translateY(1));
         const boundingBox = new BoundingBox(this.Path[0].copy(), this.Path[0].copy(), this.Path[0].copy(), this.Path[0].copy());
 
         for (let i = 1; i < this.Path.length; i++) {

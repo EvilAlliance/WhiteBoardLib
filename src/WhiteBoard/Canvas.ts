@@ -21,6 +21,7 @@ export class Canvas<T extends BaseBrush = BaseBrush> extends Observable<CanvasEv
     public width: number;
     public cursor: T;
     bgColor: Color = 'White';
+    objectSigleRender?: BaseObject;
 
     constructor(tag: string | HTMLCanvasElement, width: number, height: number, backgroundColor: Color = 'White', baseBrush: BaseBrush = new Brush()) {
         super();
@@ -96,11 +97,26 @@ export class Canvas<T extends BaseBrush = BaseBrush> extends Observable<CanvasEv
             Object.Object.render(this.ctx);
             Object.fire('render:After', null);
         }
+
+        if (this.objectSigleRender) this.renderSingle();
+
         this.fire('render:After', null);
     }
 
-    renderSingleObject(obj: BaseObject) {
-        obj.render(this.ctx);
+    startRenderingSigle(obj: BaseObject) {
+        this.objectSigleRender = obj;
+        this.clear();
+        this.render();
+    }
+
+    renderSingle() {
+        if (this.objectSigleRender) this.objectSigleRender.render(this.ctx);
+    }
+
+    stopRenderingSigle() {
+        this.objectSigleRender = undefined;
+        this.clear();
+        this.render();
     }
 
     changeBGColor(x: Color) {
