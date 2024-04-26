@@ -2,6 +2,14 @@ import { ORIGIN, Point } from "../GeoSpace/Point";
 import { BaseObject } from "./BaseObject";
 import { BoundingBox } from "./BoundingBox";
 
+export type FloodWorker = {
+    imageData: ImageData,
+    translateX: number,
+    translateY: number,
+    width: number,
+    height: number
+}
+
 export class Flood extends BaseObject {
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
@@ -9,6 +17,10 @@ export class Flood extends BaseObject {
 
     constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, translate: Point) {
         super();
+        if (canvas.width == 0 || canvas.height == 0) {
+            console.error('canvas with width or height 0', arguments);
+            return;
+        }
         this.canvas = canvas;
         this.ctx = ctx;
         this.translate = translate;
