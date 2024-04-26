@@ -120,7 +120,6 @@ export abstract class BaseObject extends CommonMethod {
         this.drawObject(this.cacheContext);
         this.cacheContext.restore();
 
-
         return this.cacheCanvas;
     }
 
@@ -155,5 +154,5 @@ export abstract class BaseObject extends CommonMethod {
         return this.getTranformedBoundigBox().pointInside(p);
     }
 
-    isDirty(): boolean { return this.ctxSetting.dirty || this.ctxTransformation.dirty || this.dirty || this.erased.some((x) => x.dirty) }
+    isDirty(): boolean { return this.ctxSetting.dirty || this.ctxTransformation.dirty || this.dirty || this.erased.some((x) => x.isDirty()) }
 }
