@@ -37,7 +37,7 @@ export class Rect extends BaseObject {
         if (this.ctxSetting.strokeWidth > 0) ctx.stroke();
     }
 
-    getBoundingBox(): BoundingBox {
+    _getBoundingBox(): BoundingBox {
         return new BoundingBox(
             new Point(this.left, this.top),
             new Point(this.left + this.width, this.top),

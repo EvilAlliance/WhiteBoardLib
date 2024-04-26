@@ -46,7 +46,7 @@ export class Path extends BaseObject {
         ctx.stroke();
     }
 
-    getBoundingBox(): BoundingBox {
+    _getBoundingBox(): BoundingBox {
         const boundingBox = new BoundingBox(this.Path[0].copy(), this.Path[0].copy(), this.Path[0].copy(), this.Path[0].copy());
 
         for (let i = 1; i < this.Path.length; i++) {

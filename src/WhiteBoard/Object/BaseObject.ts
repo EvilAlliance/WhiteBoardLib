@@ -13,12 +13,20 @@ export abstract class BaseObject extends CommonMethod {
     cacheContext?: CanvasRenderingContext2D;
     cacheTranselateX: number = 0;
     cacheTranselateY: number = 0;
+    cacheBoundingBox?: BoundingBox;
     dirty: boolean = true;
     ctxSetting: CtxSetting = new CtxSetting();
     ctxTransformation: CtxTransformation = new CtxTransformation();
     abstract _drawObject(ctx: CanvasRenderingContext2D): void;
-    abstract getBoundingBox(): BoundingBox;
+    abstract _getBoundingBox(): BoundingBox;
     abstract copy(): BaseObject;
+
+    getBoundingBox(): BoundingBox {
+        if (this.isDirty() || !this.cacheBoundingBox) {
+            this.cacheBoundingBox = this._getBoundingBox();
+        }
+        return this.cacheBoundingBox;
+    }
 
     distanceBetweenSegmentToPoint(s1: Point, s2: Point, p: Point): number {
         const dist2 = Math.pow(s1.x - s2.x, 2) + Math.pow(s1.y - s2.y, 2);
@@ -79,11 +87,12 @@ export abstract class BaseObject extends CommonMethod {
     }
 
     createCacheCanvas() {
+        const { tl, tr, bl, br } = this.getTranformedBoundigBox();
+
         this.dirty = false;
         this.ctxTransformation.dirty = false;
         this.ctxSetting.dirty = false;
 
-        const { tl, tr, bl, br } = this.getBoundingBox().tranform(this.ctxTransformation.getTransformationMatrix(this.getBoundingBox()));
 
         const canvasTL = new Point(
             Math.min(tl.x, tr.x, bl.x, br.x),

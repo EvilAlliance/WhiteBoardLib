@@ -18,7 +18,7 @@ export class Flood extends BaseObject {
         ctx.drawImage(this.canvas, this.translate.x, this.translate.y);
     }
 
-    getBoundingBox(): BoundingBox {
+    _getBoundingBox(): BoundingBox {
         const x = this.translate.x + this.canvas.width;
         const y = this.translate.y + this.canvas.height;
         return new BoundingBox(

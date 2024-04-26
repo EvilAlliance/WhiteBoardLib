@@ -17,13 +17,16 @@ export class Vector {
     phase(): number {
         let x = 0;
 
-        if (Math.sign(this.x) === -1) {
+        const x0 = this.x == 0;
+
+        if (Math.sign(this.x) === -1 || x0) {
             if (Math.sign(this.y) === -1) {
                 x = -Math.PI;
             } else {
                 x = Math.PI;
             }
         }
+        if (x0) return x;
 
         return Math.atan(this.y / this.x) + x;
     }

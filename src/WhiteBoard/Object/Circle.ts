@@ -11,7 +11,7 @@ export class Circle extends BaseObject {
         Object.assign(this, obj);
     }
 
-    getBoundingBox(): BoundingBox {
+    _getBoundingBox(): BoundingBox {
         const tl = new Point(this.center.x - this.radius, this.center.y - this.radius);
         const tr = new Point(this.center.x + this.radius, this.center.y - this.radius);
         const bl = new Point(this.center.x - this.radius, this.center.y + this.radius);

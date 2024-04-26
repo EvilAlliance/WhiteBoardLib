@@ -76,8 +76,13 @@ const x = new Circle({
     })
 });
 
-canvas.addCanvasObjectRender(p);
+canvas.addCanvasObject(p);
 
-canvas.addCanvasObjectRender(x);
+canvas.addCanvasObject(x);
 
-//setInterval(() => canvas.render(), 4000)
+canvas.render();
+
+setInterval(() => {
+    console.log('render');
+    canvas.render();
+}, 4000)
