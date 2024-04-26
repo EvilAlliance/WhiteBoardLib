@@ -8,7 +8,7 @@ import { BaseBrush } from "./BaseBrush";
 
 export class FloodFill extends BaseBrush {
     targetColor: ColorRGBA = [255, 0, 0, 255];
-    tolerance: number = 30;
+    tolerance: number = 20;
 
     constructor(obj: Partial<FloodFill>) {
         super();
@@ -16,7 +16,7 @@ export class FloodFill extends BaseBrush {
     }
 
     mouseDown(canvas: Canvas<this>, e: MouseEvent): void {
-        const mousePoint = new Point(Math.floor(e.offsetX), Math.floor(e.offsetY));
+        const mousePoint = new Point(e.offsetX, e.offsetY).floor();
 
         const c = this.floodFill(canvas.ctx, mousePoint, ColorRGBToParse(canvas.bgColor));
 
@@ -148,7 +148,7 @@ export class FloodFill extends BaseBrush {
         }
         return null;*/
 
-        const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+        const imageData = ctx.getImageData(0, 0, ctx.canvas.width + 1, ctx.canvas.height + 1);
 
         const pixelColorRGBA = this.getPixel(imageData, p);
 
@@ -160,7 +160,7 @@ export class FloodFill extends BaseBrush {
 
         const boundingBox = new BoundingBox(p.copy(), p.copy(), p.copy(), p.copy());
 
-        const newImageData = new ImageData(ctx.canvas.width, ctx.canvas.height);
+        const newImageData = new ImageData(imageData.width, imageData.height);
 
         type Coord = {
             x1: number,
@@ -176,7 +176,7 @@ export class FloodFill extends BaseBrush {
 
         while (q.peek()) {
             const { x1, x2, y, dy } = q.dequeue() as Coord;
-            if (y < 0 || y > imageData.height) continue;
+            if (y < 0 || y >= imageData.height) continue;
 
             const leftP = new Point(x1, y)
             if (!this.colorMatch(this.RGBAtoRGB(bgColor, this.getPixel(newImageData, leftP)), targetColorRGB)) continue;

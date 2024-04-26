@@ -40,6 +40,20 @@ export class Point {
         return this;
     }
 
+    floor(): Point {
+        this.x = Math.floor(this.x);
+        this.y = Math.floor(this.y);
+
+        return this
+    }
+
+    ceil(): Point {
+        this.x = Math.ceil(this.x);
+        this.y = Math.ceil(this.y);
+
+        return this
+    }
+
     copy(): Point {
         return new Point(this.x, this.y);
     }

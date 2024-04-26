@@ -42,7 +42,7 @@ export class CtxTransformation extends CommonMethod {
         ctx.translate(-centerPoint.x, -centerPoint.y);
     }
 
-    GetTransformationMatrix(boundingBox: BoundingBox) {
+    getTransformationMatrix(boundingBox: BoundingBox) {
         const centerPoint = this.getCenterPoint(boundingBox);
 
         const transformationMat = new DOMMatrix();

@@ -22,9 +22,9 @@ export class Flood extends BaseObject {
         const x = this.translate.x + this.canvas.width;
         const y = this.translate.y + this.canvas.height;
         return new BoundingBox(
-            new Point(this.translate.x, this.translate.x),
+            new Point(this.translate.x, this.translate.y),
             new Point(x, this.translate.y),
-            new Point(this.translate.y, y),
+            new Point(this.translate.x, y),
             new Point(x, y),
         );
     }

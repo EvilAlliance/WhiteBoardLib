@@ -4,10 +4,11 @@ import { Vector } from '../GeoSpace/Vector';
 import { BoundingBox } from './BoundingBox';
 import { CtxSetting } from './CtxSetting';
 import { CtxTransformation } from './CtxTransformation';
+import { Flood } from './Flood';
 import { Path } from './Path';
 
 export abstract class BaseObject extends CommonMethod {
-    erased: Path[] = [];
+    erased: (Path | Flood)[] = [];
     cacheCanvas?: HTMLCanvasElement;
     cacheContext?: CanvasRenderingContext2D;
     cacheTranselateX: number = 0;
@@ -35,7 +36,7 @@ export abstract class BaseObject extends CommonMethod {
         return this.getTranformedBoundigBox().shareArea(o.getTranformedBoundigBox());
     }
 
-    getCanvasData() {
+    getCanvas() {
         const { tl, tr, bl, br } = this.getBoundingBox();
 
         const canvas = document.createElement('canvas');
@@ -55,11 +56,14 @@ export abstract class BaseObject extends CommonMethod {
         canvas.width = canvasBR.x - canvasTL.x;
         canvas.height = canvasBR.y - canvasTL.y;
 
+        ctx.save();
         ctx.translate(-canvasTL.x, -canvasTL.y);
 
         this.render(ctx);
 
-        return ctx.getImageData(0, 0, canvas.width, canvas.height);
+        ctx.restore();
+
+        return canvas;
     }
 
     render(ctx: CanvasRenderingContext2D) {
@@ -79,7 +83,7 @@ export abstract class BaseObject extends CommonMethod {
         this.ctxTransformation.dirty = false;
         this.ctxSetting.dirty = false;
 
-        const { tl, tr, bl, br } = this.getBoundingBox().tranform(this.ctxTransformation.GetTransformationMatrix(this.getBoundingBox()));
+        const { tl, tr, bl, br } = this.getBoundingBox().tranform(this.ctxTransformation.getTransformationMatrix(this.getBoundingBox()));
 
         const canvasTL = new Point(
             Math.min(tl.x, tr.x, bl.x, br.x),
@@ -100,10 +104,13 @@ export abstract class BaseObject extends CommonMethod {
         this.cacheCanvas.height = canvasBR.y - canvasTL.y;
 
         this.cacheContext = this.cacheCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
+        this.cacheContext.save();
 
         this.cacheContext.translate(-canvasTL.x, -canvasTL.y);
 
         this.drawObject(this.cacheContext);
+        this.cacheContext.restore();
+
 
         return this.cacheCanvas;
     }
@@ -127,7 +134,7 @@ export abstract class BaseObject extends CommonMethod {
 
     getTranformedBoundigBox(): BoundingBox {
         const bb = this.getBoundingBox();
-        return bb.tranform(this.ctxTransformation.GetTransformationMatrix(bb));
+        return bb.tranform(this.ctxTransformation.getTransformationMatrix(bb));
     }
 
     set<T extends keyof this>(key: Partial<this> | T, value?: this[T] | undefined): this {

@@ -33,6 +33,8 @@ export class Vector {
         const ang = this.phase() + x;
         this.x = mod * Math.cos(ang);
         this.y = mod * Math.sin(ang);
+
+        return this
     }
 
     translatePoint(p: Point): this {
