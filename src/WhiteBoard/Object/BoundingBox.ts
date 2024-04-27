@@ -64,10 +64,12 @@ export class BoundingBox {
 
     shareArea(bb: BoundingBox): boolean {
         const coord = bb.getValues();
+        const thisCoord = this.getValues();
         for (let i = 0; i < coord.length; i++) {
             const point = coord[i];
             const point1 = coord[(i + 1) % coord.length];
-            if (this.lineIntersectBoundingBox(point, point1) || this.pointInside(point)) return true;
+            const thisPoint = thisCoord[i];
+            if (this.lineIntersectBoundingBox(point, point1) || this.pointInside(point) || bb.pointInside(thisPoint)) return true;
         }
 
         return false;

@@ -129,7 +129,7 @@ export abstract class BaseObject extends CommonMethod {
         this.ctxSetting.setSettingSetContextOption(ctx);
         this.ctxTransformation.setContextTransformation(ctx, this.getBoundingBox());
 
-        if (this.ctxSetting.globalCompositeOperation === 'destination-out') ctx.globalCompositeOperation = 'source-over';
+        if (this.ctxSetting.globalCompositeOperation === 'destination-out' || this.ctxSetting.globalCompositeOperation === 'destination-in') ctx.globalCompositeOperation = 'source-over';
 
         this._drawObject(ctx);
 

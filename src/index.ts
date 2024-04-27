@@ -3,6 +3,7 @@ import { Brush } from './WhiteBoard/Cursor/Brush';
 import { Eraser } from './WhiteBoard/Cursor/Eraser';
 import { EraserAll } from './WhiteBoard/Cursor/EraserAll';
 import { FloodFill } from './WhiteBoard/Cursor/FloodFill';
+import { UndoEraser } from './WhiteBoard/Cursor/UndoEraser';
 import { Point } from './WhiteBoard/GeoSpace/Point';
 import { Circle } from './WhiteBoard/Object/Circle';
 import { CtxSetting } from './WhiteBoard/Object/CtxSetting';
@@ -11,6 +12,7 @@ import { Rect } from './WhiteBoard/Object/Rect';
 
 
 const eraserAll = new EraserAll({ diameter: 5 });
+const undoEraser = new UndoEraser({ diameter: 10 });
 const floodFill = new FloodFill({ diameter: 5 });
 const brush = new Brush({
     color: 'Purple',
@@ -22,10 +24,14 @@ const eraser = new Eraser({ diameter: 25 });
 export const canvas = new Canvas('canvas', 1000, 800, 'Orange', floodFill);
 
 const eraserAllB = document.querySelector('#eraserAll');
+const undoEraserB = document.querySelector('#undoEraser');
 const brushB = document.querySelector('#brush');
 const eraserB = document.querySelector('#eraser');
 const floodFillB = document.querySelector('#floodFill');
 
+undoEraserB?.addEventListener('click', () => {
+    canvas.setBrush(undoEraser);
+})
 
 floodFillB?.addEventListener('click', () => {
     canvas.setBrush(floodFill);
@@ -76,13 +82,15 @@ const x = new Circle({
     })
 });
 
-canvas.addCanvasObject(p);
+//canvas.addCanvasObject(p);
 
 canvas.addCanvasObject(x);
 
 canvas.render();
 
+/*
 setInterval(() => {
     console.log('render');
     canvas.render();
 }, 4000)
+*/
