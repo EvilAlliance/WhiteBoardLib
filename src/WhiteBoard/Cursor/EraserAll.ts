@@ -16,7 +16,7 @@ export class EraserAll extends FloodFill {
         const mousePoint = new Point(e.offsetX, e.offsetY);
 
         for (const object of canvas.Objects) {
-            if (!object.pointInside(mousePoint)) continue;
+            if (!(object.shouldRender && object.pointInside(mousePoint))) continue;
             if (object.isDirty()) object.createCacheCanvas();
 
             const ctx = object.cacheContext as CanvasRenderingContext2D;
@@ -49,7 +49,7 @@ export class EraserAll extends FloodFill {
                     const f = new Flood(cc, cctx, new Point(c.translateX, c.translateY));
 
                     f.ctxSetting.globalCompositeOperation = 'destination-out';
-                    f.translate.translate(v.rotate(Math.PI));
+                    f.trans.translate(v.rotate(Math.PI));
 
                     object.erased.push(f);
 

@@ -8,7 +8,6 @@ import { BaseBrush } from './BaseBrush';
 export class Eraser extends BaseBrush {
     tolerance: number = 5;
     lineCap: CanvasLineCap = 'round';
-    erasing: boolean = false;
     path?: Path;
 
 
@@ -18,7 +17,6 @@ export class Eraser extends BaseBrush {
     }
 
     mouseDown(canvas: Canvas<this>): void {
-        this.erasing = true;
         this.path = new Path({
             ctxSetting: new CtxSetting({
                 strokeWidth: this.diameter,
@@ -48,9 +46,8 @@ export class Eraser extends BaseBrush {
     mouseUp(canvas: Canvas<this>, _: MouseEvent): void {
         if (!this.path) return;
         this.path.ctxSetting.globalCompositeOperation = 'destination-out';
-        this.erasing = false;
         for (const object of canvas.Objects) {
-            if (object.objectShareArea(this.path)) {
+            if (object.shouldRender && object.objectShareArea(this.path)) {
                 object.erased.push(this.path.copy());
             }
         }

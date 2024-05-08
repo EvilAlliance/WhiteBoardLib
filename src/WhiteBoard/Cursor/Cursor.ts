@@ -44,7 +44,7 @@ export class Cursor extends BaseBrush {
             let pointedObject: BaseObject[] = [];
 
             for (let i = objects.length - 1; i >= 0; i--) {
-                if (!objects[i].pointInside(mousePoint)) continue;
+                if (!(objects[i].shouldRender && objects[i].pointInside(mousePoint))) continue;
                 pointedObject.push(objects[i]);
                 break;
             }

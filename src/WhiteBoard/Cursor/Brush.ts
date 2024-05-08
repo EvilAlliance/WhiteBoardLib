@@ -4,7 +4,6 @@ import { Vector } from '../GeoSpace/Vector';
 import { CtxSetting } from '../Object/CtxSetting';
 import { Path } from '../Object/Path';
 import { Color } from '../Utils/Color';
-import { trailDots } from '../debug';
 import { BaseBrush } from './BaseBrush';
 
 export class Brush extends BaseBrush {
@@ -51,7 +50,6 @@ export class Brush extends BaseBrush {
     mouseUp(canvas: Canvas<this>, _: MouseEvent): void {
         if (!this.path) return;
 
-        console.log(this.path);
         canvas.addCanvasObject(this.path);
         canvas.stopRenderingSingle();
 

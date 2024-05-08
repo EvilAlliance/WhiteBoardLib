@@ -81,7 +81,7 @@ export class UndoEraser extends BaseBrush {
         this.undoErasing = false;
 
         for (const object of canvas.Objects) {
-            if (object.objectShareArea(this.path)) {
+            if (object.shouldRender && object.objectShareArea(this.path)) {
                 for (const erase of object.erased) {
                     if (erase.objectShareArea(this.path)) {
                         erase.erased.push(this.path)

@@ -59,7 +59,13 @@ export class Canvas<T extends BaseBrush = BaseBrush> extends Observable<CanvasEv
         });
 
         this.on('mouse:down', function(this: Canvas, e) {
-            this.cursor.init(this, e);
+            this.cursor.mouseDown(this, e);
+        });
+        this.on('mouse:move', function(this: Canvas, e) {
+            this.cursor.mouseMove(this, e);
+        });
+        this.on('mouse:up', function(this: Canvas, e) {
+            this.cursor.mouseUp(this, e);
         });
     }
 
@@ -84,9 +90,9 @@ export class Canvas<T extends BaseBrush = BaseBrush> extends Observable<CanvasEv
 
         this.fire('render:Before', null);
         for (const Object of this.Objects) {
+            if (!Object.shouldRender) continue;
             Object.fire('render:Before', null);
             if (this.selectionBox && this.selectionBox.includes(Object)) continue;
-            if (!Object.shouldRender) continue;
             Object.render(this.ctx);
             Object.fire('render:After', null);
         }
