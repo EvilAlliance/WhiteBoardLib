@@ -27,7 +27,7 @@ export class Eraser extends BaseBrush {
             })
         });
 
-        canvas.startRenderingSigle(this.path);
+        canvas.startRenderingSingle(this.path);
     }
 
     mouseMove(canvas: Canvas<this>, e: MouseEvent): void {
@@ -50,11 +50,11 @@ export class Eraser extends BaseBrush {
         this.path.ctxSetting.globalCompositeOperation = 'destination-out';
         this.erasing = false;
         for (const object of canvas.Objects) {
-            if (object.Object.objectShareArea(this.path)) {
-                object.Object.erased.push(this.path.copy());
+            if (object.objectShareArea(this.path)) {
+                object.erased.push(this.path.copy());
             }
         }
-        canvas.stopRenderingSigle();
+        canvas.stopRenderingSingle();
         this.path = undefined;
     }
 }

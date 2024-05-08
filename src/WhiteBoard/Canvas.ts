@@ -1,7 +1,7 @@
 import { BaseBrush } from './Cursor/BaseBrush';
 import { Brush } from './Cursor/Brush';
 import { BaseObject } from './Object/BaseObject';
-import { CanvasObjectContainer } from './Object/CanvasObjectContainer';
+import { SelectionBox } from './Object/SelectionBox';
 import { Observable } from './Observable';
 import { CanvasParseColor, Color, ColorRGBAToParse } from './Utils/Color';
 
@@ -16,12 +16,13 @@ export type CanvasEvents = {
 export class Canvas<T extends BaseBrush = BaseBrush> extends Observable<CanvasEvents> {
     public Canvas: HTMLCanvasElement;
     public ctx: CanvasRenderingContext2D;
-    public Objects: CanvasObjectContainer[] = [];
+    public Objects: BaseObject[] = [];
     public height: number;
     public width: number;
     public cursor: T;
     bgColor: Color = 'White';
-    objectSigleRender?: BaseObject;
+    objectSingleRender?: BaseObject;
+    selectionBox?: SelectionBox;
 
     constructor(tag: string | HTMLCanvasElement, width: number, height: number, backgroundColor: Color = 'White', baseBrush: BaseBrush = new Brush()) {
         super();
@@ -67,20 +68,11 @@ export class Canvas<T extends BaseBrush = BaseBrush> extends Observable<CanvasEv
     }
 
     addCanvasObject(obj: BaseObject) {
-        this.Objects.push(new CanvasObjectContainer(obj));
+        this.Objects.push(obj);
     }
 
     addCanvasObjectRender(obj: BaseObject) {
         this.addCanvasObject(obj);
-        this.render();
-    }
-
-    addCanvasObjectContainer(obj: CanvasObjectContainer) {
-        this.Objects.push(obj);
-    }
-
-    CanvasAddCanvasObjectContainerRender(obj: CanvasObjectContainer) {
-        this.addCanvasObjectContainer(obj);
         this.render();
     }
 
@@ -93,28 +85,30 @@ export class Canvas<T extends BaseBrush = BaseBrush> extends Observable<CanvasEv
         this.fire('render:Before', null);
         for (const Object of this.Objects) {
             Object.fire('render:Before', null);
-            if (!Object.render) continue;
-            Object.Object.render(this.ctx);
+            if (this.selectionBox && this.selectionBox.includes(Object)) continue;
+            if (!Object.shouldRender) continue;
+            Object.render(this.ctx);
             Object.fire('render:After', null);
         }
 
-        if (this.objectSigleRender) this.renderSingle();
+        this.renderSingle();
+        this.renderSelectionBox();
 
         this.fire('render:After', null);
     }
 
-    startRenderingSigle(obj: BaseObject) {
-        this.objectSigleRender = obj;
+    startRenderingSingle(obj: BaseObject) {
+        this.objectSingleRender = obj;
         this.clear();
         this.render();
     }
 
     renderSingle() {
-        if (this.objectSigleRender) this.objectSigleRender.render(this.ctx);
+        if (this.objectSingleRender) this.objectSingleRender.render(this.ctx);
     }
 
-    stopRenderingSigle() {
-        this.objectSigleRender = undefined;
+    stopRenderingSingle() {
+        this.objectSingleRender = undefined;
         this.clear();
         this.render();
     }
@@ -122,6 +116,22 @@ export class Canvas<T extends BaseBrush = BaseBrush> extends Observable<CanvasEv
     changeBGColor(x: Color) {
         this.bgColor = x;
         if (ColorRGBAToParse(x)[3] !== 1) throw new Error('Tranparency must be of value 1');
+        this.render();
+    }
+
+    startRenderingSelectionBox(obj: SelectionBox) {
+        this.selectionBox = obj;
+        this.clear();
+        this.render();
+    }
+
+    renderSelectionBox() {
+        if (this.selectionBox) this.selectionBox.render(this.ctx);
+    }
+
+    stopRenderingSelectionBox() {
+        this.selectionBox = undefined;
+        this.clear();
         this.render();
     }
 

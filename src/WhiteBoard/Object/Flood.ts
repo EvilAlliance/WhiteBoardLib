@@ -1,4 +1,5 @@
 import { ORIGIN, Point } from "../GeoSpace/Point";
+import { Vector } from "../GeoSpace/Vector";
 import { BaseObject } from "./BaseObject";
 import { BoundingBox } from "./BoundingBox";
 
@@ -13,7 +14,7 @@ export type FloodWorker = {
 export class Flood extends BaseObject {
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
-    translate: Point = ORIGIN.copy();
+    trans: Point = ORIGIN.copy();
 
     constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, translate: Point) {
         super();
@@ -23,25 +24,30 @@ export class Flood extends BaseObject {
         }
         this.canvas = canvas;
         this.ctx = ctx;
-        this.translate = translate;
+        this.trans = translate;
     }
 
     _drawObject(ctx: CanvasRenderingContext2D): void {
-        ctx.drawImage(this.canvas, this.translate.x, this.translate.y);
+        ctx.drawImage(this.canvas, this.trans.x, this.trans.y);
     }
 
     _getBoundingBox(): BoundingBox {
-        const x = this.translate.x + this.canvas.width;
-        const y = this.translate.y + this.canvas.height;
+        const x = this.trans.x + this.canvas.width;
+        const y = this.trans.y + this.canvas.height;
         return new BoundingBox(
-            new Point(this.translate.x, this.translate.y),
-            new Point(x, this.translate.y),
-            new Point(this.translate.x, y),
+            new Point(this.trans.x, this.trans.y),
+            new Point(x, this.trans.y),
+            new Point(this.trans.x, y),
             new Point(x, y),
         );
     }
 
     copy(): Flood {
-        return new Flood(this.canvas, this.ctx, this.translate);
+        return new Flood(this.canvas, this.ctx, this.trans);
+    }
+
+    translate(v: Vector): void {
+        this.dirty = true;
+        v.translatePoint(this.trans);
     }
 }

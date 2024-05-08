@@ -1,10 +1,10 @@
 import { Canvas } from '../Canvas';
 import { Point } from '../GeoSpace/Point';
 import { Vector } from '../GeoSpace/Vector';
-import { CanvasObjectContainer } from '../Object/CanvasObjectContainer';
 import { CtxSetting } from '../Object/CtxSetting';
 import { Path } from '../Object/Path';
 import { Color } from '../Utils/Color';
+import { trailDots } from '../debug';
 import { BaseBrush } from './BaseBrush';
 
 export class Brush extends BaseBrush {
@@ -28,7 +28,7 @@ export class Brush extends BaseBrush {
             })
         });
 
-        canvas.Objects.push(new CanvasObjectContainer(this.path));
+        canvas.startRenderingSingle(this.path);
     }
 
     mouseMove(canvas: Canvas<this>, e: MouseEvent): void {
@@ -44,13 +44,18 @@ export class Brush extends BaseBrush {
             }
         }
 
-        canvas.clear();
-        canvas.render();
+        canvas.renderSingle();
     }
 
     //simplify path prototype not used 
-    mouseUp(_1: Canvas<this>, _: MouseEvent): void {
-        return;
+    mouseUp(canvas: Canvas<this>, _: MouseEvent): void {
+        if (!this.path) return;
+
+        console.log(this.path);
+        canvas.addCanvasObject(this.path);
+        canvas.stopRenderingSingle();
+
+        this.path = undefined;
     }
 }
 

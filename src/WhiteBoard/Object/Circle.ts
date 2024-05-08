@@ -1,4 +1,5 @@
 import { Point } from '../GeoSpace/Point';
+import { Vector } from '../GeoSpace/Vector';
 import { BaseObject } from './BaseObject';
 import { BoundingBox } from './BoundingBox';
 
@@ -40,5 +41,10 @@ export class Circle extends BaseObject {
             center: this.center.copy(),
             radius: this.radius,
         })
+    }
+
+    translate(v: Vector): void {
+        this.dirty = true;
+        this.center.translate(v);
     }
 }

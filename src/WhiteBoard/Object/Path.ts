@@ -139,5 +139,13 @@ export class Path extends BaseObject {
             Path: this.Path.slice(),
         });
     }
+
+    translate(v: Vector): void {
+        this.dirty = true;
+
+        for (let i = 0; i < this.Path.length; i++) {
+            this.Path[i].translate(v);
+        }
+    }
 }
 

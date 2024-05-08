@@ -48,8 +48,8 @@ export class FloodFill extends BaseBrush {
 
                 cctx.putImageData(c.imageData, -c.translateX, -c.translateY);
 
-                f.translate.x = c.translateX;
-                f.translate.y = c.translateY;
+                f.trans.x = c.translateX;
+                f.trans.y = c.translateY;
 
                 f.dirty = true;
                 canvas.render();

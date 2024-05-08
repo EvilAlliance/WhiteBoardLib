@@ -1,5 +1,6 @@
 import CommonMethod from '../CommonMethod';
-import { Point } from '../GeoSpace/Point';
+import { ORIGIN, Point } from '../GeoSpace/Point';
+import { Vector } from '../GeoSpace/Vector';
 import { BoundingBox } from './BoundingBox';
 
 export const OriginXY = Object.freeze({
@@ -18,6 +19,7 @@ export class CtxTransformation extends CommonMethod {
     scaleY: number = 1;
     scaleX: number = 1;
     angle: number = 0;
+    trans: Vector = new Vector(ORIGIN, ORIGIN);
     dirty: boolean = true;
 
     constructor(obj?: Partial<CtxTransformation>) {
@@ -33,10 +35,11 @@ export class CtxTransformation extends CommonMethod {
             this.skewY,
             this.skewX,
             this.scaleY,
-            centerPoint.x,
-            centerPoint.y
+            this.trans.x + boundingBox.tl.x,
+            this.trans.y + boundingBox.tl.y
         );
 
+        ctx.translate(centerPoint.x - boundingBox.tl.x, centerPoint.y - boundingBox.tl.y);
         ctx.rotate(this.angle);
 
         ctx.translate(-centerPoint.x, -centerPoint.y);
@@ -51,9 +54,10 @@ export class CtxTransformation extends CommonMethod {
         transformationMat.b = this.skewY;
         transformationMat.c = this.skewX;
         transformationMat.d = this.scaleY;
-        transformationMat.e = centerPoint.x;
-        transformationMat.f = centerPoint.y;
+        transformationMat.e = this.trans.x + boundingBox.tl.x;
+        transformationMat.f = this.trans.y + boundingBox.tl.y;
 
+        transformationMat.translateSelf(centerPoint.x - boundingBox.tl.x, centerPoint.y - boundingBox.tl.y);
         transformationMat.rotateSelf(this.angle / Math.PI * 180);
         transformationMat.translateSelf(-centerPoint.x, -centerPoint.y);
 
@@ -76,4 +80,18 @@ export class CtxTransformation extends CommonMethod {
         this.dirty = true;
         return super.set(key, value);
     }
+
+    translate(v: Vector) {
+        this.trans.plus(v);
+
+        this.dirty = true;
+    }
+
+    scale(x: number, y: number) {
+        this.scaleX *= x;
+        this.scaleY *= y;
+
+        this.dirty = true;
+    }
+
 }

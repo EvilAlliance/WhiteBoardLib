@@ -50,6 +50,13 @@ export class Vector {
     copy(): Vector {
         return new Vector(ORIGIN, new Point(this.x, this.y));
     }
+
+    plus(v: Vector) {
+        this.x += v.x;
+        this.y += v.y;
+
+        return this;
+    }
 }
 
 export const NORMAL = {

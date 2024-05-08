@@ -41,21 +41,30 @@ export class BoundingBox {
     }
 
     containPoint(a: Point) {
-        if (a.x < this.tl.x) {
+        if (a.x < this.tl.x)
             this.tl.x = a.x;
-            this.bl.x = a.x;
-        } else if (a.x > this.br.x) {
-            this.br.x = a.x;
-            this.tr.x = a.x;
-        }
 
-        if (a.y < this.tl.y) {
+        if (a.x < this.bl.x)
+            this.bl.x = a.x;
+
+        if (a.x > this.br.x)
+            this.br.x = a.x;
+
+        if (a.x > this.tr.x)
+            this.tr.x = a.x;
+
+        if (a.y < this.tl.y)
             this.tl.y = a.y;
+
+        if (a.y < this.tr.y)
             this.tr.y = a.y;
-        } else if (a.y > this.br.y) {
+
+        if (a.y > this.br.y)
             this.br.y = a.y;
+
+        if (a.y > this.bl.y)
             this.bl.y = a.y;
-        }
+
     }
 
     getValues() {
@@ -101,5 +110,23 @@ export class BoundingBox {
             this.br.x >= p.x &&
             this.tl.y <= p.y &&
             this.br.y >= p.y;
+    }
+
+    normalize() {
+        const canvasTL = new Point(
+            Math.min(this.tl.x, this.tr.x, this.bl.x, this.br.x),
+            Math.min(this.tl.y, this.tr.y, this.bl.y, this.br.y)
+        );
+
+        const canvasBR = new Point(
+            Math.max(this.tl.x, this.tr.x, this.bl.x, this.br.x),
+            Math.max(this.tl.y, this.tr.y, this.bl.y, this.br.y)
+        );
+
+        this.tl = canvasTL;
+        this.tr = canvasTL.copy().translateX(canvasBR.x - canvasTL.x);
+
+        this.br = canvasBR;
+        this.bl = canvasBR.copy().translateX(-canvasBR.x + canvasTL.x);
     }
 }

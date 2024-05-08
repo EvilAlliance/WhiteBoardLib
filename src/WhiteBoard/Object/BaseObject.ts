@@ -1,13 +1,19 @@
-import CommonMethod from '../CommonMethod';
 import { Point } from '../GeoSpace/Point';
 import { Vector } from '../GeoSpace/Vector';
+import { Observable } from '../Observable';
 import { BoundingBox } from './BoundingBox';
 import { CtxSetting } from './CtxSetting';
 import { CtxTransformation } from './CtxTransformation';
 import { Flood } from './Flood';
 import { Path } from './Path';
 
-export abstract class BaseObject extends CommonMethod {
+export type BaseObjectEvent = {
+    'render:Before': null;
+    'render:After': null;
+}
+
+export abstract class BaseObject extends Observable<BaseObjectEvent> {
+    shouldRender = true;
     erased: (Path | Flood)[] = [];
     cacheCanvas?: HTMLCanvasElement;
     cacheContext?: CanvasRenderingContext2D;
@@ -19,13 +25,14 @@ export abstract class BaseObject extends CommonMethod {
     ctxTransformation: CtxTransformation = new CtxTransformation();
     abstract _drawObject(ctx: CanvasRenderingContext2D): void;
     abstract _getBoundingBox(): BoundingBox;
+    abstract translate(v: Vector): void;
     abstract copy(): BaseObject;
 
     getBoundingBox(): BoundingBox {
         if (this.isDirty() || !this.cacheBoundingBox) {
             this.cacheBoundingBox = this._getBoundingBox();
         }
-        return this.cacheBoundingBox;
+        return this.cacheBoundingBox.copy();
     }
 
     distanceBetweenSegmentToPoint(s1: Point, s2: Point, p: Point): number {
@@ -151,8 +158,18 @@ export abstract class BaseObject extends CommonMethod {
     }
 
     pointInside(p: Point) {
-        return this.getTranformedBoundigBox().pointInside(p);
+        if (!this.getTranformedBoundigBox().pointInside(p)) return false;
+
+        if (this.isDirty()) this.createCacheCanvas();
+
+        const f = p.copy().floor().translateX(-this.cacheTranselateX).translateY(-this.cacheTranselateY);
+
+        return (this.cacheContext as CanvasRenderingContext2D).getImageData(f.x, f.y, 1, 1).data.some(x => x != 0);
     }
 
     isDirty(): boolean { return this.ctxSetting.dirty || this.ctxTransformation.dirty || this.dirty || this.erased.some((x) => x.isDirty()) }
+
+    scale(x: number, y: number) {
+        this.ctxTransformation.scale(x, y);
+    }
 }

@@ -1,6 +1,7 @@
-import { BaseObject } from './BaseObject';
 import { Point } from '../GeoSpace/Point';
 import { BoundingBox } from './BoundingBox';
+import { Vector } from '../GeoSpace/Vector';
+import { BaseObject } from './BaseObject';
 //const kRect = 1 - 0.5522847498;
 
 export class Rect extends BaseObject {
@@ -55,5 +56,12 @@ export class Rect extends BaseObject {
             left: this.left,
             top: this.top,
         });
+    }
+
+    translate(v: Vector): void {
+        this.dirty = true;
+
+        this.left += v.x;
+        this.top += v.y;
     }
 }

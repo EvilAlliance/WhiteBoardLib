@@ -1,5 +1,6 @@
 import { Canvas } from './WhiteBoard/Canvas';
 import { Brush } from './WhiteBoard/Cursor/Brush';
+import { Cursor } from './WhiteBoard/Cursor/Cursor';
 import { Eraser } from './WhiteBoard/Cursor/Eraser';
 import { EraserAll } from './WhiteBoard/Cursor/EraserAll';
 import { FloodFill } from './WhiteBoard/Cursor/FloodFill';
@@ -12,6 +13,7 @@ import { Rect } from './WhiteBoard/Object/Rect';
 
 
 const eraserAll = new EraserAll({ diameter: 5 });
+const cursor = new Cursor();
 const undoEraser = new UndoEraser({ diameter: 10 });
 const floodFill = new FloodFill({ diameter: 5 });
 const brush = new Brush({
@@ -21,16 +23,21 @@ const brush = new Brush({
 
 const eraser = new Eraser({ diameter: 25 });
 
-export const canvas = new Canvas('canvas', 1000, 800, 'Orange', floodFill);
+export const canvas = new Canvas('canvas', 1000, 800, 'Orange', cursor);
 
 const eraserAllB = document.querySelector('#eraserAll');
 const undoEraserB = document.querySelector('#undoEraser');
 const brushB = document.querySelector('#brush');
 const eraserB = document.querySelector('#eraser');
 const floodFillB = document.querySelector('#floodFill');
+const cursorB = document.querySelector('#cursor');
 
 undoEraserB?.addEventListener('click', () => {
     canvas.setBrush(undoEraser);
+})
+
+cursorB?.addEventListener('click', () => {
+    canvas.setBrush(cursor);
 })
 
 floodFillB?.addEventListener('click', () => {
@@ -62,13 +69,50 @@ const p = new Rect({
     ctxTransformation: new CtxTransformation({
         originX: 'center',
         originY: 'center',
-        //scaleX: 2,
+        scaleX: 1,
         //skewY: Math.PI / 4
     })
 });
 
+canvas.addCanvasObject(new Rect({
+    left: 100,
+    top: 200,
+    width: 150,
+    height: 150,
+    ctxSetting: new CtxSetting({
+        //fill: true,
+        strokeColor: 'Purple',
+        strokeWidth: 20,
+    }),
+    ctxTransformation: new CtxTransformation({
+        originX: 'center',
+        originY: 'center',
+        scaleX: 2,
+        //skewY: Math.PI / 4
+    })
+}));
+
+canvas.addCanvasObject(p);
+
+canvas.addCanvasObject(new Rect({
+    left: 100,
+    top: 200,
+    width: 150,
+    height: 150,
+    ctxSetting: new CtxSetting({
+        //fill: true,
+        strokeColor: 'BlackBay',
+        strokeWidth: 20,
+    }),
+    ctxTransformation: new CtxTransformation({
+        originX: 'center',
+        originY: 'center',
+        scaleX: 1 / 2,
+        //skewY: Math.PI / 4
+    })
+}));
 const x = new Circle({
-    center: new Point(350, 350),
+    center: new Point(300, 300),
     radius: 40,
     ctxSetting: new CtxSetting({
         strokeColor: 'Cabo',
@@ -78,19 +122,16 @@ const x = new Circle({
         originX: 'center',
         originY: 'center',
         scaleX: 2,
-        skewY: Math.PI / 4
+        skewX: Math.PI / 4
     })
 });
 
-//canvas.addCanvasObject(p);
 
 canvas.addCanvasObject(x);
 
 canvas.render();
 
-/*
 setInterval(() => {
     console.log('render');
     canvas.render();
 }, 4000)
-*/

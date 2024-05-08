@@ -1,7 +1,6 @@
 import { Canvas } from '../Canvas';
 import { ORIGIN, Point } from '../GeoSpace/Point';
 import { Vector } from '../GeoSpace/Vector';
-import { CanvasObjectContainer } from '../Object/CanvasObjectContainer';
 import { Flood } from '../Object/Flood';
 import { ColorRGBA } from '../Utils/Color';
 import { FloodFill } from './FloodFill';
@@ -17,11 +16,11 @@ export class EraserAll extends FloodFill {
         const mousePoint = new Point(e.offsetX, e.offsetY);
 
         for (const object of canvas.Objects) {
-            if (!object.Object.pointInside(mousePoint)) continue;
-            if (object.Object.isDirty()) object.Object.createCacheCanvas();
+            if (!object.pointInside(mousePoint)) continue;
+            if (object.isDirty()) object.createCacheCanvas();
 
-            const ctx = object.Object.cacheContext as CanvasRenderingContext2D;
-            const v = new Vector(ORIGIN, new Point(-object.Object.cacheTranselateX, -object.Object.cacheTranselateY));
+            const ctx = object.cacheContext as CanvasRenderingContext2D;
+            const v = new Vector(ORIGIN, new Point(-object.cacheTranselateX, -object.cacheTranselateY));
             const transformedPoint = mousePoint.copy().translate(v).floor();
 
             const worker = new Worker('./src/WhiteBoard/Cursor/EraserAll.worker.ts', { type: 'module' });
@@ -52,7 +51,7 @@ export class EraserAll extends FloodFill {
                     f.ctxSetting.globalCompositeOperation = 'destination-out';
                     f.translate.translate(v.rotate(Math.PI));
 
-                    object.Object.erased.push(f);
+                    object.erased.push(f);
 
                     canvas.clear();
                     canvas.render();
@@ -68,10 +67,4 @@ export class EraserAll extends FloodFill {
     mouseUp(_canvas: Canvas<this>, _e: MouseEvent): void {
 
     }
-}
-
-export function EraserAllEraseObject(canvas: Canvas, object: CanvasObjectContainer) {
-    canvas.Objects.splice(canvas.Objects.indexOf(object), 1);
-    canvas.clear();
-    canvas.render();
 }

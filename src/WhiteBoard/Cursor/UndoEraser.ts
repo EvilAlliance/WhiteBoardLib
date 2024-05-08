@@ -22,7 +22,7 @@ export class UndoEraser extends BaseBrush {
         Object.assign(this, obj);
     }
 
-    mouseDown(canvas: Canvas<this>, e: MouseEvent): void {
+    mouseDown(canvas: Canvas<this>, _: MouseEvent): void {
         this.objectCanvas = document.createElement('canvas');
         this.objectCanvas.width = canvas.width;
         this.objectCanvas.height = canvas.height;
@@ -31,9 +31,9 @@ export class UndoEraser extends BaseBrush {
 
         for (const object of canvas.Objects) {
             this.objectCtx.save();
-            object.Object.ctxSetting.setSettingSetContextOption(this.objectCtx);
-            object.Object.ctxTransformation.setContextTransformation(this.objectCtx, object.Object.getBoundingBox());
-            object.Object._drawObject(this.objectCtx);
+            object.ctxSetting.setSettingSetContextOption(this.objectCtx);
+            object.ctxTransformation.setContextTransformation(this.objectCtx, object.getBoundingBox());
+            object._drawObject(this.objectCtx);
             this.objectCtx.restore();
         }
 
@@ -81,8 +81,8 @@ export class UndoEraser extends BaseBrush {
         this.undoErasing = false;
 
         for (const object of canvas.Objects) {
-            if (object.Object.objectShareArea(this.path)) {
-                for (const erase of object.Object.erased) {
+            if (object.objectShareArea(this.path)) {
+                for (const erase of object.erased) {
                     if (erase.objectShareArea(this.path)) {
                         erase.erased.push(this.path)
                         erase.dirty = true;
@@ -91,7 +91,7 @@ export class UndoEraser extends BaseBrush {
             }
         }
 
-        canvas.stopRenderingSigle();
+        canvas.stopRenderingSingle();
 
         this.path = undefined;
         this.objectCanvas = undefined;
