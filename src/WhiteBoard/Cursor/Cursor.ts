@@ -36,7 +36,7 @@ export class Cursor extends BaseBrush {
             (r || l) && this.scale.push(scale.x);
             (b || t) && this.scale.push(scale.y);
 
-            this.translate = t || l;
+            (this.translate = t || l) && (this.lastPoint = mousePoint);
 
             this.move = this.scale.length == 0;
         } else {
@@ -81,26 +81,23 @@ export class Cursor extends BaseBrush {
 
     mouseMove(canvas: Canvas<this>, e: MouseEvent): void {
         if (!canvas.selectionBox) return;
-        if (this.move) {
-            if (this.lastPoint.x == 0 && this.lastPoint.y == 0) {
-                this.lastPoint = new Point(e.offsetX, e.offsetY);
-            } else {
-                const mousePoint = new Point(e.offsetX, e.offsetY);
-                const v = new Vector(this.lastPoint, mousePoint);
-                canvas.selectionBox?.translate(v)
-                canvas.clear();
-                canvas.render();
-                this.lastPoint = mousePoint;
-            }
-        }
 
-        if (this.scale.length == 0) return;
-        console.log(this.scale);
+        if (this.move) this.translateSelectionBox(canvas, e);
+
+        if (this.scale.length != 0) this.scaleSelectionBox(canvas, e);
+
+        canvas.clear();
+        canvas.render();
+
+    }
+
+    scaleSelectionBox(canvas: Canvas, { offsetX, offsetY }: MouseEvent) {
+        if (!canvas.selectionBox) return;
 
         const bb = canvas.selectionBox.getTranformedBoundigBox() as BoundingBox;
 
-        const scaleX = this.scaleX(bb, e.offsetX);
-        const scaleY = this.scaleY(bb, e.offsetY);
+        const scaleX = this.scaleX(bb, offsetX);
+        const scaleY = this.scaleY(bb, offsetY);
 
         if (this.scale.length == 2) {
             const min = Math.min(scaleX, scaleY);
@@ -112,9 +109,18 @@ export class Cursor extends BaseBrush {
         }
 
         if (this.translate) canvas.selectionBox.translate(this.getTranslateVector(bb, canvas.selectionBox.getTranformedBoundigBox()))
-        canvas.clear();
-        canvas.render();
+    }
 
+    translateSelectionBox(canvas: Canvas, { offsetY, offsetX }: MouseEvent) {
+        if (!canvas.selectionBox) return;
+
+        const mousePoint = new Point(offsetX, offsetY);
+
+        const v = new Vector(this.lastPoint, mousePoint);
+
+        canvas.selectionBox.translate(v)
+
+        this.lastPoint = mousePoint;
     }
 
     mouseUp(canvas: Canvas<this>, e: MouseEvent): void {
