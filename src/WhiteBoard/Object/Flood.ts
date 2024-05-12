@@ -46,7 +46,7 @@ export class Flood extends BaseObject {
         return new Flood(this.canvas, this.ctx, this.trans);
     }
 
-    translate(v: Vector): void {
+    _translate(v: Vector): void {
         this.dirty = true;
         v.translatePoint(this.trans);
     }

@@ -43,7 +43,7 @@ export class Circle extends BaseObject {
         })
     }
 
-    translate(v: Vector): void {
+    _translate(v: Vector): void {
         this.dirty = true;
         this.center.translate(v);
     }

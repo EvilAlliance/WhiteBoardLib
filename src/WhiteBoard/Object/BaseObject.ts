@@ -25,7 +25,7 @@ export abstract class BaseObject extends Observable<BaseObjectEvent> {
     ctxTransformation: CtxTransformation = new CtxTransformation();
     abstract _drawObject(ctx: CanvasRenderingContext2D): void;
     abstract _getBoundingBox(): BoundingBox;
-    abstract translate(v: Vector): void;
+    abstract _translate(v: Vector): void;
     abstract copy(): BaseObject;
 
     getBoundingBox(): BoundingBox {
@@ -170,6 +170,32 @@ export abstract class BaseObject extends Observable<BaseObjectEvent> {
     isDirty(): boolean { return this.ctxSetting.dirty || this.ctxTransformation.dirty || this.dirty || this.erased.some((x) => x.isDirty()) }
 
     scale(x: number, y: number) {
+        const bb = this.getTranformedBoundigBox();
+        this.erased.forEach(o => {
+            const bb1 = o.getTranformedBoundigBox();
+
+            o.scale(x, y)
+
+            const bb2 = o.getTranformedBoundigBox();
+
+            const v1 = new Vector(bb.tl, bb1.tl);
+            const v2 = new Vector(bb.tl, bb2.tl);
+
+            v1.x *= x;
+            v1.y *= y;
+
+            v2.x *= -1;
+            v2.y *= -1;
+
+            v1.plus(v2);
+
+            o.translate(v1);
+        });
         this.ctxTransformation.scale(x, y);
+    }
+
+    translate(v: Vector) {
+        this.erased.forEach(x => x.translate(v));
+        this._translate(v);
     }
 }

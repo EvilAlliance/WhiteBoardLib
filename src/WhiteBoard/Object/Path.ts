@@ -140,7 +140,7 @@ export class Path extends BaseObject {
         });
     }
 
-    translate(v: Vector): void {
+    _translate(v: Vector): void {
         this.dirty = true;
 
         for (let i = 0; i < this.Path.length; i++) {

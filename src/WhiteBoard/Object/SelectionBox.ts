@@ -57,7 +57,7 @@ export class SelectionBox extends BaseObject {
         return this.object.includes(obj);
     }
 
-    translate(v: Vector): void {
+    _translate(v: Vector): void {
         this.dirty = true;
 
         this.object.forEach(x => x.translate(v));
@@ -73,6 +73,16 @@ export class SelectionBox extends BaseObject {
         if (super.isDirty()) return true;
 
         return this.object.some(o => o.isDirty());
+    }
+
+    getWidth(): number {
+        const bb = this.getTranformedBoundigBox();
+        return bb.tr.x - bb.tl.x;
+    }
+
+    getHeigth(): number {
+        const bb = this.getTranformedBoundigBox();
+        return bb.bl.y - bb.tl.y;
     }
 }
 
