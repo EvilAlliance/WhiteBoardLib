@@ -35,18 +35,6 @@ export abstract class BaseObject extends Observable<BaseObjectEvent> {
         return this.cacheBoundingBox.copy();
     }
 
-    distanceBetweenSegmentToPoint(s1: Point, s2: Point, p: Point): number {
-        const dist2 = Math.pow(s1.x - s2.x, 2) + Math.pow(s1.y - s2.y, 2);
-        if (dist2 == 0) return Math.hypot(s2.x - p.x, s2.y - p.y);
-
-        let t = ((p.x - s1.x) * (s2.x - s1.x) + (p.y - s1.y) * (s2.y - s1.y)) / dist2;
-        t = Math.max(0, Math.min(1, t));
-
-        const projection = new Point(s1.x + t * (s2.x - s1.x), s1.y + t * (s2.y - s1.y));
-
-        return new Vector(projection, p).mod();
-    }
-
     objectShareArea(o: BaseObject): boolean {
         return this.getTranformedBoundigBox().shareArea(o.getTranformedBoundigBox());
     }
@@ -116,8 +104,8 @@ export abstract class BaseObject extends Observable<BaseObjectEvent> {
 
         this.cacheCanvas = document.createElement('canvas');
 
-        this.cacheCanvas.width = canvasBR.x - canvasTL.x;
-        this.cacheCanvas.height = canvasBR.y - canvasTL.y;
+        this.cacheCanvas.width = Math.max(canvasBR.x - canvasTL.x, 1);
+        this.cacheCanvas.height = Math.max(canvasBR.y - canvasTL.y, 1);
 
         this.cacheContext = this.cacheCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
         this.cacheContext.save();

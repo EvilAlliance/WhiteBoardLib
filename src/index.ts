@@ -10,6 +10,7 @@ import { Circle } from './WhiteBoard/Object/Circle';
 import { CtxSetting } from './WhiteBoard/Object/CtxSetting';
 import { CtxTransformation } from './WhiteBoard/Object/CtxTransformation';
 import { Rect } from './WhiteBoard/Object/Rect';
+import { SelectionBox } from './WhiteBoard/Object/SelectionBox';
 
 
 const eraserAll = new EraserAll({ diameter: 5 });
@@ -70,7 +71,8 @@ const p = new Rect({
         originX: 'center',
         originY: 'center',
         scaleX: 1,
-        //skewY: Math.PI / 4
+        skewY: Math.PI / 4,
+        // angle: Math.PI / 2.25
     })
 });
 
@@ -135,3 +137,5 @@ setInterval(() => {
     console.log('render');
     canvas.render();
 }, 4000)
+
+canvas.startRenderingSelectionBox(new SelectionBox([p]));

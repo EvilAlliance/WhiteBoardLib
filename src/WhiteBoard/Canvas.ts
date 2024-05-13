@@ -144,14 +144,18 @@ export class Canvas<T extends BaseBrush = BaseBrush> extends Observable<CanvasEv
     /**
      * The canvas must have the the aspect ratio of 1/1 
      * **/
-    changeCursor(canvas: HTMLCanvasElement) {
-        const w = canvas.height / 2;
-        this.Canvas.style.cursor = 'url(' + canvas.toDataURL() + ') ' + w + ' ' + w + ' , auto';
+    changeCursor(x: HTMLCanvasElement | string) {
+        if (x instanceof HTMLCanvasElement) {
+            const w = x.height / 2;
+            this.Canvas.style.cursor = 'url(' + x.toDataURL() + ') ' + w + ' ' + w + ' , auto';
+        } else {
+            this.Canvas.style.cursor = x;
+        }
     }
 
     setBrush(b: BaseBrush) {
         this.cursor = b as T;
-        const canvas = b.renderCursor();
-        this.changeCursor(canvas);
+        const x = b.renderCursor();
+        this.changeCursor(x);
     }
 }

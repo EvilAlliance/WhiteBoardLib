@@ -1,4 +1,6 @@
 import { Point } from '../GeoSpace/Point';
+import { Vector } from '../GeoSpace/Vector';
+import { closestPointToSegment } from '../Utils/CommonMethod';
 
 export class BoundingBox {
     tl: Point;
@@ -112,7 +114,7 @@ export class BoundingBox {
             this.br.y >= p.y;
     }
 
-    normalize() {
+    normalize(): BoundingBox {
         const canvasTL = new Point(
             Math.min(this.tl.x, this.tr.x, this.bl.x, this.br.x),
             Math.min(this.tl.y, this.tr.y, this.bl.y, this.br.y)
@@ -128,5 +130,34 @@ export class BoundingBox {
 
         this.br = canvasBR;
         this.bl = canvasBR.copy().translateX(-canvasBR.x + canvasTL.x);
+
+        return this;
+    }
+
+    getWidth(): number {
+        const bb = this.copy().normalize();
+        return bb.tr.x - bb.tl.x;
+    }
+
+    getHeigth(): number {
+        const bb = this.copy().normalize();
+        return bb.bl.y - bb.tl.y;
+    }
+
+    clostestProjectionInSide(p: Point): Point {
+        const coord = this.getValues();
+        let closePoint = coord[0];
+        let dist = new Vector(closePoint, p).mod();
+        for (let i = 0; i < coord.length; i++) {
+            const point = coord[i];
+            const point1 = coord[(i + 1) % coord.length];
+            const proj = closestPointToSegment(point, point1, p);
+            const newDist = new Vector(proj, p).mod();
+            if (newDist < dist) {
+                closePoint = proj;
+                dist = newDist;
+            }
+        }
+        return closePoint;
     }
 }

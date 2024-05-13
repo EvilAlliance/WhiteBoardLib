@@ -7,7 +7,8 @@ export abstract class BaseBrush {
     abstract mouseMove(canvas: Canvas<typeof this>, e: MouseEvent): void;
     abstract mouseUp(canvas: Canvas<typeof this>, e: MouseEvent): void;
 
-    renderCursor(canvas: HTMLCanvasElement = document.createElement('canvas')) {
+    renderCursor(): HTMLCanvasElement | string {
+        const canvas = document.createElement('canvas')
         const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
         ctx.lineWidth = 1;
         ctx.shadowColor = 'black';

@@ -20,9 +20,7 @@ export class SelectionBox extends BaseObject {
             this.object[i].getTranformedBoundigBox().getValues().forEach(x => bb.containPoint(x));
         }
 
-        bb.normalize();
-
-        bb.addPadding(7 + this.ctxSetting.strokeWidth / 2);
+        bb.addPadding(this.ctxSetting.strokeWidth / 2);
 
         return bb;
     }
@@ -37,7 +35,7 @@ export class SelectionBox extends BaseObject {
         }
 
         const bb = this.getTranformedBoundigBox();
-        bb.addPadding(-4 - this.ctxSetting.strokeWidth / 2);
+        bb.addPadding(-this.ctxSetting.strokeWidth / 2);
 
         ctx.beginPath();
 

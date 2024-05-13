@@ -4,7 +4,7 @@ import { Vector } from "../GeoSpace/Vector";
 import { BaseObject } from "../Object/BaseObject";
 import { BoundingBox } from "../Object/BoundingBox";
 import { SelectionBox } from "../Object/SelectionBox";
-import { closestToBase } from "../Utils/CommonMethod";
+import { distanceBetweenSegmentToPoint } from "../Utils/CommonMethod";
 import { BaseBrush } from "./BaseBrush";
 
 const enum scale {
@@ -23,22 +23,27 @@ export class Cursor extends BaseBrush {
         const mousePoint = new Point(e.offsetX, e.offsetY);
         if (canvas.selectionBox) {
             const bb = canvas.selectionBox.getTranformedBoundigBox();
-            if (!canvas.selectionBox.pointInside(mousePoint)) {
-                canvas.stopRenderingSelectionBox();
-                return;
-            }
-            const l = Math.abs(canvas.selectionBox.distanceBetweenSegmentToPoint(bb.bl, bb.tl, mousePoint)) < 20;
-            const r = Math.abs(canvas.selectionBox.distanceBetweenSegmentToPoint(bb.br, bb.tr, mousePoint)) < 20;
+            const l = Math.abs(distanceBetweenSegmentToPoint(bb.bl, bb.tl, mousePoint)) < 10;
+            const r = Math.abs(distanceBetweenSegmentToPoint(bb.br, bb.tr, mousePoint)) < 10;
 
-            const b = Math.abs(canvas.selectionBox.distanceBetweenSegmentToPoint(bb.bl, bb.br, mousePoint)) < 20;
-            const t = Math.abs(canvas.selectionBox.distanceBetweenSegmentToPoint(bb.tl, bb.tr, mousePoint)) < 20;
+            const b = Math.abs(distanceBetweenSegmentToPoint(bb.bl, bb.br, mousePoint)) < 10;
+            const t = Math.abs(distanceBetweenSegmentToPoint(bb.tl, bb.tr, mousePoint)) < 10;
 
             (r || l) && this.scale.push(scale.x);
             (b || t) && this.scale.push(scale.y);
 
-            (this.translate = t || l) && (this.lastPoint = mousePoint);
+            (this.translate = t || l);
 
-            this.move = this.scale.length == 0;
+            (this.move = this.scale.length == 0 && canvas.selectionBox.pointInside(mousePoint)) && canvas.changeCursor('grabbing');
+
+            if ((!(l || r || t || b || this.move))) {
+                canvas.changeCursor('default');
+                canvas.stopRenderingSelectionBox();
+            } else if (this.move) {
+                this.lastPoint = mousePoint;
+            } else {
+                this.lastPoint = bb.clostestProjectionInSide(mousePoint)
+            }
         } else {
             this.lastPoint = ORIGIN.copy();
 
@@ -57,16 +62,12 @@ export class Cursor extends BaseBrush {
 
     }
 
-    scaleX(bb: BoundingBox, x: number): number {
-        const w = bb.tr.x - bb.tl.x;
-        const side = closestToBase(bb.br.x, bb.bl.x, x)
-        return (w + ((-side + x)) * (this.translate ? -1 : 1)) / w;
+    scaleX(w: number, proj: number, x: number): number {
+        return (w + ((-proj + x)) * (this.translate ? -1 : 1)) / w;
     }
 
-    scaleY(bb: BoundingBox, y: number): number {
-        const h = bb.bl.y - bb.tl.y;;
-        const side = closestToBase(bb.tl.y, bb.bl.y, y)
-        return (h + ((-side + y)) * (this.translate ? -1 : 1)) / h;
+    scaleY(h: number, proj: number, y: number): number {
+        return (h + ((-proj + y)) * (this.translate ? -1 : 1)) / h;
     }
 
     getTranslateVector(oldBB: BoundingBox, newBB: BoundingBox): Vector {
@@ -80,15 +81,46 @@ export class Cursor extends BaseBrush {
     }
 
     mouseMove(canvas: Canvas<this>, e: MouseEvent): void {
-        if (!canvas.selectionBox) return;
+        const mousePoint = new Point(e.offsetX, e.offsetY);
+
+        if (!canvas.selectionBox) {
+            const objects = canvas.Objects;
+            for (let i = objects.length - 1; i >= 0; i--) {
+                if (!(objects[i].shouldRender && objects[i].getTranformedBoundigBox().pointInside(mousePoint))) continue;
+                canvas.changeCursor('pointer')
+                return;
+            }
+            canvas.changeCursor('default');
+            return;
+        }
+
 
         if (this.move) this.translateSelectionBox(canvas, e);
 
         if (this.scale.length != 0) this.scaleSelectionBox(canvas, e);
 
-        canvas.clear();
-        canvas.render();
+        if (this.move || this.scale.length != 0) {
+            canvas.clear();
+            canvas.render();
+        }
 
+        const bb = canvas.selectionBox.getTranformedBoundigBox();
+
+        const l = Math.abs(distanceBetweenSegmentToPoint(bb.bl, bb.tl, mousePoint)) < 10;
+        const r = Math.abs(distanceBetweenSegmentToPoint(bb.br, bb.tr, mousePoint)) < 10;
+
+        const b = Math.abs(distanceBetweenSegmentToPoint(bb.bl, bb.br, mousePoint)) < 10;
+        const t = Math.abs(distanceBetweenSegmentToPoint(bb.tl, bb.tr, mousePoint)) < 10;
+
+        const grab = canvas.selectionBox.pointInside(mousePoint) && !this.move;
+
+        (l || r) && canvas.changeCursor('ew-resize');
+        (t || b) && canvas.changeCursor('ns-resize');
+        ((t && l) || (b && r)) && canvas.changeCursor('nwse-resize');
+        ((t && r) || (b && l)) && canvas.changeCursor('nesw-resize');
+
+        (!(l || r || t || b)) && grab && canvas.changeCursor('grab');
+        (!(l || r || t || b || grab || this.move)) && canvas.changeCursor('default');
     }
 
     scaleSelectionBox(canvas: Canvas, { offsetX, offsetY }: MouseEvent) {
@@ -96,8 +128,8 @@ export class Cursor extends BaseBrush {
 
         const bb = canvas.selectionBox.getTranformedBoundigBox() as BoundingBox;
 
-        const scaleX = this.scaleX(bb, offsetX);
-        const scaleY = this.scaleY(bb, offsetY);
+        const scaleX = this.scaleX(canvas.selectionBox.getWidth(), this.lastPoint.x, offsetX);
+        const scaleY = this.scaleY(canvas.selectionBox.getHeigth(), this.lastPoint.y, offsetY);
 
         if (this.scale.length == 2) {
             const min = Math.min(scaleX, scaleY);
@@ -107,6 +139,8 @@ export class Cursor extends BaseBrush {
                 +(this.scale[0] != scale.x) || scaleX,
                 +(this.scale[0] != scale.y) || scaleY);
         }
+
+        this.lastPoint = new Point(offsetX, offsetY);
 
         if (this.translate) canvas.selectionBox.translate(this.getTranslateVector(bb, canvas.selectionBox.getTranformedBoundigBox()))
     }
@@ -127,5 +161,9 @@ export class Cursor extends BaseBrush {
         this.move = false;
         this.scale.splice(0, this.scale.length);
         this.translate = false;
+    }
+
+    renderCursor() {
+        return 'default';
     }
 }
