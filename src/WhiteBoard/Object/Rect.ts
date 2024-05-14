@@ -1,7 +1,7 @@
 import { Point } from '../GeoSpace/Point';
-import { BoundingBox } from './BoundingBox';
 import { Vector } from '../GeoSpace/Vector';
 import { BaseObject } from './BaseObject';
+import { BoundingBox } from './BoundingBox';
 //const kRect = 1 - 0.5522847498;
 
 export class Rect extends BaseObject {

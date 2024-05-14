@@ -1,3 +1,4 @@
+import { Point } from "../GeoSpace/Point";
 import { Vector } from "../GeoSpace/Vector";
 import { BaseObject } from "./BaseObject";
 import { BoundingBox } from "./BoundingBox";
@@ -6,7 +7,7 @@ import { CtxSetting } from "./CtxSetting";
 export class SelectionBox extends BaseObject {
     ctxSetting: CtxSetting = new CtxSetting({
         strokeWidth: 2,
-        strokeColor: 'Grey',
+        strokeColor: 'rgba(173, 216, 230, 0.8)',
     });
     object: BaseObject[];
     constructor(objs: BaseObject[]) {
@@ -15,9 +16,10 @@ export class SelectionBox extends BaseObject {
     }
 
     _getBoundingBox(): BoundingBox {
-        const bb = this.object[0].getTranformedBoundigBox();
-        for (let i = 1; i < this.object.length; i++) {
-            this.object[i].getTranformedBoundigBox().getValues().forEach(x => bb.containPoint(x));
+        const p = this.object[0].getTranformedBoundigBox().tl;
+        const bb = new BoundingBox(p.copy(), p.copy(), p.copy(), p.copy());
+        for (let i = 0; i < this.object.length; i++) {
+            this.object[i].getTranformedBoundigBox().getValues().forEach((x: Point) => bb.containPoint(x));
         }
 
         bb.addPadding(this.ctxSetting.strokeWidth / 2);
@@ -49,6 +51,16 @@ export class SelectionBox extends BaseObject {
 
         if (this.ctxSetting.fill) ctx.fill();
         if (this.ctxSetting.strokeWidth > 0) ctx.stroke();
+
+        ctx.fillStyle = ctx.strokeStyle;
+
+        const halfW = this.getWidth() / 2;
+
+        ctx.beginPath();
+
+        ctx.fillRect(bb.tl.x + halfW - 5, bb.tl.y + 20, 10, 10)
+
+        ctx.closePath();
     }
 
     includes(obj: BaseObject): boolean {
@@ -81,6 +93,25 @@ export class SelectionBox extends BaseObject {
     getHeigth(): number {
         const bb = this.getTranformedBoundigBox();
         return bb.bl.y - bb.tl.y;
+    }
+
+    insideRotate(p: Point): boolean {
+        const bb = this.getTranformedBoundigBox();
+
+        const halfW = this.getWidth();
+
+        const rBB = new BoundingBox(
+            new Point(bb.tl.x + halfW - 5, bb.tl.y + 20),
+            new Point(bb.tl.x + halfW + 5, bb.tl.y + 20),
+            new Point(bb.tl.x + halfW - 5, bb.tl.y + 30),
+            new Point(bb.tl.x + halfW + 5, bb.tl.y + 30))
+
+        return rBB.pointInside(p);
+    }
+
+    rotate(rad: number) {
+        super.rotate(rad);
+        this.object.forEach(x => x.rotate(rad));
     }
 }
 

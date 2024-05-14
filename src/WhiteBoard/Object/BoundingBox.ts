@@ -107,11 +107,19 @@ export class BoundingBox {
         return 0 <= t && t <= 1 && 0 <= u && u <= 1;
     }
 
-    pointInside(p: Point) {
-        return this.tl.x <= p.x &&
-            this.br.x >= p.x &&
-            this.tl.y <= p.y &&
-            this.br.y >= p.y;
+    pointInside(p: Point): boolean {
+        const points = this.getValues();
+        let c = 0
+
+        for (let i = 0; i < points.length; i++) {
+            const p1 = points[i]
+            const p2 = points[(i + 1) % points.length]
+
+            if (p1.y <= p.y && p.y < p2.y && (p.x - p1.x) * (p2.y - p1.y) < (p2.x - p1.x) * (p.y - p1.y))
+                c += 1
+        }
+
+        return c % 2 == 1
     }
 
     normalize(): BoundingBox {
