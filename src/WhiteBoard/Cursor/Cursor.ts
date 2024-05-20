@@ -125,7 +125,7 @@ export class Cursor extends BaseBrush {
     scaleSelectionBox(canvas: Canvas, { offsetX, offsetY }: MouseEvent) {
         if (!canvas.selectionBox) return;
 
-        const bb = canvas.selectionBox.getTranformedBoundigBox() as BoundingBox;
+        const bb = canvas.selectionBox.getTranformedBoundigBox();
 
         const scaleX = this.scaleX(canvas.selectionBox.getWidth(), this.lastPoint.x, offsetX);
         const scaleY = this.scaleY(canvas.selectionBox.getHeigth(), this.lastPoint.y, offsetY);

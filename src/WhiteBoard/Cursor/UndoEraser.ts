@@ -85,7 +85,6 @@ export class UndoEraser extends BaseBrush {
                 for (const erase of object.erased) {
                     if (erase.objectShareArea(this.path)) {
                         erase.erased.push(this.path)
-                        erase.dirty = true;
                     }
                 }
             }

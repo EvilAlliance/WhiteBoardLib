@@ -28,7 +28,7 @@ export class CtxTransformation extends CommonMethod {
     }
 
     setContextTransformation(ctx: CanvasRenderingContext2D, boundingBox: BoundingBox) {
-        const centerPoint = this.getCenterPoint(boundingBox);
+        const centerPoint = this.getRelativeCenterPoint(boundingBox);
 
         ctx.transform(
             this.scaleX,
@@ -39,14 +39,14 @@ export class CtxTransformation extends CommonMethod {
             this.trans.y + boundingBox.tl.y
         );
 
-        ctx.translate(centerPoint.x - boundingBox.tl.x, centerPoint.y - boundingBox.tl.y);
+        ctx.translate(centerPoint.x, centerPoint.y);
         ctx.rotate(this.angle);
 
-        ctx.translate(-centerPoint.x, -centerPoint.y);
+        ctx.translate(-centerPoint.x - boundingBox.tl.x, -centerPoint.y - boundingBox.tl.y);
     }
 
     getTransformationMatrix(boundingBox: BoundingBox) {
-        const centerPoint = this.getCenterPoint(boundingBox);
+        const centerPoint = this.getRelativeCenterPoint(boundingBox);
 
         const transformationMat = new DOMMatrix();
 
@@ -57,19 +57,19 @@ export class CtxTransformation extends CommonMethod {
         transformationMat.e = this.trans.x + boundingBox.tl.x;
         transformationMat.f = this.trans.y + boundingBox.tl.y;
 
-        transformationMat.translateSelf(centerPoint.x - boundingBox.tl.x, centerPoint.y - boundingBox.tl.y);
+        transformationMat.translateSelf(centerPoint.x, centerPoint.y);
         transformationMat.rotateSelf(this.angle / Math.PI * 180);
-        transformationMat.translateSelf(-centerPoint.x, -centerPoint.y);
+        transformationMat.translateSelf(-centerPoint.x - boundingBox.tl.x, -centerPoint.y - boundingBox.tl.y);
 
         return transformationMat;
     }
 
-    getCenterPoint({ tl, br }: BoundingBox): Point {
+    getRelativeCenterPoint({ tl, br }: BoundingBox): Point {
         const heigth = br.y - tl.y;
         const width = br.x - tl.x;
         const x = OriginXY[this.originX as keyof typeof OriginXY] ?? this.originX;
         const y = OriginXY[this.originY as keyof typeof OriginXY] ?? this.originY;
-        return new Point(tl.x + width * x, tl.y + heigth * y,);
+        return new Point(width * x, heigth * y,);
     }
 
     copy(): CtxTransformation {
