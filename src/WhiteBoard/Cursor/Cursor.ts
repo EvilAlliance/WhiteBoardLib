@@ -17,7 +17,6 @@ export class Cursor extends BaseBrush {
     move: boolean = false;
     scale: scale[] = [];
     translate: boolean = false;
-    rotating: boolean = false;
     lastPoint: Point = ORIGIN.copy();
 
     mouseDown(canvas: Canvas<this>, e: MouseEvent): void {
@@ -35,14 +34,12 @@ export class Cursor extends BaseBrush {
 
             (this.translate = t || l);
 
-            const insideRotate = (this.rotating = canvas.selectionBox.insideRotate(mousePoint));
+            (this.move = this.scale.length == 0 && canvas.selectionBox.pointInside(mousePoint)) && canvas.changeCursor('grabbing');
 
-            (this.move = this.scale.length == 0 && canvas.selectionBox.pointInside(mousePoint) && !canvas.selectionBox.insideRotate(mousePoint)) && canvas.changeCursor('grabbing');
-
-            if ((!(l || r || t || b || insideRotate || this.move))) {
+            if ((!(l || r || t || b || this.move))) {
                 canvas.changeCursor('default');
                 canvas.stopRenderingSelectionBox();
-            } else if (this.move || insideRotate) {
+            } else if (this.move) {
                 this.lastPoint = mousePoint;
             } else {
                 this.lastPoint = bb.clostestProjectionInSide(mousePoint)
@@ -83,24 +80,6 @@ export class Cursor extends BaseBrush {
         return new Vector(ORIGIN.copy(), new Point(oldW - newW, oldH - newH));
     }
 
-    rotateSelectionBox(canvas: Canvas, { offsetX, offsetY }: MouseEvent) {
-        if (!canvas.selectionBox) return;
-        const mousePoint = new Point(offsetX, offsetY);
-
-        const bb = canvas.selectionBox.getBoundingBox();
-        const centerPoint = canvas.selectionBox.ctxTransformation.getCenterPoint(bb).transform(canvas.selectionBox.ctxTransformation.getTransformationMatrix(bb));
-
-        const v1 = new Vector(centerPoint, this.lastPoint);
-
-        const v2 = new Vector(centerPoint, mousePoint);
-        const rad = v2.phase() - v1.phase();
-        console.log(rad, v2.phase(), v1.phase())
-
-        canvas.selectionBox.rotate(rad);
-        canvas.clear();
-        canvas.render();
-    }
-
     mouseMove(canvas: Canvas<this>, e: MouseEvent): void {
         const mousePoint = new Point(e.offsetX, e.offsetY);
 
@@ -114,9 +93,6 @@ export class Cursor extends BaseBrush {
             canvas.changeCursor('default');
             return;
         }
-
-
-        if (this.rotating) this.rotateSelectionBox(canvas, e);
 
         if (this.move) this.translateSelectionBox(canvas, e);
 
@@ -137,16 +113,13 @@ export class Cursor extends BaseBrush {
 
         const grab = canvas.selectionBox.pointInside(mousePoint) && !this.move;
 
-        const insideRotate = canvas.selectionBox.insideRotate(mousePoint);
-
         (l || r) && canvas.changeCursor('ew-resize');
         (t || b) && canvas.changeCursor('ns-resize');
         ((t && l) || (b && r)) && canvas.changeCursor('nwse-resize');
         ((t && r) || (b && l)) && canvas.changeCursor('nesw-resize');
-        insideRotate && canvas.changeCursor('crosshair');
 
-        (!(l || r || t || b || insideRotate)) && grab && canvas.changeCursor('grab');
-        (!(l || r || t || b || grab || this.move || insideRotate)) && canvas.changeCursor('default');
+        (!(l || r || t || b)) && grab && canvas.changeCursor('grab');
+        (!(l || r || t || b || grab || this.move)) && canvas.changeCursor('default');
     }
 
     scaleSelectionBox(canvas: Canvas, { offsetX, offsetY }: MouseEvent) {

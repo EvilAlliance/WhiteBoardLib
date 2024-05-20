@@ -94,24 +94,5 @@ export class SelectionBox extends BaseObject {
         const bb = this.getTranformedBoundigBox();
         return bb.bl.y - bb.tl.y;
     }
-
-    insideRotate(p: Point): boolean {
-        const bb = this.getTranformedBoundigBox();
-
-        const halfW = this.getWidth();
-
-        const rBB = new BoundingBox(
-            new Point(bb.tl.x + halfW - 5, bb.tl.y + 20),
-            new Point(bb.tl.x + halfW + 5, bb.tl.y + 20),
-            new Point(bb.tl.x + halfW - 5, bb.tl.y + 30),
-            new Point(bb.tl.x + halfW + 5, bb.tl.y + 30))
-
-        return rBB.pointInside(p);
-    }
-
-    rotate(rad: number) {
-        super.rotate(rad);
-        this.object.forEach(x => x.rotate(rad));
-    }
 }
 
