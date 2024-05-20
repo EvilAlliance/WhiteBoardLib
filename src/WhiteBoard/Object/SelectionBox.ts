@@ -51,16 +51,6 @@ export class SelectionBox extends BaseObject {
 
         if (this.ctxSetting.fill) ctx.fill();
         if (this.ctxSetting.strokeWidth > 0) ctx.stroke();
-
-        ctx.fillStyle = ctx.strokeStyle;
-
-        const halfW = this.getWidth() / 2;
-
-        ctx.beginPath();
-
-        ctx.fillRect(bb.tl.x + halfW - 5, bb.tl.y + 20, 10, 10)
-
-        ctx.closePath();
     }
 
     includes(obj: BaseObject): boolean {
